@@ -8,7 +8,10 @@ on:
 jobs:
   forecast:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required to push the results back to the repo
     steps:
+
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
