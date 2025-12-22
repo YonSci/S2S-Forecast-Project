@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ET-NeuralCast | Weekly S2S Forecast</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.2);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            padding: 4rem 2rem;
+            text-align: center;
+            background: linear-gradient(180deg, rgba(30, 41, 59, 0.5) 0%, transparent 100%);
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin: 0;
+            letter-spacing: -0.05em;
+            background: linear-gradient(to right, #fff, var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            margin-top: 0.5rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .forecast-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2.5rem;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 600px) {
+            .forecast-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .forecast-card {
+            background: var(--card-bg);
+            border-radius: 1.5rem;
+            overflow: hidden;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .forecast-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.5), 0 0 15px var(--accent-glow);
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .card-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .image-container {
+            position: relative;
+            width: 100%;
+            background: #111;
+            aspect-ratio: 1.2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .forecast-image {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .card-footer {
+            padding: 1rem 1.5rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .update-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: var(--accent-glow);
+            color: var(--accent);
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .placeholder {
+            padding: 3rem;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.02);
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            margin: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="update-badge">Status: Live Operational Data</div>
+        <h1>ET-NeuralCast</h1>
+        <p class="subtitle">Sub-seasonal to Seasonal Precipitation Forecast for Ethiopia</p>
+    </header>
+
+    <div class="container">
+        <div class="forecast-grid">
+            <!-- Tercile Forecast -->
+            <div class="forecast-card">
+                <div class="card-header">
+                    <div class="card-title">Categorical Forecast (Terciles)</div>
+                </div>
+                <div class="image-container">
+                    <img id="tercile-map" class="forecast-image" src="outputs/latest_tercile.png"
+                        onerror="this.src='https://placehold.co/600x500/1e293b/38bdf8?text=Generating+Latest+Forecast...'"
+                        alt="Tercile Forecast">
+                </div>
+                <div class="card-footer">
+                    Probability categories: Below, Near, and Above Normal.
+                </div>
+            </div>
+
+            <!-- Anomaly Forecast -->
+            <div class="forecast-card">
+                <div class="card-header">
+                    <div class="card-title">Precipitation Anomaly</div>
+                </div>
+                <div class="image-container">
+                    <img id="anomaly-map" class="forecast-image" src="outputs/latest_anomaly.png"
+                        onerror="this.src='https://placehold.co/600x500/1e293b/38bdf8?text=Generating+Latest+Forecast...'"
+                        alt="Anomaly Forecast">
+                </div>
+                <div class="card-footer">
+                    Deviation from the historical spatial-weekly mean (mm/day).
+                </div>
+            </div>
+
+            <!-- Total Forecast -->
+            <div class="forecast-card">
+                <div class="card-header">
+                    <div class="card-title">Total Precipitation</div>
+                </div>
+                <div class="image-container">
+                    <img id="total-map" class="forecast-image" src="outputs/latest_total.png"
+                        onerror="this.src='https://placehold.co/600x500/1e293b/38bdf8?text=Generating+Latest+Forecast...'"
+                        alt="Total Forecast">
+                </div>
+                <div class="card-footer">
+                    Predicted physical rainfall amount (mm/day).
+                </div>
+            </div>
+
+            <!-- Percent Forecast -->
+            <div class="forecast-card">
+                <div class="card-header">
+                    <div class="card-title">Percent of Normal</div>
+                </div>
+                <div class="image-container">
+                    <img id="percent-map" class="forecast-image" src="outputs/latest_percent.png"
+                        onerror="this.src='https://placehold.co/600x500/1e293b/38bdf8?text=Generating+Latest+Forecast...'"
+                        alt="Percent Forecast">
+                </div>
+                <div class="card-footer">
+                    Rainfall as a percentage of the seasonal baseline.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2025 ET-NeuralCast Project. Powered by Deep Learning & ERA5/CHIRPS data.
+    </footer>
+
+    <script>
+        // Simple script to automatically fetch the "latest" files
+        // Note: For this to work simple, we'll update main_operational.py
+        // to always copy the newest files to a fixed name 'latest_*.png'
+    </script>
+</body>
+
+</html>

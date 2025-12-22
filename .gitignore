@@ -1,0 +1,34 @@
+# Virtual Environment
+s2s_env/
+venv/
+venv_gpu/
+.venv/
+__pycache__/
+*.pyc
+
+# Data (Crucial: Keep the structure, exclude the heavy NetCDF raw files)
+data/raw/chirps/*.nc
+data/raw/era5_pressure/*.nc
+data/raw/era5_sst/*.nc
+
+# Logs
+pipeline.log
+*.log
+
+# IDEs
+.vscode/
+.idea/
+
+# MLflow
+mlruns/
+
+# System
+.DS_Store
+Thumbs.db
+
+# Keep the directories but ignore contents
+!data/raw/chirps/.gitkeep
+!data/raw/era5_pressure/.gitkeep
+!data/raw/era5_sst/.gitkeep
+!outputs/.gitkeep
+!checkpoints/.gitkeep
