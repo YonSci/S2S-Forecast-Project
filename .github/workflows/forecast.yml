@@ -2,7 +2,7 @@ name: ET-NeuralCast Forecast
 
 on:
   schedule:
-    - cron: "0 0 * * 1" # Run every Monday at 00:00 UTC
+    - cron: "0 0 * * *" # Run every day at 00:00 UTC
   workflow_dispatch: # Allow manual trigger from the Actions tab
 
 jobs:
@@ -53,6 +53,6 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add outputs/*.png outputs/*.nc
+          git add outputs/*.png outputs/*.nc outputs/*.json
           git commit -m "Update Forecast: $(date +'%Y-%m-%d')" || echo "No changes to commit"
           git push

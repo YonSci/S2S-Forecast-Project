@@ -80,9 +80,35 @@ def main():
             if matches:
                 shutil.copy2(os.path.join(output_dir, matches[0]), os.path.join(output_dir, target))
                 logging.info(f"Updated {target} with {matches[0]}")
+
+        # 5. Generate Manifest for Web Dashboard (forecast_index.json)
+        try:
+            import json
+            import re
+            
+            forecast_dates = set()
+            date_pattern = re.compile(r"forecast_(\d{4}-\d{2}-\d{2})")
+            
+            for f in os.listdir(output_dir):
+                match = date_pattern.search(f)
+                if match:
+                    forecast_dates.add(match.group(1))
+            
+            if forecast_dates:
+                manifest = {
+                    "last_updated": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "available_dates": sorted(list(forecast_dates), reverse=True)
+                }
                 
+                manifest_path = os.path.join(output_dir, "forecast_index.json")
+                with open(manifest_path, 'w') as f:
+                    json.dump(manifest, f, indent=4)
+                logging.info(f"Generated manifest: {manifest_path} with {len(forecast_dates)} dates.")
+        except Exception as e:
+            logging.error(f"Manifest generation failed: {e}")
+            
     except Exception as e:
-        logging.error(f"Inference failed: {e}")
+        logging.error(f"Operational pipeline failed: {e}")
         return
 
     logging.info("=== ET-NeuralCast Operational Pipeline Completed Successfully ===")

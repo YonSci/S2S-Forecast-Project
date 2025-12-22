@@ -92,8 +92,8 @@ if __name__ == "__main__":
         print(e)
         exit(1)
 
-    START_YEAR = 2002
-    END_YEAR = 2005
+    START_YEAR = 2006
+    END_YEAR = 2009
     OUTPUT_DIR_PL = os.path.join(os.getcwd(), "data", "raw", "era5_pressure")
     OUTPUT_DIR_SST = os.path.join(os.getcwd(), "data", "raw", "era5_sst")
     
