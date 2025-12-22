@@ -6,22 +6,24 @@
     <title>ET-NeuralCast | Advanced S2S Forecasting</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #020617;
-            --card-bg: rgba(30, 41, 59, 0.5);
-            --card-border: rgba(255, 255, 255, 0.08);
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --accent: #38bdf8;
-            --accent-gradient: linear-gradient(135deg, #38bdf8 0%, #10b981 100%);
-            --glass-blur: blur(20px);
+            --bg-color: #010409;
+            --bg-secondary: #0d1117;
+            --card-bg: rgba(22, 27, 34, 0.6);
+            --card-border: rgba(48, 54, 61, 0.8);
+            --text-primary: #f0f6fc;
+            --text-secondary: #8b949e;
+            --accent: #58a6ff;
+            --accent-glow: rgba(88, 166, 255, 0.15);
+            --accent-gradient: linear-gradient(135deg, #58a6ff 0%, #3fb950 100%);
+            --glass-blur: blur(24px);
         }
 
         * {
             box-sizing: border-box;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         body {
@@ -32,15 +34,27 @@
             padding: 0;
             overflow-x: hidden;
             background-image: 
-                radial-gradient(circle at 5% 10%, rgba(56, 189, 248, 0.12) 0%, transparent 40%),
-                radial-gradient(circle at 95% 90%, rgba(16, 185, 129, 0.12) 0%, transparent 40%);
+                radial-gradient(circle at 0% 0%, rgba(88, 166, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(63, 185, 80, 0.1) 0%, transparent 50%),
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 80px 80px, 80px 80px;
         }
 
-        /* Hero Section Refined */
-        .hero {
-            padding: 8rem 2rem 6rem;
-            max-width: 1400px;
+        /* Spacious Layout */
+        .container {
+            max-width: 1600px;
             margin: 0 auto;
+            padding: 0 4rem;
+        }
+
+        section {
+            margin-bottom: 25rem; /* Large spacing between sections */
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 12rem 0 8rem;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -49,32 +63,34 @@
         .header-main {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 3rem;
+            gap: 5rem;
             width: 100%;
-            max-width: 1000px;
+            max-width: 1200px;
+            margin-bottom: 8rem;
         }
 
-        @media (max-width: 900px) {
+        @media (max-width: 1100px) {
             .header-main {
                 flex-direction: column;
                 text-align: center;
-                gap: 2rem;
+                gap: 3rem;
             }
+            .container { padding: 0 2rem; }
         }
 
         .logo-wrapper {
             flex-shrink: 0;
-            width: 180px;
-            height: 180px;
+            width: 240px;
+            height: 240px;
             position: relative;
         }
 
-        .logo-wrapper::before {
+        .logo-wrapper::after {
             content: '';
             position: absolute;
-            inset: -15px;
-            background: radial-gradient(circle, rgba(56, 189, 248, 0.2) 0%, transparent 70%);
+            inset: -20px;
+            background: var(--accent-glow);
+            filter: blur(40px);
             border-radius: 50%;
             z-index: -1;
         }
@@ -83,9 +99,9 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 32px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
         }
 
         .hero-text {
@@ -94,348 +110,319 @@
 
         h1 {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: clamp(3rem, 6vw, 5rem);
+            font-size: clamp(3.5rem, 8vw, 6rem);
             font-weight: 800;
             margin: 0;
-            letter-spacing: -0.05em;
-            line-height: 0.95;
-            background: linear-gradient(to bottom, #fff 60%, #94a3b8 100%);
+            letter-spacing: -0.06em;
+            line-height: 0.9;
+            background: linear-gradient(to bottom, #fff 60%, var(--text-secondary) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
-        .hero p.subtitle {
-            font-size: 1.25rem;
+        .subtitle-large {
+            font-size: 1.5rem;
             color: var(--text-secondary);
-            margin: 1.5rem 0 0;
-            font-weight: 400;
-            line-height: 1.6;
-            max-width: 600px;
-        }
-
-        .status-header {
-            width: 100%;
-            margin-bottom: 2rem;
-            display: flex;
-            justify-content: center;
+            margin-top: 2rem;
+            font-weight: 300;
+            line-height: 1.5;
+            max-width: 700px;
         }
 
         .status-badge {
             display: inline-flex;
             align-items: center;
-            gap: 0.6rem;
-            padding: 0.5rem 1.25rem;
-            background: rgba(16, 185, 129, 0.08);
-            color: #34d399;
-            border-radius: 999px;
-            font-size: 0.8rem;
+            gap: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            background: rgba(63, 185, 80, 0.1);
+            color: #3fb950;
+            border-radius: 12px;
+            font-size: 0.85rem;
             font-weight: 700;
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            letter-spacing: 0.08em;
+            border: 1px solid rgba(63, 185, 80, 0.2);
             text-transform: uppercase;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            background: #10b981;
-            border-radius: 50%;
-            box-shadow: 0 0 12px #10b981;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(0.9); opacity: 0.7; }
-            50% { transform: scale(1.3); opacity: 1; }
-            100% { transform: scale(0.9); opacity: 0.7; }
-        }
-
-        /* Container & Sections */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 2rem 10rem;
-        }
-
-        section {
-            margin-top: 10rem;
-        }
-
-        .section-title {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 2.5rem;
-            font-weight: 700;
+            letter-spacing: 0.1em;
             margin-bottom: 4rem;
-            display: flex;
-            align-items: center;
-            gap: 2rem;
         }
 
-        .section-title::after {
-            content: '';
-            height: 1px;
-            background: linear-gradient(to right, var(--card-border), transparent);
-            flex: 1;
+        .pulse-dot {
+            width: 10px;
+            height: 10px;
+            background: #3fb950;
+            border-radius: 50%;
+            box-shadow: 0 0 15px #3fb950;
+            animation: pulse-ring 2s infinite;
         }
 
-        /* Info Grid - Modern Glass */
-        .info-grid {
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 1; }
+            50% { transform: scale(1.4); opacity: 0.5; }
+            100% { transform: scale(0.8); opacity: 1; }
+        }
+
+        /* Architecture Row Hero */
+        .architecture-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 3rem;
-        }
-
-        .info-card {
-            background: var(--card-bg);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            padding: 3.5rem;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+            background: var(--card-border);
+            border: 1px solid var(--card-border);
             border-radius: 3rem;
-            border: 1px solid var(--card-border);
-            position: relative;
             overflow: hidden;
+            width: 100%;
+            max-width: 1400px;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.5);
         }
 
-        .info-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 2px;
-            background: var(--accent-gradient);
-            opacity: 0;
-            transition: opacity 0.3s ease;
+        @media (max-width: 1000px) {
+            .architecture-row { grid-template-columns: 1fr; }
         }
 
-        .info-card:hover {
-            border-color: rgba(255, 255, 255, 0.15);
-            background: rgba(30, 41, 59, 0.7);
-            transform: translateY(-5px);
-        }
-
-        .info-card:hover::before { opacity: 1; }
-
-        .icon-box {
-            width: 60px;
-            height: 60px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 18px;
-            margin-bottom: 2rem;
+        .arch-item {
+            background: var(--bg-secondary);
+            padding: 4rem;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            border: 1px solid var(--card-border);
+            flex-direction: column;
+            gap: 1.5rem;
         }
 
-        .info-card h3 {
-            font-size: 1.8rem;
-            margin: 0 0 1.5rem;
+        .arch-item:hover {
+            background: #161b22;
+        }
+
+        .arch-icon {
+            font-size: 2.5rem;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .arch-item h3 {
+            font-size: 1.5rem;
             font-weight: 700;
-        }
-
-        .info-card p {
-            color: var(--text-secondary);
-            line-height: 1.8;
             margin: 0;
-            font-size: 1.1rem;
+            color: #fff;
         }
 
-        /* Forecast Cards */
+        .arch-item p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin: 0;
+        }
+
+        /* Sections Titles */
+        .section-label {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 5rem;
+            text-align: center;
+            opacity: 0.9;
+        }
+
+        /* Forecast Grid - High Contrast */
         .forecast-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
-            gap: 4rem;
+            grid-template-columns: repeat(auto-fit, minmax(650px, 1fr));
+            gap: 6rem;
         }
 
-        @media (max-width: 700px) {
+        @media (max-width: 800px) {
             .forecast-grid { grid-template-columns: 1fr; }
         }
 
         .forecast-card {
             background: #000;
-            border-radius: 3rem;
+            border-radius: 4rem;
             border: 1px solid var(--card-border);
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
         }
 
         .forecast-card:hover {
-            border-color: var(--accent);
-            box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.8);
+            border-color: #fff;
+            transform: scale(1.02);
+            box-shadow: 0 60px 120px rgba(0,0,0,0.9);
         }
 
-        .card-header {
-            padding: 2rem 3rem;
-            background: #0f172a;
+        .card-meta {
+            padding: 2.5rem 4rem;
+            background: var(--bg-secondary);
             border-bottom: 1px solid var(--card-border);
             display: flex;
-            align-items: center;
             justify-content: space-between;
+            align-items: center;
         }
 
-        .card-title {
-            font-size: 0.9rem;
-            font-weight: 800;
+        .meta-tag {
             color: var(--accent);
+            font-weight: 800;
+            letter-spacing: 0.3em;
+            font-size: 0.75rem;
             text-transform: uppercase;
-            letter-spacing: 0.25em;
         }
 
-        .image-container {
-            position: relative;
-            aspect-ratio: 1.25;
+        .img-container {
+            background: #000;
+            aspect-ratio: 1.3;
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 2rem;
         }
 
-        .forecast-image {
+        .img-container img {
             max-width: 100%;
             height: auto;
-            display: block;
+            border-radius: 12px;
         }
 
-        .card-body {
-            padding: 2.5rem 3rem;
-            background: #0f172a;
+        .card-content {
+            padding: 4rem;
+            background: var(--bg-secondary);
         }
 
-        .card-body h4 {
-            font-size: 1.4rem;
-            margin: 0 0 1rem;
-            color: #fff;
+        .card-content h4 {
+            font-size: 1.8rem;
+            margin: 0 0 1.5rem;
+            font-weight: 700;
         }
 
-        .card-description {
+        .card-content p {
+            font-size: 1.15rem;
             color: var(--text-secondary);
-            font-size: 1.05rem;
-            line-height: 1.7;
+            line-height: 1.8;
             margin: 0;
         }
 
-        /* Footer */
+        /* Footer Modern */
         footer {
-            padding: 8rem 2rem;
+            padding: 12rem 0 6rem;
             background: #000;
             border-top: 1px solid var(--card-border);
             text-align: center;
         }
 
-        .nav-links {
+        .footer-brand {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -0.05em;
+            margin-bottom: 4rem;
+            display: block;
+        }
+
+        .f-links {
             display: flex;
             justify-content: center;
-            gap: 3rem;
-            margin: 3rem 0;
+            gap: 4rem;
+            margin-bottom: 4rem;
         }
 
-        .nav-links a {
-            color: var(--text-secondary);
+        .f-links a {
+            color: #fff;
             text-decoration: none;
-            font-weight: 600;
-            font-size: 1rem;
+            font-weight: 400;
+            font-size: 1.1rem;
+            opacity: 0.5;
         }
 
-        .nav-links a:hover { color: #fff; }
+        .f-links a:hover { opacity: 1; color: var(--accent); }
 
         .copyright {
-            color: #475569;
-            font-size: 0.9rem;
-            letter-spacing: 0.02em;
+            color: #30363d;
+            font-size: 1rem;
         }
     </style>
 </head>
 <body>
 
-    <header class="hero">
-        <div class="status-header">
-            <div class="status-badge">
-                <span class="status-dot"></span>
-                Operational Cycle: Active
-            </div>
-        </div>
-        
-        <div class="header-main">
-            <div class="logo-wrapper">
-                <img src="hero_graphic.png" alt="ET-NeuralCast Logo" class="hero-graphic">
-            </div>
-            <div class="hero-text">
-                <h1>ET-NeuralCast</h1>
-                <p class="subtitle">Next-generation S2S Forecasting bridging Global Climate Signals with local Ethiopian topography through Generative AI.</p>
-            </div>
-        </div>
-    </header>
-
     <div class="container">
         
-        <!-- System Architecture Section First -->
-        <section id="architecture">
-            <h2 class="section-title">System Architecture</h2>
-            <div class="info-grid">
-                <div class="info-card">
-                    <div class="icon-box">⚡</div>
-                    <h3>U-Net GAN Methodology</h3>
-                    <p>The system utilizes a <b>U-Net Generator</b> architecture specialized in image-to-image translation, fine-tuned with a <b>PatchGAN Discriminator</b>. This dual-model setup ensures that forecasts aren't just statistically accurate, but spatially coherent, capturing the "sharp" boundaries of rainfall events that standard models often fail to resolve.</p>
+        <!-- Hero Section -->
+        <header class="hero">
+            <div class="status-badge">
+                <span class="pulse-dot"></span>
+                Operational Station: 1-Week Lead
+            </div>
+            
+            <div class="header-main">
+                <div class="logo-wrapper">
+                    <img src="hero_graphic.png" alt="ET-NeuralCast" class="hero-graphic">
                 </div>
-                <div class="info-card">
-                    <div class="icon-box">📦</div>
-                    <h3>Intelligent Data Fusion</h3>
-                    <p>We combine high-resolution <b>CHIRPS</b> historical data (0.05°) with <b>ERA5-T</b> reanalysis variables. By feeding the model 200hPa geopotential heights, wind vectors, and sea surface temperatures, we allow the neural network to learn the complex lag-correlations between planetary waves and local precipitation over the Horn of Africa.</p>
-                </div>
-                <div class="info-card">
-                    <div class="icon-box">🤖</div>
-                    <h3>Automated Operationalization</h3>
-                    <p>Designed for real-world impact, the pipeline is fully headless. <b>GitHub Actions</b> orchestrates the weekly ingestion of raw Copernicus data, normalization through 20-year climatology baselines, and model inference. The resulting NetCDF data and visualization maps are automatically pushed to this dashboard every Monday.</p>
+                <div class="hero-text">
+                    <h1>ET-NeuralCast</h1>
+                    <p class="subtitle-large">A hybrid Deep Learning framework bridging global atmospheric drivers with high-resolution precipitation reality across Ethiopia.</p>
                 </div>
             </div>
-        </section>
 
-        <!-- Forecast Section -->
-        <section id="forecast">
-            <h2 class="section-title">Latest Weekly Insights</h2>
+            <!-- Architecture Row integrated as Hero extension -->
+            <div class="architecture-row">
+                <div class="arch-item">
+                    <span class="arch-icon">⚡</span>
+                    <h3>U-Net GAN Core</h3>
+                    <p>Fusing convolutional local-feature extraction with adversarial feedback for unparalleled spatial prediction sharpness.</p>
+                </div>
+                <div class="arch-item">
+                    <span class="arch-icon">🛰️</span>
+                    <h3>Domain Fusion</h3>
+                    <p>Synthesizing ERA5 planetary dynamics with 0.05° CHIRPS precipitation history to capture regional microclimates.</p>
+                </div>
+                <div class="arch-item">
+                    <span class="arch-icon">🤖</span>
+                    <h3>Native CI/CD</h3>
+                    <p>Decoupled operational logic pipelines every Monday, automating the transition from raw satellite data to public insights.</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Insights Section -->
+        <section id="forecasts">
+            <h2 class="section-label">Operational Forecasts</h2>
             <div class="forecast-grid">
                 <div class="forecast-card">
-                    <div class="card-header"><span class="card-title">Forecast View A</span></div>
-                    <div class="image-container">
-                        <img class="forecast-image" src="outputs/latest_tercile.png" onerror="this.src='https://placehold.co/800x600/0f172a/38bdf8?text=Syncing+Tercile+Data...'" alt="Tercile Forecast">
+                    <div class="card-meta"><span class="meta-tag">Perspective 01</span></div>
+                    <div class="img-container">
+                        <img src="outputs/latest_tercile.png" onerror="this.src='https://placehold.co/1000x800/0d1117/58a6ff?text=Syncing+Categorical+Map...'" alt="Tercile">
                     </div>
-                    <div class="card-body">
-                        <h4>Categorical Probability (Terciles)</h4>
-                        <p class="card-description">Probabilistic mapping showing which category—Below, Near, or Above Normal—is most likely for the target week. This view simplifies complex deviations into actionable probability zones for decision-makers.</p>
+                    <div class="card-content">
+                        <h4>Tercile Probability</h4>
+                        <p>Classification of seasonal expectations into Below, Near, or Above normal states based on local 20-year climatology thresholds.</p>
                     </div>
                 </div>
 
                 <div class="forecast-card">
-                    <div class="card-header"><span class="card-title">Forecast View B</span></div>
-                    <div class="image-container">
-                        <img class="forecast-image" src="outputs/latest_anomaly.png" onerror="this.src='https://placehold.co/800x600/0f172a/38bdf8?text=Syncing+Anomaly+Data...'" alt="Anomaly Forecast">
+                    <div class="card-meta"><span class="meta-tag">Perspective 02</span></div>
+                    <div class="img-container">
+                        <img src="outputs/latest_anomaly.png" onerror="this.src='https://placehold.co/1000x800/0d1117/58a6ff?text=Syncing+Anomaly+Map...'" alt="Anomaly">
                     </div>
-                    <div class="card-body">
+                    <div class="card-content">
                         <h4>Precipitation Anomaly</h4>
-                        <p class="card-description">The spatial distribution of predicted deviation from the mean in <b>mm/day</b>. This high-contrast map identifies hotspots of extreme dry or wet conditions relative to the 2000-2020 historical baseline.</p>
+                        <p>Identifying regions of critical rainfall deficit or surplus by calculating deviation from the mean in physical units (mm/day).</p>
                     </div>
                 </div>
 
                 <div class="forecast-card">
-                    <div class="card-header"><span class="card-title">Forecast View C</span></div>
-                    <div class="image-container">
-                        <img class="forecast-image" src="outputs/latest_total.png" onerror="this.src='https://placehold.co/800x600/0f172a/38bdf8?text=Syncing+Absolute+Data...'" alt="Total Forecast">
+                    <div class="card-meta"><span class="meta-tag">Perspective 03</span></div>
+                    <div class="img-container">
+                        <img src="outputs/latest_total.png" onerror="this.src='https://placehold.co/1000x800/0d1117/58a6ff?text=Syncing+Physical+Map...'" alt="Total">
                     </div>
-                    <div class="card-body">
-                        <h4>Absolute Physical Precipitation</h4>
-                        <p class="card-description">Quantifiable physical rainfall depth in <b>mm/day</b>. By combining the calculated anomaly with the weekly climatological mean, we reconstruct the final expected physical rainfall for agricultural and hydrological assessment.</p>
+                    <div class="card-content">
+                        <h4>Absolute Physical Flux</h4>
+                        <p>The total expected water volume reaching the surface. Reconstructed from the learned anomaly and regional seasonal baseline data.</p>
                     </div>
                 </div>
 
                 <div class="forecast-card">
-                    <div class="card-header"><span class="card-title">Forecast View D</span></div>
-                    <div class="image-container">
-                        <img class="forecast-image" src="outputs/latest_percent.png" onerror="this.src='https://placehold.co/800x600/0f172a/38bdf8?text=Syncing+Relative+Data...'" alt="Percent Forecast">
+                    <div class="card-meta"><span class="meta-tag">Perspective 04</span></div>
+                    <div class="img-container">
+                        <img src="outputs/latest_percent.png" onerror="this.src='https://placehold.co/1000x800/0d1117/58a6ff?text=Syncing+Relative+Map...'" alt="Percent">
                     </div>
-                    <div class="card-body">
-                        <h4>Percent of Normal</h4>
-                        <p class="card-description">Expresses the forecast as a percentage of the typical rainfall for this specific week. A value of 200% indicates double the normal rainfall, while 50% warns of a significant moisture deficit for the region.</p>
+                    <div class="card-content">
+                        <h4>Percent of Operational Normal</h4>
+                        <p>A relative moisture metric expressing the forecast as a percentage of standard expectation, highlighting extreme departures from the norm.</p>
                     </div>
                 </div>
             </div>
@@ -444,13 +431,14 @@
     </div>
 
     <footer>
-        <div class="nav-links">
-            <a href="https://github.com/YonSci/S2S-Forecast-Project">GitHub Repository</a>
-            <a href="outputs/latest_anomaly.nc">Download NetCDF</a>
-            <a href="#">Technical Methodology</a>
-            <a href="#">Data Sources</a>
+        <span class="footer-brand">ET-NeuralCast</span>
+        <div class="f-links">
+            <a href="https://github.com/YonSci/S2S-Forecast-Project">Repository</a>
+            <a href="outputs/latest_anomaly.nc">NetCDF Export</a>
+            <a href="#">Methodology</a>
+            <a href="#">ERA5/CHIRPS Data</a>
         </div>
-        <p class="copyright">&copy; 2025 ET-NeuralCast | Advanced Spatial Climate Intelligence</p>
+        <p class="copyright">Advanced S2S Climate Applications | &copy; 2025</p>
     </footer>
 
 </body>
