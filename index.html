@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
+            /* Dark Theme (Default) */
             --bg-color: #010409;
             --bg-secondary: #0d1117;
             --card-bg: rgba(22, 27, 34, 0.6);
@@ -18,12 +19,33 @@
             --accent: #58a6ff;
             --accent-glow: rgba(88, 166, 255, 0.15);
             --accent-gradient: linear-gradient(135deg, #58a6ff 0%, #3fb950 100%);
+            --grid-color: rgba(255, 255, 255, 0.02);
             --glass-blur: blur(24px);
+            --hero-gradient: linear-gradient(to bottom, #fff 60%, #8b949e 100%);
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f6f8fa;
+            --bg-secondary: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --card-border: #d0d7de;
+            --text-primary: #111111; /* Deeper black for high contrast */
+            --text-secondary: #4b535d; /* Darker secondary text for readability */
+            --accent: #0969da;
+            --accent-glow: rgba(9, 105, 218, 0.05);
+            --grid-color: rgba(0, 0, 0, 0.04);
+            --hero-gradient: linear-gradient(to bottom, #111 60%, #4b535d 100%);
+            --img-container-bg: #f6f8fa; /* Light background for maps in light mode */
+        }
+
+        :root {
+            /* ... (keep as is) ... */
+            --img-container-bg: #000000; /* Default black for dark mode */
         }
 
         * {
             box-sizing: border-box;
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         body {
@@ -34,10 +56,10 @@
             padding: 0;
             overflow-x: hidden;
             background-image: 
-                radial-gradient(circle at 0% 0%, rgba(88, 166, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 0% 0%, var(--accent-glow) 0%, transparent 50%),
                 radial-gradient(circle at 100% 100%, rgba(63, 185, 80, 0.1) 0%, transparent 50%),
-                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
             background-size: 100% 100%, 100% 100%, 80px 80px, 80px 80px;
         }
 
@@ -89,8 +111,8 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            object-position: 0% 50%; /* Force the crop to happen from the right side */
-            transform: scale(1.15); /* Aggressive zoom to kill all edge lines */
+            object-position: 0% 50%;
+            transform: scale(1.15);
             display: block;
         }
 
@@ -101,7 +123,7 @@
             margin: 0;
             letter-spacing: -0.06em;
             line-height: 0.9;
-            background: linear-gradient(to bottom, #fff 60%, var(--text-secondary) 100%);
+            background: var(--hero-gradient);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -126,7 +148,7 @@
             width: 100%;
         }
 
-        .date-picker-wrapper {
+        .control-pill {
             background: var(--bg-secondary);
             border: 1px solid var(--card-border);
             border-radius: 16px;
@@ -135,9 +157,10 @@
             align-items: center;
             gap: 1rem;
             cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
-        .date-picker-wrapper label {
+        .control-pill label {
             font-size: 0.85rem;
             font-weight: 700;
             color: var(--accent);
@@ -148,7 +171,7 @@
         #forecast-date-select {
             background: transparent;
             border: none;
-            color: #fff;
+            color: var(--text-primary);
             font-family: 'Outfit', sans-serif;
             font-size: 1.1rem;
             font-weight: 600;
@@ -159,7 +182,25 @@
 
         #forecast-date-select option {
             background: var(--bg-secondary);
-            color: #fff;
+            color: var(--text-primary);
+        }
+
+        .theme-toggle {
+            padding: 0.75rem;
+            border-radius: 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--card-border);
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
         }
 
         .status-badge {
@@ -203,7 +244,7 @@
             overflow: hidden;
             width: 100%;
             max-width: 1400px;
-            box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+            box-shadow: 0 40px 100px rgba(0,0,0,0.3);
         }
 
         @media (max-width: 1000px) {
@@ -212,7 +253,7 @@
 
         .arch-item {
             background: var(--bg-secondary);
-            padding: 5rem 4rem; /* More generous padding */
+            padding: 5rem 4rem;
             display: flex;
             flex-direction: column;
             gap: 2rem;
@@ -225,12 +266,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(88, 166, 255, 0.1);
+            background: var(--accent-glow);
             border-radius: 16px;
             color: var(--accent);
             margin-bottom: 1rem;
             position: relative;
-            box-shadow: 0 0 20px rgba(88, 166, 255, 0.1);
         }
 
         .arch-icon-wrapper svg {
@@ -243,8 +283,7 @@
         .arch-item h3 { 
             font-size: 1.6rem; 
             font-weight: 700; 
-            color: #fff;
-            letter-spacing: -0.02em;
+            color: var(--text-primary);
         }
 
         .arch-item p { 
@@ -272,17 +311,18 @@
         @media (max-width: 800px) { .forecast-grid { grid-template-columns: 1fr; } }
 
         .forecast-card {
-            background: #000;
+            background: var(--bg-secondary);
             border-radius: 4rem;
             border: 1px solid var(--card-border);
             overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
         }
 
-        .forecast-card:hover { border-color: #fff; transform: scale(1.02); }
+        .forecast-card:hover { border-color: var(--accent); transform: scale(1.02); }
 
         .card-meta {
             padding: 2.5rem 4rem;
-            background: var(--bg-secondary);
+            background: var(--bg-color);
             border-bottom: 1px solid var(--card-border);
             display: flex;
             justify-content: space-between;
@@ -291,31 +331,32 @@
         .meta-tag { color: var(--accent); font-weight: 800; letter-spacing: 0.3em; font-size: 0.75rem; text-transform: uppercase; }
 
         .img-container {
-            background: #000;
+            background: var(--img-container-bg);
             aspect-ratio: 1.3;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 2rem;
+            transition: background-color 0.3s ease;
         }
 
         .img-container img { max-width: 100%; height: auto; border-radius: 12px; }
 
         .card-content { padding: 4rem; background: var(--bg-secondary); }
-        .card-content h4 { font-size: 1.8rem; margin: 0 0 1.5rem; font-weight: 700; }
+        .card-content h4 { font-size: 1.8rem; margin: 0 0 1.5rem; font-weight: 700; color: var(--text-primary); }
         .card-content p { font-size: 1.15rem; color: var(--text-secondary); line-height: 1.8; }
 
         /* Footer */
         footer {
             padding: 12rem 0 6rem;
-            background: #000;
+            background: var(--bg-color);
             border-top: 1px solid var(--card-border);
             text-align: center;
         }
 
-        .footer-brand { font-size: 2.5rem; font-weight: 800; margin-bottom: 4rem; display: block; }
+        .footer-brand { font-size: 2.5rem; font-weight: 800; margin-bottom: 4rem; display: block; color: var(--text-primary); }
         .f-links { display: flex; justify-content: center; gap: 4rem; margin-bottom: 4rem; }
-        .f-links a { color: #fff; text-decoration: none; opacity: 0.5; }
+        .f-links a { color: var(--text-primary); text-decoration: none; opacity: 0.5; }
         .f-links a:hover { opacity: 1; color: var(--accent); }
     </style>
 </head>
@@ -340,12 +381,29 @@
                     Operational
                 </div>
                 
-                <div class="date-picker-wrapper">
+                <div class="control-pill">
                     <label for="forecast-date-select">Issued Date:</label>
                     <select id="forecast-date-select">
                         <option value="latest">Loading Dates...</option>
                     </select>
                 </div>
+
+                <button id="theme-toggle" class="theme-toggle" title="Toggle Light/Dark Mode">
+                    <svg id="theme-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <!-- Moon Icon (Default for dark mode) -->
+                        <path id="moon-path" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        <!-- Sun Icon (Hidden) -->
+                        <circle id="sun-circle" cx="12" cy="12" r="5" style="display:none"></circle>
+                        <line id="sun-l1" x1="12" y1="1" x2="12" y2="3" style="display:none"></line>
+                        <line id="sun-l2" x1="12" y1="21" x2="12" y2="23" style="display:none"></line>
+                        <line id="sun-l3" x1="4.22" y1="4.22" x2="5.64" y2="5.64" style="display:none"></line>
+                        <line id="sun-l4" x1="18.36" y1="18.36" x2="19.78" y2="19.78" style="display:none"></line>
+                        <line id="sun-l5" x1="1" y1="12" x2="3" y2="12" style="display:none"></line>
+                        <line id="sun-l6" x1="21" y1="12" x2="23" y2="12" style="display:none"></line>
+                        <line id="sun-l7" x1="4.22" y1="19.78" x2="5.64" y2="18.36" style="display:none"></line>
+                        <line id="sun-l8" x1="18.36" y1="5.64" x2="19.78" y2="4.22" style="display:none"></line>
+                    </svg>
+                </button>
             </div>
 
             <!-- Architecture Row - Enhanced Visuals -->
@@ -447,6 +505,9 @@
 
     <script>
         const dateSelect = document.getElementById('forecast-date-select');
+        const themeToggle = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        
         const imgMap = {
             'tercile': document.getElementById('img-tercile'),
             'anomaly': document.getElementById('img-anomaly'),
@@ -454,6 +515,38 @@
             'percent': document.getElementById('img-percent')
         };
         const linkNc = document.getElementById('link-nc');
+
+        // Theme Management
+        function setTheme(theme) {
+            html.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            updateThemeIcon(theme);
+        }
+
+        function updateThemeIcon(theme) {
+            const moon = document.getElementById('moon-path');
+            const sunElements = [
+                'sun-circle', 'sun-l1', 'sun-l2', 'sun-l3', 'sun-l4', 
+                'sun-l5', 'sun-l6', 'sun-l7', 'sun-l8'
+            ];
+            
+            if (theme === 'light') {
+                moon.style.display = 'none';
+                sunElements.forEach(id => document.getElementById(id).style.display = 'block');
+            } else {
+                moon.style.display = 'block';
+                sunElements.forEach(id => document.getElementById(id).style.display = 'none');
+            }
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+        });
+
+        // Initialize theme
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        setTheme(savedTheme);
 
         async function init() {
             try {
