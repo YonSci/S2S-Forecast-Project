@@ -10,18 +10,18 @@
     <style>
         :root {
             --bg-color: #020617;
-            --card-bg: rgba(30, 41, 59, 0.7);
-            --card-border: rgba(255, 255, 255, 0.1);
+            --card-bg: rgba(30, 41, 59, 0.6);
+            --card-border: rgba(255, 255, 255, 0.08);
             --text-primary: #f8fafc;
             --text-secondary: #94a3b8;
-            --accent: #0ea5e9;
-            --accent-gradient: linear-gradient(135deg, #0ea5e9 0%, #10b981 100%);
-            --glass-blur: blur(12px);
+            --accent: #38bdf8;
+            --accent-gradient: linear-gradient(135deg, #38bdf8 0%, #10b981 100%);
+            --glass-blur: blur(16px);
         }
 
         * {
             box-sizing: border-box;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         body {
@@ -32,8 +32,8 @@
             padding: 0;
             overflow-x: hidden;
             background-image: 
-                radial-gradient(circle at 20% 30%, rgba(14, 165, 233, 0.05) 0%, transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.05) 0%, transparent 40%);
+                radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.08) 0%, transparent 40%);
         }
 
         /* Hero Section */
@@ -45,105 +45,158 @@
             margin: 0 auto;
         }
 
-        .logo-container {
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 2rem;
-            border-radius: 24px;
+        .hero-graphic-container {
+            width: 320px;
+            height: auto;
+            margin: 0 auto 2.5rem;
+            border-radius: 32px;
             overflow: hidden;
-            box-shadow: 0 0 40px rgba(14, 165, 233, 0.3);
-            border: 2px solid var(--accent);
+            box-shadow: 0 0 60px rgba(56, 189, 248, 0.2);
+            position: relative;
         }
 
-        .logo-image {
+        .hero-graphic {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
+            height: auto;
+            display: block;
         }
 
         h1 {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            font-size: clamp(2.5rem, 8vw, 4rem);
             font-weight: 800;
             margin: 0;
             letter-spacing: -0.04em;
             line-height: 1.1;
-            background: linear-gradient(to bottom, #fff 40%, #94a3b8 100%);
+            background: linear-gradient(to bottom, #fff 50%, #64748b 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
         .hero p.subtitle {
-            font-size: 1.25rem;
+            font-size: 1.35rem;
             color: var(--text-secondary);
-            max-width: 700px;
+            max-width: 800px;
             margin: 1.5rem auto 0;
-            font-weight: 400;
+            font-weight: 300;
+            line-height: 1.6;
         }
 
         .status-badge {
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: rgba(16, 185, 129, 0.1);
-            color: #10b981;
+            gap: 0.6rem;
+            padding: 0.6rem 1.2rem;
+            background: rgba(16, 185, 129, 0.08);
+            color: #34d399;
             border-radius: 999px;
-            font-size: 0.875rem;
+            font-size: 0.85rem;
             font-weight: 600;
-            margin-bottom: 2rem;
-            border: 1px solid rgba(16, 185, 129, 0.2);
+            margin-bottom: 2.5rem;
+            border: 1px solid rgba(16, 185, 129, 0.15);
+            letter-spacing: 0.05em;
         }
 
         .status-dot {
-            width: 8px;
-            height: 8px;
-            background: currentColor;
+            width: 10px;
+            height: 10px;
+            background: #10b981;
             border-radius: 50%;
+            box-shadow: 0 0 10px #10b981;
             animation: pulse 2s infinite;
         }
 
         @keyframes pulse {
-            0% { transform: scale(0.95); opacity: 0.5; }
-            50% { transform: scale(1.1); opacity: 1; }
-            100% { transform: scale(0.95); opacity: 0.5; }
+            0% { transform: scale(0.9); opacity: 0.6; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(0.9); opacity: 0.6; }
         }
 
         /* Content Container */
         .container {
             max-width: 1300px;
             margin: 0 auto;
-            padding: 0 2rem 6rem;
+            padding: 0 2rem 8rem;
         }
 
         /* Section Styling */
         section {
-            margin-top: 6rem;
+            margin-top: 8rem;
         }
 
         .section-title {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 2rem;
+            font-size: 2.25rem;
             font-weight: 700;
-            margin-bottom: 3rem;
+            margin-bottom: 3.5rem;
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 1.5rem;
         }
 
         .section-title::after {
             content: '';
             height: 1px;
-            background: var(--card-border);
+            background: linear-gradient(to right, var(--card-border), transparent);
             flex: 1;
+        }
+
+        /* Info Grid - System Architecture */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .info-card {
+            background: var(--card-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            padding: 3rem;
+            border-radius: 2.5rem;
+            border: 1px solid var(--card-border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-card:hover {
+            border-color: rgba(56, 189, 248, 0.3);
+            background: rgba(30, 41, 59, 0.8);
+        }
+
+        .icon-box {
+            width: 56px;
+            height: 56px;
+            background: var(--accent-gradient);
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            box-shadow: 0 10px 20px -5px rgba(56, 189, 248, 0.3);
+        }
+
+        .info-card h3 {
+            font-size: 1.75rem;
+            margin: 0 0 1.25rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .info-card p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin: 0;
+            font-size: 1.05rem;
         }
 
         /* Forecast Grid */
         .forecast-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-            gap: 2.5rem;
+            gap: 3rem;
         }
 
         @media (max-width: 600px) {
@@ -154,7 +207,7 @@
             background: var(--card-bg);
             backdrop-filter: var(--glass-blur);
             -webkit-backdrop-filter: var(--glass-blur);
-            border-radius: 2rem;
+            border-radius: 2.5rem;
             border: 1px solid var(--card-border);
             overflow: hidden;
             display: flex;
@@ -162,23 +215,23 @@
         }
 
         .forecast-card:hover {
-            border-color: rgba(14, 165, 233, 0.4);
-            transform: translateY(-8px);
-            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.5);
+            border-color: rgba(56, 189, 248, 0.4);
+            transform: translateY(-10px);
+            box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.6);
         }
 
         .card-header {
-            padding: 1.5rem 2rem;
-            background: rgba(255, 255, 255, 0.02);
+            padding: 1.75rem 2.5rem;
+            background: rgba(255, 255, 255, 0.03);
             border-bottom: 1px solid var(--card-border);
         }
 
         .card-title {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 700;
             color: var(--accent);
             text-transform: uppercase;
-            letter-spacing: 0.15em;
+            letter-spacing: 0.2em;
         }
 
         .image-wrapper {
@@ -197,80 +250,60 @@
         }
 
         .card-body {
-            padding: 1.5rem 2rem;
-            background: rgba(0, 0, 0, 0.2);
+            padding: 2rem 2.5rem;
+            background: rgba(0, 0, 0, 0.25);
             flex: 1;
+        }
+
+        .card-body h4 {
+            margin: 0 0 0.75rem;
+            font-size: 1.25rem;
+            color: #fff;
         }
 
         .card-description {
             color: var(--text-secondary);
-            font-size: 0.95rem;
+            font-size: 1rem;
+            line-height: 1.6;
             margin: 0;
         }
 
-        /* Info Grid */
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
-        }
-
-        .info-card {
-            background: var(--card-bg);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            padding: 2.5rem;
-            border-radius: 2rem;
-            border: 1px solid var(--card-border);
-        }
-
-        .icon-box {
-            width: 48px;
-            height: 48px;
-            background: var(--accent-gradient);
-            border-radius: 12px;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-        }
-
-        .info-card h3 {
-            font-size: 1.5rem;
-            margin: 0 0 1rem;
-            font-weight: 600;
-        }
-
-        .info-card p {
-            color: var(--text-secondary);
-            line-height: 1.7;
-            margin: 0;
-        }
-
+        /* Footer */
         footer {
-            padding: 4rem 2rem;
+            padding: 6rem 2rem;
+            background: rgba(0, 0, 0, 0.3);
             border-top: 1px solid var(--card-border);
             text-align: center;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
+        }
+
+        .footer-logo {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: #fff;
+            margin-bottom: 1rem;
+            display: block;
         }
 
         .nav-links {
             display: flex;
             justify-content: center;
-            gap: 2rem;
-            margin-bottom: 2rem;
+            gap: 2.5rem;
+            margin: 2.5rem 0;
         }
 
         .nav-links a {
-            color: var(--text-primary);
+            color: var(--text-secondary);
             text-decoration: none;
             font-weight: 500;
-            opacity: 0.7;
+            font-size: 0.95rem;
         }
 
-        .nav-links a:hover { opacity: 1; color: var(--accent); }
+        .nav-links a:hover { color: var(--accent); }
+
+        .copyright {
+            color: #475569;
+            font-size: 0.85rem;
+        }
     </style>
 </head>
 <body>
@@ -278,17 +311,39 @@
     <header class="hero">
         <div class="status-badge">
             <span class="status-dot"></span>
-            Operational: Automated Cycle (Weekly)
+            Operational Status: Healthy (Weekly Cycle)
         </div>
-        <div class="logo-container">
-            <img src="logo.png" alt="ET-NeuralCast Logo" class="logo-image">
+        <div class="hero-graphic-container">
+            <img src="hero_graphic.png" alt="ET-NeuralCast Concept Architecture" class="hero-graphic">
         </div>
         <h1>ET-NeuralCast</h1>
-        <p class="subtitle">AI-Driven Sub-seasonal to Seasonal Precipitation Forecasting System for Ethiopia and the Horn of Africa.</p>
+        <p class="subtitle">Harnessing Generative Adversarial Networks (GANs) and High-Resolution Satellite Data to Bridge the Gap in Sub-seasonal Forecasting.</p>
     </header>
 
     <div class="container">
         
+        <!-- System Architecture Section -->
+        <section id="about">
+            <h2 class="section-title">System Architecture</h2>
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="icon-box">🧠</div>
+                    <h3>U-Net GAN Framework</h3>
+                    <p>Our core engine is a deep <b>U-Net Generator</b> paired with a <b>PatchGAN Discriminator</b>. This architecture excels at translation tasks, converting coarse global atmospheric signals into fine-grained local precipitation maps. The adversarial training ensures sharp, realistic gradients that traditional regression models often "blur" into averages.</p>
+                </div>
+                <div class="info-card">
+                    <div class="icon-box">🌍</div>
+                    <h3>Fused Datasets</h3>
+                    <p>We perform <b>Domain Fusion</b>: leveraging <b>ERA5-T</b> for dynamic drivers (200hPa Geopotential, Specific Humidity, Wind Vectors, and SST) and <b>CHIRPS</b> for historical ground-truth. By training on 20+ years of high-resolution IR-based rainfall, the model learns the unique topographic influences on Ethiopia's micro-climates.</p>
+                </div>
+                <div class="info-card">
+                    <div class="icon-box">⚙️</div>
+                    <h3>CI/CD Operational Logic</h3>
+                    <p>The system is "Alive." Using <b>GitHub Actions</b> and the <b>CDS API</b>, ET-NeuralCast fetches the latest preliminary reanalysis data every Monday. It automatically normalizes inputs against a 20-year per-pixel climatology, generates forecasts, and updates this dashboard with no manual intervention required.</p>
+                </div>
+            </div>
+        </section>
+
         <!-- Forecast Section -->
         <section id="forecast">
             <h2 class="section-title">Latest Forecasts</h2>
@@ -299,7 +354,8 @@
                         <img class="forecast-image" src="outputs/latest_tercile.png" onerror="this.src='https://placehold.co/600x500/1e293b/38bdf8?text=Syncing+Imagery...'" alt="Tercile Forecast">
                     </div>
                     <div class="card-body">
-                        <p class="card-description">Probabilistic mapping of tercile categories (Below, Near, and Above Normal) relative to local climatology.</p>
+                        <h4>Tercile Classification</h4>
+                        <p class="card-description">Divides the forecast into three categories: <b>Below Normal</b>, <b>Near Normal</b>, and <b>Above Normal</b>. This uses spatial-weekly probability thresholds to classify the coming week relative to the 20-year distribution.</p>
                     </div>
                 </div>
 
@@ -309,7 +365,8 @@
                         <img class="forecast-image" src="outputs/latest_anomaly.png" onerror="this.src='https://placehold.co/600x500/1e293b/38bdf8?text=Syncing+Imagery...'" alt="Anomaly Forecast">
                     </div>
                     <div class="card-body">
-                        <p class="card-description">Deviation from historical mean rainfall in mm/day. Identifies intense dry or wet spells at a 1-week lead time.</p>
+                        <h4>Anomaly Magnitude</h4>
+                        <p class="card-description">Shows the departure from the historical mean in <b>mm/day</b>. This view is critical for early warning systems, highlighting regions where rainfall is expected to be significantly higher or lower than the seasonal norm.</p>
                     </div>
                 </div>
 
@@ -319,7 +376,8 @@
                         <img class="forecast-image" src="outputs/latest_total.png" onerror="this.src='https://placehold.co/600x500/1e293b/38bdf8?text=Syncing+Imagery...'" alt="Total Forecast">
                     </div>
                     <div class="card-body">
-                        <p class="card-description">Absolute rainfall amounts in mm/day. Useful for agricultural planning and water resource management.</p>
+                        <h4>Absolute Precipitation</h4>
+                        <p class="card-description">The final processed prediction of absolute rainfall depth in <b>mm/day</b>. This value is derived by inverse-transforming the model's standardized outputs using local spatial-weekly standard deviations.</p>
                     </div>
                 </div>
 
@@ -329,30 +387,9 @@
                         <img class="forecast-image" src="outputs/latest_percent.png" onerror="this.src='https://placehold.co/600x500/1e293b/38bdf8?text=Syncing+Imagery...'" alt="Percent Forecast">
                     </div>
                     <div class="card-body">
-                        <p class="card-description">Current forecast as a percentage of standard seasonal expectation, highlighting relative moisture abundance.</p>
+                        <h4>Relative Moisture</h4>
+                        <p class="card-description">A normalized view showing the forecast as a <b>percentage</b> of the usual rainfall for this specific week. Values above 100% indicate wetter-than-usual conditions, regardless of the absolute rainfall depth.</p>
                     </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- About Section -->
-        <section id="about">
-            <h2 class="section-title">System Architecture</h2>
-            <div class="info-grid">
-                <div class="info-card">
-                    <div class="icon-box">🧠</div>
-                    <h3>Deep Learning Core</h3>
-                    <p>ET-NeuralCast utilizes a custom <b>U-Net Generator</b> combined with a <b>PatchGAN Discriminator</b>. This adversarial training setup allows the model to capture high-frequency spatial patterns often lost in traditional statistical models.</p>
-                </div>
-                <div class="info-card">
-                    <div class="icon-box">🛰️</div>
-                    <h3>Multi-Source Data</h3>
-                    <p>Inputs are derived from <b>ERA5-T</b> (Atmospheric Pressure, SST, Humidity) and <b>CHIRPS</b> (High-res IR Precipitation). We fuse these datasets to bridge the gap between global atmospheric signals and local rain patterns.</p>
-                </div>
-                <div class="info-card">
-                    <div class="icon-box">⚡</div>
-                    <h3>Operational Edge</h3>
-                    <p>The system is fully automated using GitHub Actions. Every Monday, it fetches the latest satellite and reanalysis data, executes the neural pipeline, and updates this dashboard with new insights.</p>
                 </div>
             </div>
         </section>
@@ -360,12 +397,14 @@
     </div>
 
     <footer>
+        <span class="footer-logo">ET-NeuralCast</span>
         <div class="nav-links">
-            <a href="https://github.com/YonSci/S2S-Forecast-Project">Source Code</a>
-            <a href="outputs/latest_anomaly.nc">Download NetCDF</a>
-            <a href="#">Technical Docs</a>
+            <a href="https://github.com/YonSci/S2S-Forecast-Project">GitHub Repository</a>
+            <a href="outputs/latest_anomaly.nc">Download NetCDF Data</a>
+            <a href="#">Methodology Report</a>
+            <a href="#">API Documentation</a>
         </div>
-        <p>&copy; 2025 ET-NeuralCast Project. Developed for Advanced S2S Climate Applications.</p>
+        <p class="copyright">&copy; 2025 Advanced S2S Climate Modeling Project. All Rights Reserved.</p>
     </footer>
 
 </body>
