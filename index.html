@@ -41,7 +41,6 @@
             background-size: 100% 100%, 100% 100%, 80px 80px, 80px 80px;
         }
 
-        /* Spacious Layout */
         .container {
             max-width: 1600px;
             margin: 0 auto;
@@ -49,12 +48,12 @@
         }
 
         section {
-            margin-bottom: 25rem; /* Large spacing between sections */
+            margin-bottom: 20rem;
         }
 
-        /* Hero Section */
+        /* Hero */
         .hero {
-            padding: 12rem 0 8rem;
+            padding: 10rem 0 6rem;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -66,7 +65,7 @@
             gap: 5rem;
             width: 100%;
             max-width: 1200px;
-            margin-bottom: 8rem;
+            margin-bottom: 6rem;
         }
 
         @media (max-width: 1100px) {
@@ -75,14 +74,21 @@
                 text-align: center;
                 gap: 3rem;
             }
-            .container { padding: 0 2rem; }
         }
 
         .logo-wrapper {
             flex-shrink: 0;
-            width: 240px;
-            height: 240px;
+            width: 220px;
+            height: 220px;
             position: relative;
+            background: #000; /* Match logo background to prevent asymmetric bands */
+            border-radius: 40px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .logo-wrapper::after {
@@ -98,14 +104,7 @@
         .hero-graphic {
             width: 100%;
             height: 100%;
-            object-fit: cover;
-            border-radius: 40px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
-        }
-
-        .hero-text {
-            flex: 1;
+            object-fit: contain; /* Use contain for perfect symmetry */
         }
 
         h1 {
@@ -117,8 +116,8 @@
             line-height: 0.9;
             background: linear-gradient(to bottom, #fff 60%, var(--text-secondary) 100%);
             -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
             background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .subtitle-large {
@@ -128,6 +127,52 @@
             font-weight: 300;
             line-height: 1.5;
             max-width: 700px;
+        }
+
+        /* Controls Section */
+        .controls-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 6rem;
+            width: 100%;
+        }
+
+        .date-picker-wrapper {
+            background: var(--bg-secondary);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 0.5rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+        }
+
+        .date-picker-wrapper label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        #forecast-date-select {
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding: 0.5rem;
+            cursor: pointer;
+            outline: none;
+        }
+
+        #forecast-date-select option {
+            background: var(--bg-secondary);
+            color: #fff;
         }
 
         .status-badge {
@@ -143,7 +188,6 @@
             border: 1px solid rgba(63, 185, 80, 0.2);
             text-transform: uppercase;
             letter-spacing: 0.1em;
-            margin-bottom: 4rem;
         }
 
         .pulse-dot {
@@ -161,7 +205,7 @@
             100% { transform: scale(0.8); opacity: 1; }
         }
 
-        /* Architecture Row Hero */
+        /* Architecture Row */
         .architecture-row {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -187,53 +231,35 @@
             gap: 1.5rem;
         }
 
-        .arch-item:hover {
-            background: #161b22;
-        }
-
         .arch-icon {
             font-size: 2.5rem;
             background: var(--accent-gradient);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 1rem;
             display: block;
         }
 
-        .arch-item h3 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin: 0;
-            color: #fff;
-        }
+        .arch-item h3 { font-size: 1.5rem; font-weight: 700; color: #fff; }
+        .arch-item p { font-size: 1.1rem; color: var(--text-secondary); line-height: 1.7; }
 
-        .arch-item p {
-            font-size: 1.1rem;
-            color: var(--text-secondary);
-            line-height: 1.7;
-            margin: 0;
-        }
-
-        /* Sections Titles */
+        /* Forecasts */
         .section-label {
             font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: 3rem;
             font-weight: 800;
             margin-bottom: 5rem;
             text-align: center;
-            opacity: 0.9;
         }
 
-        /* Forecast Grid - High Contrast */
         .forecast-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(650px, 1fr));
             gap: 6rem;
         }
 
-        @media (max-width: 800px) {
-            .forecast-grid { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 800px) { .forecast-grid { grid-template-columns: 1fr; } }
 
         .forecast-card {
             background: #000;
@@ -242,11 +268,7 @@
             overflow: hidden;
         }
 
-        .forecast-card:hover {
-            border-color: #fff;
-            transform: scale(1.02);
-            box-shadow: 0 60px 120px rgba(0,0,0,0.9);
-        }
+        .forecast-card:hover { border-color: #fff; transform: scale(1.02); }
 
         .card-meta {
             padding: 2.5rem 4rem;
@@ -254,16 +276,9 @@
             border-bottom: 1px solid var(--card-border);
             display: flex;
             justify-content: space-between;
-            align-items: center;
         }
 
-        .meta-tag {
-            color: var(--accent);
-            font-weight: 800;
-            letter-spacing: 0.3em;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-        }
+        .meta-tag { color: var(--accent); font-weight: 800; letter-spacing: 0.3em; font-size: 0.75rem; text-transform: uppercase; }
 
         .img-container {
             background: #000;
@@ -274,31 +289,13 @@
             padding: 2rem;
         }
 
-        .img-container img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 12px;
-        }
+        .img-container img { max-width: 100%; height: auto; border-radius: 12px; }
 
-        .card-content {
-            padding: 4rem;
-            background: var(--bg-secondary);
-        }
+        .card-content { padding: 4rem; background: var(--bg-secondary); }
+        .card-content h4 { font-size: 1.8rem; margin: 0 0 1.5rem; font-weight: 700; }
+        .card-content p { font-size: 1.15rem; color: var(--text-secondary); line-height: 1.8; }
 
-        .card-content h4 {
-            font-size: 1.8rem;
-            margin: 0 0 1.5rem;
-            font-weight: 700;
-        }
-
-        .card-content p {
-            font-size: 1.15rem;
-            color: var(--text-secondary);
-            line-height: 1.8;
-            margin: 0;
-        }
-
-        /* Footer Modern */
+        /* Footer */
         footer {
             padding: 12rem 0 6rem;
             background: #000;
@@ -306,48 +303,17 @@
             text-align: center;
         }
 
-        .footer-brand {
-            font-size: 2.5rem;
-            font-weight: 800;
-            letter-spacing: -0.05em;
-            margin-bottom: 4rem;
-            display: block;
-        }
-
-        .f-links {
-            display: flex;
-            justify-content: center;
-            gap: 4rem;
-            margin-bottom: 4rem;
-        }
-
-        .f-links a {
-            color: #fff;
-            text-decoration: none;
-            font-weight: 400;
-            font-size: 1.1rem;
-            opacity: 0.5;
-        }
-
+        .footer-brand { font-size: 2.5rem; font-weight: 800; margin-bottom: 4rem; display: block; }
+        .f-links { display: flex; justify-content: center; gap: 4rem; margin-bottom: 4rem; }
+        .f-links a { color: #fff; text-decoration: none; opacity: 0.5; }
         .f-links a:hover { opacity: 1; color: var(--accent); }
-
-        .copyright {
-            color: #30363d;
-            font-size: 1rem;
-        }
     </style>
 </head>
 <body>
 
     <div class="container">
         
-        <!-- Hero Section -->
         <header class="hero">
-            <div class="status-badge">
-                <span class="pulse-dot"></span>
-                Operational Station: 1-Week Lead
-            </div>
-            
             <div class="header-main">
                 <div class="logo-wrapper">
                     <img src="hero_graphic.png" alt="ET-NeuralCast" class="hero-graphic">
@@ -358,7 +324,20 @@
                 </div>
             </div>
 
-            <!-- Architecture Row integrated as Hero extension -->
+            <div class="controls-row">
+                <div class="status-badge">
+                    <span class="pulse-dot"></span>
+                    Operational
+                </div>
+                
+                <div class="date-picker-wrapper">
+                    <label for="forecast-date-select">Issued Date:</label>
+                    <select id="forecast-date-select">
+                        <option value="latest">Loading Dates...</option>
+                    </select>
+                </div>
+            </div>
+
             <div class="architecture-row">
                 <div class="arch-item">
                     <span class="arch-icon">⚡</span>
@@ -378,14 +357,13 @@
             </div>
         </header>
 
-        <!-- Insights Section -->
         <section id="forecasts">
             <h2 class="section-label">Operational Forecasts</h2>
             <div class="forecast-grid">
                 <div class="forecast-card">
-                    <div class="card-meta"><span class="meta-tag">Perspective 01</span></div>
+                    <div class="card-meta"><span class="meta-tag"></span></div>
                     <div class="img-container">
-                        <img src="outputs/latest_tercile.png" onerror="this.src='https://placehold.co/1000x800/0d1117/58a6ff?text=Syncing+Categorical+Map...'" alt="Tercile">
+                        <img id="img-tercile" src="outputs/latest_tercile.png" alt="Tercile">
                     </div>
                     <div class="card-content">
                         <h4>Tercile Probability</h4>
@@ -396,7 +374,7 @@
                 <div class="forecast-card">
                     <div class="card-meta"><span class="meta-tag">Perspective 02</span></div>
                     <div class="img-container">
-                        <img src="outputs/latest_anomaly.png" onerror="this.src='https://placehold.co/1000x800/0d1117/58a6ff?text=Syncing+Anomaly+Map...'" alt="Anomaly">
+                        <img id="img-anomaly" src="outputs/latest_anomaly.png" alt="Anomaly">
                     </div>
                     <div class="card-content">
                         <h4>Precipitation Anomaly</h4>
@@ -407,7 +385,7 @@
                 <div class="forecast-card">
                     <div class="card-meta"><span class="meta-tag">Perspective 03</span></div>
                     <div class="img-container">
-                        <img src="outputs/latest_total.png" onerror="this.src='https://placehold.co/1000x800/0d1117/58a6ff?text=Syncing+Physical+Map...'" alt="Total">
+                        <img id="img-total" src="outputs/latest_total.png" alt="Total">
                     </div>
                     <div class="card-content">
                         <h4>Absolute Physical Flux</h4>
@@ -418,7 +396,7 @@
                 <div class="forecast-card">
                     <div class="card-meta"><span class="meta-tag">Perspective 04</span></div>
                     <div class="img-container">
-                        <img src="outputs/latest_percent.png" onerror="this.src='https://placehold.co/1000x800/0d1117/58a6ff?text=Syncing+Relative+Map...'" alt="Percent">
+                        <img id="img-percent" src="outputs/latest_percent.png" alt="Percent">
                     </div>
                     <div class="card-content">
                         <h4>Percent of Operational Normal</h4>
@@ -434,12 +412,59 @@
         <span class="footer-brand">ET-NeuralCast</span>
         <div class="f-links">
             <a href="https://github.com/YonSci/S2S-Forecast-Project">Repository</a>
-            <a href="outputs/latest_anomaly.nc">NetCDF Export</a>
+            <a href="outputs/latest_anomaly.nc" id="link-nc">NetCDF Export</a>
             <a href="#">Methodology</a>
             <a href="#">ERA5/CHIRPS Data</a>
         </div>
         <p class="copyright">Advanced S2S Climate Applications | &copy; 2025</p>
     </footer>
+
+    <script>
+        const dateSelect = document.getElementById('forecast-date-select');
+        const imgMap = {
+            'tercile': document.getElementById('img-tercile'),
+            'anomaly': document.getElementById('img-anomaly'),
+            'total': document.getElementById('img-total'),
+            'percent': document.getElementById('img-percent')
+        };
+        const linkNc = document.getElementById('link-nc');
+
+        async function init() {
+            try {
+                const response = await fetch('outputs/forecast_index.json');
+                const data = await response.json();
+                
+                // Populate dropdown
+                dateSelect.innerHTML = '';
+                data.available_dates.forEach((date, index) => {
+                    const option = document.createElement('option');
+                    option.value = date;
+                    option.textContent = date + (index === 0 ? ' (Latest)' : '');
+                    dateSelect.appendChild(option);
+                });
+
+                // Listen for changes
+                dateSelect.addEventListener('change', (e) => {
+                    updateForecast(e.target.value);
+                });
+
+            } catch (err) {
+                console.error("Failed to load forecast manifest:", err);
+                dateSelect.innerHTML = '<option value="latest">Latest</option>';
+            }
+        }
+
+        function updateForecast(date) {
+            // Update all images
+            for (const [key, img] of Object.entries(imgMap)) {
+                img.src = `outputs/forecast_${date}_${key}.png`;
+            }
+            // Update NetCDF download link
+            linkNc.href = `outputs/forecast_${date}.nc`;
+        }
+
+        init();
+    </script>
 
 </body>
 </html>
