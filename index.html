@@ -78,13 +78,19 @@
 
         .logo-wrapper {
             flex-shrink: 0;
-            width: 280px; /* Slightly larger to let it shine */
+            width: 220px;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
             position: relative;
+            background: transparent;
         }
 
         .hero-graphic {
             width: 100%;
-            height: auto;
+            height: 100%;
+            object-fit: cover;
+            object-position: 0% 50%; /* Force the crop to happen from the right side */
+            transform: scale(1.15); /* Aggressive zoom to kill all edge lines */
             display: block;
         }
 
@@ -341,19 +347,9 @@
         <section id="forecasts">
             <h2 class="section-label">Operational Forecasts</h2>
             <div class="forecast-grid">
+                <!-- 1. Anomaly Forecast -->
                 <div class="forecast-card">
-                    <div class="card-meta"><span class="meta-tag"></span></div>
-                    <div class="img-container">
-                        <img id="img-tercile" src="outputs/latest_tercile.png" alt="Tercile">
-                    </div>
-                    <div class="card-content">
-                        <h4>Tercile Probability</h4>
-                        <p>Classification of seasonal expectations into Below, Near, or Above normal states based on local 20-year climatology thresholds.</p>
-                    </div>
-                </div>
-
-                <div class="forecast-card">
-                    <div class="card-meta"><span class="meta-tag">Perspective 02</span></div>
+                    <div class="card-meta"><span class="meta-tag">Anomaly Forecast</span></div>
                     <div class="img-container">
                         <img id="img-anomaly" src="outputs/latest_anomaly.png" alt="Anomaly">
                     </div>
@@ -363,8 +359,9 @@
                     </div>
                 </div>
 
+                <!-- 2. Total Precipitation Forecast -->
                 <div class="forecast-card">
-                    <div class="card-meta"><span class="meta-tag">Perspective 03</span></div>
+                    <div class="card-meta"><span class="meta-tag">Total Precipitation Forecast</span></div>
                     <div class="img-container">
                         <img id="img-total" src="outputs/latest_total.png" alt="Total">
                     </div>
@@ -374,14 +371,27 @@
                     </div>
                 </div>
 
+                <!-- 3. Percent of Normal -->
                 <div class="forecast-card">
-                    <div class="card-meta"><span class="meta-tag">Perspective 04</span></div>
+                    <div class="card-meta"><span class="meta-tag">Percent of Normal</span></div>
                     <div class="img-container">
                         <img id="img-percent" src="outputs/latest_percent.png" alt="Percent">
                     </div>
                     <div class="card-content">
                         <h4>Percent of Operational Normal</h4>
                         <p>A relative moisture metric expressing the forecast as a percentage of standard expectation, highlighting extreme departures from the norm.</p>
+                    </div>
+                </div>
+
+                <!-- 4. Tercile Probability Forecast -->
+                <div class="forecast-card">
+                    <div class="card-meta"><span class="meta-tag">Tercile Probability Forecast</span></div>
+                    <div class="img-container">
+                        <img id="img-tercile" src="outputs/latest_tercile.png" alt="Tercile">
+                    </div>
+                    <div class="card-content">
+                        <h4>Tercile Probability</h4>
+                        <p>Classification of seasonal expectations into Below, Near, or Above normal states based on local 20-year climatology thresholds.</p>
                     </div>
                 </div>
             </div>
