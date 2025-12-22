@@ -1,21 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ET-NeuralCast | Weekly S2S Forecast</title>
+    <title>ET-NeuralCast | Advanced S2S Forecasting</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
+            --bg-color: #020617;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --card-border: rgba(255, 255, 255, 0.1);
             --text-primary: #f8fafc;
             --text-secondary: #94a3b8;
-            --accent: #38bdf8;
-            --accent-glow: rgba(56, 189, 248, 0.2);
+            --accent: #0ea5e9;
+            --accent-gradient: linear-gradient(135deg, #0ea5e9 0%, #10b981 100%);
+            --glass-blur: blur(12px);
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: all 0.3s ease;
         }
 
         body {
@@ -24,83 +30,161 @@
             color: var(--text-primary);
             margin: 0;
             padding: 0;
-            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(14, 165, 233, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.05) 0%, transparent 40%);
         }
 
-        header {
-            padding: 4rem 2rem;
+        /* Hero Section */
+        .hero {
+            position: relative;
+            padding: 6rem 2rem 4rem;
             text-align: center;
-            background: linear-gradient(180deg, rgba(30, 41, 59, 0.5) 0%, transparent 100%);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo-container {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 2rem;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 0 40px rgba(14, 165, 233, 0.3);
+            border: 2px solid var(--accent);
+        }
+
+        .logo-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         h1 {
-            font-size: 3rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            font-weight: 800;
             margin: 0;
-            letter-spacing: -0.05em;
-            background: linear-gradient(to right, #fff, var(--accent));
+            letter-spacing: -0.04em;
+            line-height: 1.1;
+            background: linear-gradient(to bottom, #fff 40%, #94a3b8 100%);
             -webkit-background-clip: text;
-            background-clip: text;
             -webkit-text-fill-color: transparent;
-
+            background-clip: text;
         }
 
-        .subtitle {
+        .hero p.subtitle {
+            font-size: 1.25rem;
             color: var(--text-secondary);
-            font-size: 1.2rem;
-            margin-top: 0.5rem;
+            max-width: 700px;
+            margin: 1.5rem auto 0;
+            font-weight: 400;
         }
 
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border-radius: 999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: currentColor;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.5; }
+        }
+
+        /* Content Container */
         .container {
-            max-width: 1200px;
+            max-width: 1300px;
             margin: 0 auto;
-            padding: 2rem;
+            padding: 0 2rem 6rem;
         }
 
+        /* Section Styling */
+        section {
+            margin-top: 6rem;
+        }
+
+        .section-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            height: 1px;
+            background: var(--card-border);
+            flex: 1;
+        }
+
+        /* Forecast Grid */
         .forecast-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
             gap: 2.5rem;
-            margin-top: 2rem;
         }
 
         @media (max-width: 600px) {
-            .forecast-grid {
-                grid-template-columns: 1fr;
-            }
+            .forecast-grid { grid-template-columns: 1fr; }
         }
 
         .forecast-card {
             background: var(--card-bg);
-            border-radius: 1.5rem;
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border-radius: 2rem;
+            border: 1px solid var(--card-border);
             overflow: hidden;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
         }
 
         .forecast-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.5), 0 0 15px var(--accent-glow);
+            border-color: rgba(14, 165, 233, 0.4);
+            transform: translateY(-8px);
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.5);
         }
 
         .card-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 1.5rem 2rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid var(--card-border);
         }
 
         .card-title {
-            font-weight: 600;
-            font-size: 1.1rem;
+            font-size: 0.9rem;
+            font-weight: 700;
             color: var(--accent);
             text-transform: uppercase;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.15em;
         }
 
-        .image-container {
+        .image-wrapper {
             position: relative;
-            width: 100%;
-            background: #111;
             aspect-ratio: 1.2;
+            background: #000;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -112,123 +196,177 @@
             display: block;
         }
 
-        .card-footer {
-            padding: 1rem 1.5rem;
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            background: rgba(0, 0, 0, 0.1);
+        .card-body {
+            padding: 1.5rem 2rem;
+            background: rgba(0, 0, 0, 0.2);
+            flex: 1;
         }
 
-        .update-badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            background: var(--accent-glow);
-            color: var(--accent);
-            border-radius: 999px;
-            font-size: 0.8rem;
+        .card-description {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        /* Info Grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .info-card {
+            background: var(--card-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            padding: 2.5rem;
+            border-radius: 2rem;
+            border: 1px solid var(--card-border);
+        }
+
+        .icon-box {
+            width: 48px;
+            height: 48px;
+            background: var(--accent-gradient);
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .info-card h3 {
+            font-size: 1.5rem;
+            margin: 0 0 1rem;
             font-weight: 600;
-            margin-bottom: 2rem;
+        }
+
+        .info-card p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin: 0;
         }
 
         footer {
-            text-align: center;
             padding: 4rem 2rem;
+            border-top: 1px solid var(--card-border);
+            text-align: center;
             color: var(--text-secondary);
             font-size: 0.9rem;
         }
 
-        .placeholder {
-            padding: 3rem;
-            text-align: center;
-            background: rgba(255, 255, 255, 0.02);
-            border: 2px dashed rgba(255, 255, 255, 0.1);
-            border-radius: 1rem;
-            margin: 2rem;
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
         }
+
+        .nav-links a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            opacity: 0.7;
+        }
+
+        .nav-links a:hover { opacity: 1; color: var(--accent); }
     </style>
 </head>
-
 <body>
 
-    <header>
-        <div class="update-badge">Status: Live Operational Data</div>
+    <header class="hero">
+        <div class="status-badge">
+            <span class="status-dot"></span>
+            Operational: Automated Cycle (Weekly)
+        </div>
+        <div class="logo-container">
+            <img src="logo.png" alt="ET-NeuralCast Logo" class="logo-image">
+        </div>
         <h1>ET-NeuralCast</h1>
-        <p class="subtitle">Sub-seasonal to Seasonal Precipitation Forecast for Ethiopia</p>
+        <p class="subtitle">AI-Driven Sub-seasonal to Seasonal Precipitation Forecasting System for Ethiopia and the Horn of Africa.</p>
     </header>
 
     <div class="container">
-        <div class="forecast-grid">
-            <!-- Tercile Forecast -->
-            <div class="forecast-card">
-                <div class="card-header">
-                    <div class="card-title">Categorical Forecast (Terciles)</div>
+        
+        <!-- Forecast Section -->
+        <section id="forecast">
+            <h2 class="section-title">Latest Forecasts</h2>
+            <div class="forecast-grid">
+                <div class="forecast-card">
+                    <div class="card-header"><span class="card-title">Categorical Probability</span></div>
+                    <div class="image-wrapper">
+                        <img class="forecast-image" src="outputs/latest_tercile.png" onerror="this.src='https://placehold.co/600x500/1e293b/38bdf8?text=Syncing+Imagery...'" alt="Tercile Forecast">
+                    </div>
+                    <div class="card-body">
+                        <p class="card-description">Probabilistic mapping of tercile categories (Below, Near, and Above Normal) relative to local climatology.</p>
+                    </div>
                 </div>
-                <div class="image-container">
-                    <img id="tercile-map" class="forecast-image" src="outputs/latest_tercile.png"
-                        onerror="this.src='https://placehold.co/600x500/1e293b/38bdf8?text=Generating+Latest+Forecast...'"
-                        alt="Tercile Forecast">
-                </div>
-                <div class="card-footer">
-                    Probability categories: Below, Near, and Above Normal.
-                </div>
-            </div>
 
-            <!-- Anomaly Forecast -->
-            <div class="forecast-card">
-                <div class="card-header">
-                    <div class="card-title">Precipitation Anomaly</div>
+                <div class="forecast-card">
+                    <div class="card-header"><span class="card-title">Precipitation Anomaly</span></div>
+                    <div class="image-wrapper">
+                        <img class="forecast-image" src="outputs/latest_anomaly.png" onerror="this.src='https://placehold.co/600x500/1e293b/38bdf8?text=Syncing+Imagery...'" alt="Anomaly Forecast">
+                    </div>
+                    <div class="card-body">
+                        <p class="card-description">Deviation from historical mean rainfall in mm/day. Identifies intense dry or wet spells at a 1-week lead time.</p>
+                    </div>
                 </div>
-                <div class="image-container">
-                    <img id="anomaly-map" class="forecast-image" src="outputs/latest_anomaly.png"
-                        onerror="this.src='https://placehold.co/600x500/1e293b/38bdf8?text=Generating+Latest+Forecast...'"
-                        alt="Anomaly Forecast">
-                </div>
-                <div class="card-footer">
-                    Deviation from the historical spatial-weekly mean (mm/day).
-                </div>
-            </div>
 
-            <!-- Total Forecast -->
-            <div class="forecast-card">
-                <div class="card-header">
-                    <div class="card-title">Total Precipitation</div>
+                <div class="forecast-card">
+                    <div class="card-header"><span class="card-title">Total Physical Output</span></div>
+                    <div class="image-wrapper">
+                        <img class="forecast-image" src="outputs/latest_total.png" onerror="this.src='https://placehold.co/600x500/1e293b/38bdf8?text=Syncing+Imagery...'" alt="Total Forecast">
+                    </div>
+                    <div class="card-body">
+                        <p class="card-description">Absolute rainfall amounts in mm/day. Useful for agricultural planning and water resource management.</p>
+                    </div>
                 </div>
-                <div class="image-container">
-                    <img id="total-map" class="forecast-image" src="outputs/latest_total.png"
-                        onerror="this.src='https://placehold.co/600x500/1e293b/38bdf8?text=Generating+Latest+Forecast...'"
-                        alt="Total Forecast">
-                </div>
-                <div class="card-footer">
-                    Predicted physical rainfall amount (mm/day).
-                </div>
-            </div>
 
-            <!-- Percent Forecast -->
-            <div class="forecast-card">
-                <div class="card-header">
-                    <div class="card-title">Percent of Normal</div>
-                </div>
-                <div class="image-container">
-                    <img id="percent-map" class="forecast-image" src="outputs/latest_percent.png"
-                        onerror="this.src='https://placehold.co/600x500/1e293b/38bdf8?text=Generating+Latest+Forecast...'"
-                        alt="Percent Forecast">
-                </div>
-                <div class="card-footer">
-                    Rainfall as a percentage of the seasonal baseline.
+                <div class="forecast-card">
+                    <div class="card-header"><span class="card-title">Percent of Normal</span></div>
+                    <div class="image-wrapper">
+                        <img class="forecast-image" src="outputs/latest_percent.png" onerror="this.src='https://placehold.co/600x500/1e293b/38bdf8?text=Syncing+Imagery...'" alt="Percent Forecast">
+                    </div>
+                    <div class="card-body">
+                        <p class="card-description">Current forecast as a percentage of standard seasonal expectation, highlighting relative moisture abundance.</p>
+                    </div>
                 </div>
             </div>
-        </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about">
+            <h2 class="section-title">System Architecture</h2>
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="icon-box">🧠</div>
+                    <h3>Deep Learning Core</h3>
+                    <p>ET-NeuralCast utilizes a custom <b>U-Net Generator</b> combined with a <b>PatchGAN Discriminator</b>. This adversarial training setup allows the model to capture high-frequency spatial patterns often lost in traditional statistical models.</p>
+                </div>
+                <div class="info-card">
+                    <div class="icon-box">🛰️</div>
+                    <h3>Multi-Source Data</h3>
+                    <p>Inputs are derived from <b>ERA5-T</b> (Atmospheric Pressure, SST, Humidity) and <b>CHIRPS</b> (High-res IR Precipitation). We fuse these datasets to bridge the gap between global atmospheric signals and local rain patterns.</p>
+                </div>
+                <div class="info-card">
+                    <div class="icon-box">⚡</div>
+                    <h3>Operational Edge</h3>
+                    <p>The system is fully automated using GitHub Actions. Every Monday, it fetches the latest satellite and reanalysis data, executes the neural pipeline, and updates this dashboard with new insights.</p>
+                </div>
+            </div>
+        </section>
+
     </div>
 
     <footer>
-        &copy; 2025 ET-NeuralCast Project. Powered by Deep Learning & ERA5/CHIRPS data.
+        <div class="nav-links">
+            <a href="https://github.com/YonSci/S2S-Forecast-Project">Source Code</a>
+            <a href="outputs/latest_anomaly.nc">Download NetCDF</a>
+            <a href="#">Technical Docs</a>
+        </div>
+        <p>&copy; 2025 ET-NeuralCast Project. Developed for Advanced S2S Climate Applications.</p>
     </footer>
 
-    <script>
-        // Simple script to automatically fetch the "latest" files
-        // Note: For this to work simple, we'll update main_operational.py
-        // to always copy the newest files to a fixed name 'latest_*.png'
-    </script>
 </body>
-
 </html>
