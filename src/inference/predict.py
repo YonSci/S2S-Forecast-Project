@@ -64,7 +64,8 @@ def visualize_forecast(ds, var_name, lead_date, lead_weeks, output_path):
     """
     Produce a professional-quality forecast map for Ethiopia.
     """
-    plt.figure(figsize=(12, 10))
+    plt.style.use('dark_background') # Force a dark theme for consistent inversion
+    plt.figure(figsize=(12, 10), facecolor='none') 
     
     # Configure plotting based on variable type
     if 'anomaly' in var_name:
@@ -137,7 +138,8 @@ def visualize_forecast(ds, var_name, lead_date, lead_weeks, output_path):
     plt.title(f"ET-NeuralCast S2S Forecast: {title_prefix}\nTarget: {date_str} (Lead: {lead_weeks} Weeks)", 
               fontsize=16, pad=25, fontweight='bold')
     
-    plt.savefig(output_path, dpi=300, bbox_inches='tight')
+    # Save with transparency to allow the web dashboard to handle themes
+    plt.savefig(output_path, dpi=300, bbox_inches='tight', transparent=True)
     plt.close()
 
 
