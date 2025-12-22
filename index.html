@@ -307,7 +307,7 @@
                 </div>
                 <div class="hero-text">
                     <h1>ET-NeuralCast</h1>
-                    <p class="subtitle-large">A hybrid Deep Learning framework bridging global atmospheric drivers with high-resolution precipitation reality across Ethiopia.</p>
+                    <p class="subtitle-large">The ET-NeuralCast architecture is a Hybrid Deep Learning framework specifically designed for Sub-seasonal to Seasonal (S2S) downscaling. Fussing the Generator (U-Net) and the Discriminator (PatchGAN) to capture the spatiotemporal patterns of the input climate data.</p>
                 </div>
             </div>
 
@@ -328,18 +328,18 @@
             <div class="architecture-row">
                 <div class="arch-item">
                     <span class="arch-icon">⚡</span>
-                    <h3>U-Net GAN Core</h3>
+                    <h3>Hybrid Deep Learning Framework</h3>
                     <p>Fusing convolutional local-feature extraction with adversarial feedback for unparalleled spatial prediction sharpness.</p>
                 </div>
                 <div class="arch-item">
                     <span class="arch-icon">🛰️</span>
-                    <h3>Domain Fusion</h3>
-                    <p>Synthesizing ERA5 planetary dynamics with 0.05° CHIRPS precipitation history to capture regional microclimates.</p>
+                    <h3>Data Fusion</h3>
+                    <p>The model consumes a 4D tensor of atmospheric data from the ERA5 Reanalysis (and ERA5T for operational runs). The ET-NeuralCast system is built on a specific set of atmospheric and oceanic predictors to model rainfall behavior. This includes Geopotential (Z), Specific Humidity (Q), U & V Wind Components, Sea Surface Temperature (SST) and CHIRPS </p>
                 </div>
                 <div class="arch-item">
                     <span class="arch-icon">🤖</span>
-                    <h3>Native CI/CD</h3>
-                    <p>Decoupled operational logic pipelines every Monday, automating the transition from raw satellite data to public insights.</p>
+                    <h3>Production Pipeline</h3>
+                    <p>The entire architecture is wrapped in automated CI/CD pipelines running the entire workflow every 24 hours at 00:00 UTC.</p>
                 </div>
             </div>
         </header>
