@@ -212,24 +212,47 @@
 
         .arch-item {
             background: var(--bg-secondary);
-            padding: 4rem;
+            padding: 5rem 4rem; /* More generous padding */
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
+            gap: 2rem;
+            position: relative;
         }
 
-        .arch-icon {
-            font-size: 2.5rem;
-            background: var(--accent-gradient);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .arch-icon-wrapper {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(88, 166, 255, 0.1);
+            border-radius: 16px;
+            color: var(--accent);
             margin-bottom: 1rem;
-            display: block;
+            position: relative;
+            box-shadow: 0 0 20px rgba(88, 166, 255, 0.1);
         }
 
-        .arch-item h3 { font-size: 1.5rem; font-weight: 700; color: #fff; }
-        .arch-item p { font-size: 1.1rem; color: var(--text-secondary); line-height: 1.7; }
+        .arch-icon-wrapper svg {
+            width: 32px;
+            height: 32px;
+            stroke: var(--accent);
+            filter: drop-shadow(0 0 8px var(--accent));
+        }
+
+        .arch-item h3 { 
+            font-size: 1.6rem; 
+            font-weight: 700; 
+            color: #fff;
+            letter-spacing: -0.02em;
+        }
+
+        .arch-item p { 
+            font-size: 1.1rem; 
+            color: var(--text-secondary); 
+            line-height: 1.8;
+            font-weight: 300;
+        }
 
         /* Forecasts */
         .section-label {
@@ -325,21 +348,33 @@
                 </div>
             </div>
 
+            <!-- Architecture Row - Enhanced Visuals -->
             <div class="architecture-row">
+                <!-- 1. Hybrid Framework -->
                 <div class="arch-item">
-                    <span class="arch-icon">⚡</span>
+                    <div class="arch-icon-wrapper">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-neural"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+                    </div>
                     <h3>Hybrid Deep Learning Framework</h3>
-                    <p>The ET-NeuralCast architecture is a Hybrid Deep Learning framework specifically designed for Sub-seasonal to Seasonal (S2S) downscaling. Fussing the Generator (U-Net) and the Discriminator (PatchGAN) to capture the spatiotemporal patterns of the input climate data.</p>
+                    <p>The ET-NeuralCast architecture is a Hybrid Deep Learning framework specifically designed for Sub-seasonal to Seasonal (S2S) downscaling. Fusing the Generator (U-Net) and the Discriminator (PatchGAN) to capture the spatiotemporal patterns of the input climate data.</p>
                 </div>
+
+                <!-- 2. Data Fusion -->
                 <div class="arch-item">
-                    <span class="arch-icon">🛰️</span>
-                    <h3>Data Fusion</h3>
-                    <p>The model consumes a 4D tensor of atmospheric data from the ERA5 Reanalysis (and ERA5T for operational runs). The ET-NeuralCast system is built on a specific set of atmospheric and oceanic predictors to model rainfall behavior. This includes Geopotential (Z), Specific Humidity (Q), U & V Wind Components, Sea Surface Temperature (SST) and CHIRPS.</p>
+                    <div class="arch-icon-wrapper">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-fusion"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z"></path><path d="M12 2a10 10 0 0 1 10 10M12 22a10 10 0 0 1-10-10"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    </div>
+                    <h3>Intelligent Data Fusion</h3>
+                    <p>Built on a 4D tensor of atmospheric and oceanic predictors: Geopotential (Z500), Humidity (Q), Wind Vectors (U/V), and Sea Surface Temperature (SST), all cross-referenced with 0.05° CHIRPS precipitation history.</p>
                 </div>
+
+                <!-- 3. Production Pipeline -->
                 <div class="arch-item">
-                    <span class="arch-icon">🤖</span>
-                    <h3>Production Pipeline</h3>
-                    <p>The entire architecture is wrapped in automated CI/CD pipelines running the entire workflow every 24 hours at 00:00 UTC. It generates anomaly, total precipitation, percent of normal, and  tercile based forecasts.</p>
+                    <div class="arch-icon-wrapper">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-pipeline"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                    </div>
+                    <h3>Daily Production Pipeline</h3>
+                    <p>Fully autonomous CI/CD pipelines running every 24 hours at 00:00 UTC. The system automatically orchestrates data acquisition, inference, and multi-perspective forecast generation.</p>
                 </div>
             </div>
         </header>
