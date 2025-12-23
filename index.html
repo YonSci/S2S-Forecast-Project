@@ -442,6 +442,79 @@
         .f-links a { color: var(--text-primary); text-decoration: none; opacity: 0.5; font-size: 0.95rem; }
         .f-links a:hover { opacity: 1; color: var(--accent); }
         .copyright { color: var(--text-secondary); font-size: 0.9rem; opacity: 0.8; }
+
+        /* Technical Framework Section */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 4rem;
+            margin-top: 4rem;
+        }
+
+        @media (max-width: 1100px) {
+            .tech-grid { grid-template-columns: 1fr; }
+        }
+
+        .tech-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--card-border);
+            border-radius: 2.5rem;
+            padding: 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tech-card h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .tech-card h3 svg {
+            width: 30px;
+            height: 30px;
+            color: var(--accent);
+        }
+
+        .tech-content h4 {
+            color: var(--accent);
+            font-size: 1.1rem;
+            margin: 2.5rem 0 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .tech-content p {
+            font-size: 1.05rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+
+        .tech-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .tech-list li {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+        }
+
+        .tech-list li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+        }
     </style>
 </head>
 <body>
@@ -569,6 +642,85 @@
                     <div class="card-content">
                         <h4>Tercile Probability</h4>
                         <p>Classification of seasonal expectations into Below, Near, or Above normal states based on local 20-year climatology thresholds.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="technical-framework">
+            <h2 class="section-label">Technical Framework</h2>
+            <div class="tech-grid">
+                <!-- 1. Data Pipeline -->
+                <div class="tech-card">
+                    <h3>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                        Data Pipeline
+                    </h3>
+                    <div class="tech-content">
+                        <h4>Preprocessing & Normalization</h4>
+                        <p>Sources: ERA5 reanalysis and CHIRPS precipitation datasets. Performs clipping to Ethiopia's bounding box and weekly mean aggregation.</p>
+                        <ul class="tech-list">
+                            <li><strong>Anomaly Creation:</strong> Subtracts training-set-only weekly climatology.</li>
+                            <li><strong>Standardization:</strong> Zero-mean/unit-variance scaling using training statistics.</li>
+                            <li><strong>Lagged Predictors:</strong> Captures temporal atmospheric memory.</li>
+                        </ul>
+                        <h4>Input Format</h4>
+                        <p>Tensors: [Batch, Time, Variable, Lat, Lon]. Includes Z500, Q850, U/V Wind, and SST.</p>
+                    </div>
+                </div>
+
+                <!-- 2. Model Architecture -->
+                <div class="tech-card">
+                    <h3>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                        Model Architecture
+                    </h3>
+                    <div class="tech-content">
+                        <h4>U-Net Generator Core</h4>
+                        <p>Deep encoder-decoder with skip connections ensuring preservation of both local and contextual atmospheric features.</p>
+                        <ul class="tech-list">
+                            <li><strong>Encoder:</strong> Progressive downsampling to capture planetary patterns.</li>
+                            <li><strong>Decoder:</strong> High-res reconstruction using transposed convolutions.</li>
+                            <li><strong>Tanh Activation:</strong> Outputs normalized precipitation anomalies.</li>
+                        </ul>
+                        <h4>PatchGAN Discriminator</h4>
+                        <p>Adversarial "critic" evaluating 16x16 spatial patches for absolute physical realism.</p>
+                    </div>
+                </div>
+
+                <!-- 3. Training Strategy -->
+                <div class="tech-card">
+                    <h3>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                        Training Strategy
+                    </h3>
+                    <div class="tech-content">
+                        <h4>Phase 1: Warm Start</h4>
+                        <p>Generator-only training using L1 Loss to stabilize core spatial patterns and ensure reliable baseline predictions.</p>
+                        <h4>Phase 2: GAN Fine-tuning</h4>
+                        <p>Full adversarial cycle. Generator is tuned to both minimize pixel-wise error and fool the Discriminator.</p>
+                        <ul class="tech-list">
+                            <li><strong>Loss Profile:</strong> Weighted combination of L1 and MSE PatchGAN loss.</li>
+                            <li><strong>Leakage Prevention:</strong> Chronological training splits to ensure zero data leakage.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 4. Production Workflow -->
+                <div class="tech-card">
+                    <h3>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                        Autonomous Operation
+                    </h3>
+                    <div class="tech-content">
+                        <h4>End-to-End CI/CD</h4>
+                        <p>Fully automated Docker-ready pipeline hosted via GitHub Actions, running every 24 hours at 00:00 UTC.</p>
+                        <ul class="tech-list">
+                            <li><strong>Ingestion:</strong> Real-time fetching of ERA5-T atmospheric drivers.</li>
+                            <li><strong>Sync:</strong> On-the-fly normalization matching training statistics.</li>
+                            <li><strong>Deployment:</strong> Immediate update of dashboard PNGs and NetCDF exports.</li>
+                        </ul>
+                        <p>Total latency: ~45 mins from raw atmospheric data to published forecast.</p>
                     </div>
                 </div>
             </div>
