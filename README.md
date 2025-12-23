@@ -15,86 +15,72 @@
 
 ---
 
-## 🤖 Model Architecture
+## 📊 1. Data Pipeline
+
+### a) Preprocessing & Normalization
+The system ingests **ERA5** reanalysis and **CHIRPS** precipitation datasets. The preprocessing logic (`src/data/preprocessor.py`) performs:
+*   **Spatial Focus**: Clipping to Ethiopia's bounding box.
+*   **Temporal Aggregation**: Computing weekly means to align with S2S timescales.
+*   **Lagged Predictors**: Creating temporal lags to capture atmospheric memory.
+*   **Anomaly Extraction**: Subtracting weekly climatology (learned exclusively from the training set) to isolate significant atmospheric shifts.
+*   **Standardization**: Applying zero-mean/unit-variance normalization using training-only statistics (`src/data/normalization.py`).
+
+### b) Dataloader Implementation
+The core is a custom `S2SDataset` (`src/data/dataloader.py`) which:
+*   Loads tabular and gridded data from NetCDF.
+*   Applies normalization on-the-fly.
+*   Supports specific year selection and configurable forecast lead times.
+*   Maps samples to the typical PyTorch `[Batch, Channel, H, W]` format.
+
+### c) Data Format
+*   **Input Tensors**: `[batch, time, variable, lat, lon]` (e.g., past 4 weeks, 5 variables, 48x60 grid).
+*   **Target Tensors**: `[batch, target_window, 1, lat, lon]`.
+
+---
+
+## 🤖 2. Model Architecture
 The core of ET-NeuralCast is a **Spatially-Aware Generative Adversarial Network (GAN)**:
 
-*   **Generator (U-Net)**: A deep encoder-decoder architecture with skip-connections. It learns to reconstruct high-resolution precipitation structures by analyzing global moisture transport and pressure surfaces.
-*   **Discriminator (PatchGAN)**: A convolutional critic that evaluates the "physical plausibility" of the generated maps against historical CHIRPS topography, forcing the generator to produce sharp, realistic rainfall patterns.
-*   **Anomaly-Centric Learning**: The model targets **Precipitation Anomalies** (deviation from a 20-year mean) rather than raw values, reducing bias and focusing the neural network on significant atmospheric shifts.
+### a) U-Net Generator (`src/models/unet.py`)
+*   **Encoder**: Stacks `Conv2d` layers, downsampling while increasing channels (64→128→256→512), utilizing BatchNorm and LeakyReLU.
+*   **Bottleneck**: Compresses features into a rich latent representation.
+*   **Decoder**: Uses `TransposedConv` for upsampling with **Skip Connections** to corresponding encoder layers, preserving spatial resolution.
+*   **Output**: Single-channel grid with `Tanh` activation to produce normalized precipitation anomalies.
+
+### b) Discriminator (PatchGAN)
+*   Receives both the input drivers and the prediction (or observation) map.
+*   Outputs a grid of scores (e.g., 16x16) to evaluate local realism.
+*   Encourages the generator to produce high-frequency details and physically plausible rainfall textures.
 
 ---
 
-## ⚙️ Operational Pipeline
-The system operates on a fully autonomous **Daily Flux Pipeline**:
+## 📉 3. Training Loop & Loss
 
-1.  **Data Ingestion**: Automated triggers fetch real-time atmospheric drivers (ERA5/ERA5T) from the Copernicus CDS API.
-2.  **Harmonization**: Global variables (Z500, Q700, Wind U/V, SST) are normalized using a production-synced scaling layer.
-3.  **Inference Engine**: The U-Net GAN prepares four multi-perspective forecasts:
-    *   **Anomaly**: Physical deviation from expectations.
-    *   **Total Rain**: Absolute water volume reconstructed from regional baselines.
-    *   **Percent of Normal**: Relative moisture impact.
-    *   **Tercile Categories**: Categorical outlook (Below, Near, or Above Normal).
-4.  **Edge Delivery**: Results are committed to the repository and deployed immediately to the [GitHub Pages Dashboard](https://YonSci.github.io/S2S-Forecast-Project/).
+### a) Two-Phase Training Strategy
+1.  **Phase 1 (Warm Start)**: Training only the Generator using **L1 Loss** (Mean Absolute Error). this ensures stable learning of coarse rainfall patterns (`src/training/train_warmstart.py`).
+2.  **Phase 2 (GAN Fine-tuning)**: Introducing the Discriminator. The Generator is trained to both minimize L1 error and "fool" the PatchGAN, resulting in sharper, more realistic outputs (`src/training/train_gan.py`).
 
----
+### b) Loss Functions
+*   **L1 Loss**: Primary loss to reduce absolute error and prevent outlier dominance.
+*   **GAN Loss (MSE)**: Adversarial loss for PatchGAN style training.
+*   **Spatial Weighting**: Capacity to emphasize specific regions of interest.
 
-## 🛠️ Installation & Setup
-
-### 1. Requirements
-*   Python 3.10+
-*   [Conda](https://docs.conda.io/en/latest/miniconda.html) or Micromamba (Recommended)
-*   CDS API Key (For data acquisition)
-
-### 2. Environment Setup
-```bash
-# Clone the repository
-git clone https://github.com/YonSci/S2S-Forecast-Project.git
-cd S2S-Forecast-Project
-
-# Create environment
-conda create -n et_neuralcast python=3.10 -y
-conda activate et_neuralcast
-
-# Install core dependencies
-pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
-pip install xarray netcdf4 cdsapi matplotlib cartopy shapely numpy
-```
-
-### 3. API Configuration
-Create a `.cdsapirc` file in your home directory or set environment variables:
-```bash
-export CDSAPI_URL='https://cds.climate.copernicus.eu/api/v2'
-export CDSAPI_KEY='YOUR_UID:YOUR_API_KEY'
-```
+### c) Execution Strategy
+*   **Chronological Splitting**: Ensuring no data leakage by following strict temporal order.
+*   **Experiment Tracking**: Integration with MLflow for tracking parameters, metrics, and model checkpoints.
 
 ---
 
-## 🚀 Running the Workflow
+## 🚀 4. Usage & Operations
 
-### Local Operational Run
-To run the same pipeline that powers the dashboard:
-```bash
-python src/main_operational.py
-```
-This script will:
-1. Download recent ERA5 data.
-2. Run GAN inference.
-3. Generate `.png` maps and `.nc` data exports in the `outputs/` folder.
+### Operational Pipeline
+See `src/main_operational.py` for the end-to-end production workflow.
+*   **Autonomous Operation**: Daily ingestion, preprocessing, inference, and dashboard deployment.
+*   **Local Run**: `python src/main_operational.py`
 
-### Local Testing/Training
-The project is modularized into dedicated phases:
+### Testing & Training
 *   **Data Prep**: `src/data/download_era5.py` & `download_chirps.py`
-*   **Training**: `src/training/train_warmstart.py` (L1 Warmstart) & `train_gan.py` (GAN Refinement)
-
----
-
-## 📊 Data Specifications
-| Aspect | Input (Predictors) | Target (Predictand) |
-| :--- | :--- | :--- |
-| **Source** | ERA5 / ERA5T Reanalysis | CHIRPS v2.0 |
-| **Grid** | 1.0° x 1.0° (Global) | 0.05° x 0.05° (Ethiopia) |
-| **Variables** | Z, Q, U, V (200, 500, 850 hPa) + SST | Precipitation Anomaly |
-| **Horizon** | S2S (Lead: 1-4 Weeks) | Static Climatology Baseline |
+*   **Training**: Run the respective phase scripts in `src/training/`.
 
 ---
 
