@@ -594,59 +594,6 @@
             </div>
         </header>
 
-        <section id="forecasts">
-            <h2 class="section-label">Operational Forecasts</h2>
-            <div class="forecast-grid">
-                <!-- 1. Anomaly Forecast -->
-                <div class="forecast-card">
-                    <div class="card-meta"><span class="meta-tag">Anomaly Forecast</span></div>
-                    <div class="img-container">
-                        <img id="img-anomaly" src="outputs/latest_anomaly.png" alt="Anomaly">
-                    </div>
-                    <div class="card-content">
-                        <h4>Precipitation Anomaly</h4>
-                        <p>Identifying regions of critical rainfall deficit or surplus by calculating deviation from the mean in physical units (mm/day).</p>
-                    </div>
-                </div>
-
-                <!-- 2. Total Precipitation Forecast -->
-                <div class="forecast-card">
-                    <div class="card-meta"><span class="meta-tag">Total Precipitation Forecast</span></div>
-                    <div class="img-container">
-                        <img id="img-total" src="outputs/latest_total.png" alt="Total">
-                    </div>
-                    <div class="card-content">
-                        <h4>Absolute Physical Flux</h4>
-                        <p>The total expected water volume reaching the surface. Reconstructed from the learned anomaly and regional seasonal baseline data.</p>
-                    </div>
-                </div>
-
-                <!-- 3. Percent of Normal -->
-                <div class="forecast-card">
-                    <div class="card-meta"><span class="meta-tag">Percent of Normal</span></div>
-                    <div class="img-container">
-                        <img id="img-percent" src="outputs/latest_percent.png" alt="Percent">
-                    </div>
-                    <div class="card-content">
-                        <h4>Percent of Operational Normal</h4>
-                        <p>A relative moisture metric expressing the forecast as a percentage of standard expectation, highlighting extreme departures from the norm.</p>
-                    </div>
-                </div>
-
-                <!-- 4. Tercile Probability Forecast -->
-                <div class="forecast-card">
-                    <div class="card-meta"><span class="meta-tag">Tercile Probability Forecast</span></div>
-                    <div class="img-container">
-                        <img id="img-tercile" src="outputs/latest_tercile.png" alt="Tercile">
-                    </div>
-                    <div class="card-content">
-                        <h4>Tercile Probability</h4>
-                        <p>Classification of seasonal expectations into Below, Near, or Above normal states based on local 20-year climatology thresholds.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <section id="technical-framework">
             <h2 class="section-label">Technical Framework</h2>
             <div class="tech-grid">
@@ -721,6 +668,59 @@
                             <li><strong>Deployment:</strong> Immediate update of dashboard PNGs and NetCDF exports.</li>
                         </ul>
                         <p>Total latency: ~45 mins from raw atmospheric data to published forecast.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="forecasts">
+            <h2 class="section-label">Operational Forecasts</h2>
+            <div class="forecast-grid">
+                <!-- 1. Anomaly Forecast -->
+                <div class="forecast-card">
+                    <div class="card-meta"><span class="meta-tag">Anomaly Forecast</span></div>
+                    <div class="img-container">
+                        <img id="img-anomaly" src="outputs/latest_anomaly.png" alt="Anomaly">
+                    </div>
+                    <div class="card-content">
+                        <h4>Precipitation Anomaly</h4>
+                        <p>Identifying regions of critical rainfall deficit or surplus by calculating deviation from the mean in physical units (mm/day).</p>
+                    </div>
+                </div>
+
+                <!-- 2. Total Precipitation Forecast -->
+                <div class="forecast-card">
+                    <div class="card-meta"><span class="meta-tag">Total Precipitation Forecast</span></div>
+                    <div class="img-container">
+                        <img id="img-total" src="outputs/latest_total.png" alt="Total">
+                    </div>
+                    <div class="card-content">
+                        <h4>Absolute Physical Flux</h4>
+                        <p>The total expected water volume reaching the surface. Reconstructed from the learned anomaly and regional seasonal baseline data.</p>
+                    </div>
+                </div>
+
+                <!-- 3. Percent of Normal -->
+                <div class="forecast-card">
+                    <div class="card-meta"><span class="meta-tag">Percent of Normal</span></div>
+                    <div class="img-container">
+                        <img id="img-percent" src="outputs/latest_percent.png" alt="Percent">
+                    </div>
+                    <div class="card-content">
+                        <h4>Percent of Operational Normal</h4>
+                        <p>A relative moisture metric expressing the forecast as a percentage of standard expectation, highlighting extreme departures from the norm.</p>
+                    </div>
+                </div>
+
+                <!-- 4. Tercile Probability Forecast -->
+                <div class="forecast-card">
+                    <div class="card-meta"><span class="meta-tag">Tercile Probability Forecast</span></div>
+                    <div class="img-container">
+                        <img id="img-tercile" src="outputs/latest_tercile.png" alt="Tercile">
+                    </div>
+                    <div class="card-content">
+                        <h4>Tercile Probability</h4>
+                        <p>Classification of seasonal expectations into Below, Near, or Above normal states based on local 20-year climatology thresholds.</p>
                     </div>
                 </div>
             </div>
