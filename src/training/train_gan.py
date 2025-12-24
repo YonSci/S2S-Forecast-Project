@@ -50,12 +50,12 @@ def train_gan(config):
     D = PixelDiscriminator(input_channels=6).to(device)  # 5 input + 1 target
     
     # Load warm-start weights
-    warmstart_path = "checkpoints/G_warmstart_best.pth"
+    warmstart_path = f"checkpoints/G_warmstart_best_W{config.get('lead_weeks', 1)}.pth"
     if os.path.exists(warmstart_path):
         G.load_state_dict(torch.load(warmstart_path, map_location=device))
         print(f"[+] Loaded warm-start weights from {warmstart_path}")
     else:
-        print("⚠ Warning: No warm-start weights found, training from scratch")
+        print(f"⚠ Warning: No warm-start weights found at {warmstart_path}, training from scratch")
     
     # Optimizers
     opt_G = optim.Adam(G.parameters(), lr=config['lr'], betas=(0.5, 0.999))
@@ -125,8 +125,8 @@ def train_gan(config):
         
         # Save checkpoint
         if (epoch + 1) % 10 == 0:
-            g_path = f"checkpoints/G_gan_epoch_{epoch+1}.pth"
-            d_path = f"checkpoints/D_gan_epoch_{epoch+1}.pth"
+            g_path = f"checkpoints/G_gan_epoch_{epoch+1}_W{config.get('lead_weeks', 1)}.pth"
+            d_path = f"checkpoints/D_gan_epoch_{epoch+1}_W{config.get('lead_weeks', 1)}.pth"
             torch.save(G.state_dict(), g_path)
             torch.save(D.state_dict(), d_path)
             print(f"[+] Saved GAN checkpoint: epoch {epoch+1}")
@@ -139,13 +139,34 @@ def train_gan(config):
     
     print(f"\n=== GAN FINE-TUNING COMPLETE ===")
 
+def parse_years(year_input):
+    """Parses year input which can be a list of years or range strings like '2000-2005'."""
+    years = []
+    for item in year_input:
+        if '-' in str(item):
+            start, end = map(int, str(item).split('-'))
+            years.extend(range(start, end + 1))
+        else:
+            years.append(int(item))
+    return sorted(list(set(years)))
+
 if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(description="Phase 2: GAN fine-tuning.")
+    parser.add_argument("--lead", type=int, default=1, help="Lead time in weeks (1, 2, 3, 4)")
+    parser.add_argument("--epochs", type=int, default=30, help="Number of training epochs")
+    parser.add_argument("--years", type=str, nargs='+', default=["2000-2005"], help="Years to train on (e.g. 2000-2005 or 2000 2001)")
+    args = parser.parse_args()
+
+    train_years = parse_years(args.years)
+
     gan_config = {
-        'data_dir': 'data/raw',
-        'train_years': [2000, 2001],
-        'batch_size': 2,
+        'data_dir': 'data/train',
+        'train_years': train_years,
+        'lead_weeks': args.lead,
+        'batch_size': 4,
         'lr': 0.0001,
-        'epochs': 30,
+        'epochs': args.epochs,
         'lambda_l1': 100
     }
     

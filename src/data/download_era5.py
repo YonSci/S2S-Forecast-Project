@@ -92,10 +92,10 @@ if __name__ == "__main__":
         print(e)
         exit(1)
 
-    START_YEAR = 2006
+    START_YEAR = 2000
     END_YEAR = 2009
-    OUTPUT_DIR_PL = os.path.join(os.getcwd(), "data", "raw", "era5_pressure")
-    OUTPUT_DIR_SST = os.path.join(os.getcwd(), "data", "raw", "era5_sst")
+    OUTPUT_DIR_PL = os.path.join(os.getcwd(), "data", "train", "era5_pressure")
+    OUTPUT_DIR_SST = os.path.join(os.getcwd(), "data", "train", "era5_sst")
     
     os.makedirs(OUTPUT_DIR_PL, exist_ok=True)
     os.makedirs(OUTPUT_DIR_SST, exist_ok=True)

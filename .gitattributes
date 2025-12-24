@@ -1,2 +1,2 @@
-checkpoints/*.pkl filter=lfs diff=lfs merge=lfs -text
-checkpoints/*.pth filter=lfs diff=lfs merge=lfs -text
+# No LFS tracking for images (kept small)
+# Checkpoints are ignored by .gitignore

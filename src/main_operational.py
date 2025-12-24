@@ -25,7 +25,7 @@ def main():
     
     # Paths
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    data_dir = os.path.join(base_dir, "data", "raw")
+    data_dir = os.path.join(base_dir, "data", "operational")
     pl_dir = os.path.join(data_dir, "era5_pressure")
     sst_dir = os.path.join(data_dir, "era5_sst")
     model_path = os.path.join(base_dir, "checkpoints", "G_warmstart_best.pth")
@@ -58,54 +58,76 @@ def main():
         sst_file = None
         logging.warning(f"SST file not found for {pl_files[0]}. Running without SST.")
     
-    # 3. Run Inference
-    logging.info(f"Step 3: Running inference on {pl_files[0]}...")
-    try:
-        run_inference(model_path, normalizer_path, pl_file, sst_file, output_dir=output_dir)
-        logging.info("Inference successful. Maps generated in 'outputs/' folder.")
+    # 3. Run Inference for each Lead
+    leads = [1, 2, 3, 4]
+    for lead in leads:
+        logging.info(f"Step 3: Running inference for LEAD WEEK {lead}...")
+        lead_model_path = os.path.join(base_dir, "checkpoints", f"G_gan_epoch_30_W{lead}.pth")
         
-        # 4. Copy to fixed names for the web dashboard (latest_*.png)
-        import shutil
-        mapping = {
-            'tercile': 'latest_tercile.png',
-            'anomaly': 'latest_anomaly.png',
-            'total': 'latest_total.png',
-            'percent': 'latest_percent.png'
+        # Fallback to warmstart if GAN doesn't exist yet
+        if not os.path.exists(lead_model_path):
+            lead_model_path = os.path.join(base_dir, "checkpoints", f"G_warmstart_best_W{lead}.pth")
+            
+        if not os.path.exists(lead_model_path):
+            logging.warning(f"No model found for lead W{lead} at {lead_model_path}. Skipping.")
+            continue
+            
+        try:
+            run_inference(lead_model_path, normalizer_path, pl_file, sst_file, output_dir=output_dir, lead_weeks=lead)
+            logging.info(f"Inference successful for Lead W{lead}.")
+        except Exception as e:
+            logging.error(f"Inference failed for Lead W{lead}: {e}")
+            continue
+
+    # 4. Copy to fixed names for the web dashboard (latest_*_W*.png)
+    import shutil
+    try:
+        mapping_keys = ['tercile', 'anomaly', 'total', 'percent']
+        all_outputs = os.listdir(output_dir)
+        
+        for lead in leads:
+            for key in mapping_keys:
+                target = f"latest_{key}_W{lead}.png"
+                # Pattern: forecast_YYYY-MM-DD_W{lead}_{key}.png
+                pattern = f"_W{lead}_{key}.png"
+                matches = sorted([f for f in all_outputs if pattern in f], reverse=True)
+                if matches:
+                    shutil.copy2(os.path.join(output_dir, matches[0]), os.path.join(output_dir, target))
+                    logging.info(f"Updated {target} with {matches[0]}")
+    except Exception as e:
+        logging.error(f"Copying latest files failed: {e}")
+
+    # 5. Generate Manifest for Web Dashboard (forecast_index.json)
+    try:
+        import json
+        import re
+        
+        forecast_data = {} # lead -> dates
+        date_pattern = re.compile(r"forecast_(\d{4}-\d{2}-\d{2})_W(\d)")
+        
+        for f in os.listdir(output_dir):
+            match = date_pattern.search(f)
+            if match:
+                date_str = match.group(1)
+                lead_num = match.group(2)
+                if lead_num not in forecast_data:
+                    forecast_data[lead_num] = set()
+                forecast_data[lead_num].add(date_str)
+        
+        # Format for JSON
+        formatted_data = {
+            "last_updated": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "leads": {
+                f"W{l}": sorted(list(dates), reverse=True) for l, dates in forecast_data.items()
+            }
         }
         
-        # Find the most recent files generated today/now
-        all_outputs = os.listdir(output_dir)
-        for key, target in mapping.items():
-            matches = sorted([f for f in all_outputs if key in f and f.endswith('.png')], reverse=True)
-            if matches:
-                shutil.copy2(os.path.join(output_dir, matches[0]), os.path.join(output_dir, target))
-                logging.info(f"Updated {target} with {matches[0]}")
-
-        # 5. Generate Manifest for Web Dashboard (forecast_index.json)
-        try:
-            import json
-            import re
-            
-            forecast_dates = set()
-            date_pattern = re.compile(r"forecast_(\d{4}-\d{2}-\d{2})")
-            
-            for f in os.listdir(output_dir):
-                match = date_pattern.search(f)
-                if match:
-                    forecast_dates.add(match.group(1))
-            
-            if forecast_dates:
-                manifest = {
-                    "last_updated": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    "available_dates": sorted(list(forecast_dates), reverse=True)
-                }
-                
-                manifest_path = os.path.join(output_dir, "forecast_index.json")
-                with open(manifest_path, 'w') as f:
-                    json.dump(manifest, f, indent=4)
-                logging.info(f"Generated manifest: {manifest_path} with {len(forecast_dates)} dates.")
-        except Exception as e:
-            logging.error(f"Manifest generation failed: {e}")
+        manifest_path = os.path.join(output_dir, "forecast_index.json")
+        with open(manifest_path, 'w') as f:
+            json.dump(formatted_data, f, indent=4)
+        logging.info(f"Generated multi-lead manifest: {manifest_path}")
+    except Exception as e:
+        logging.error(f"Manifest generation failed: {e}")
             
     except Exception as e:
         logging.error(f"Operational pipeline failed: {e}")

@@ -69,7 +69,7 @@ def download_operational_data(output_dir_pl, output_dir_sst):
         sst_path)
 
 if __name__ == "__main__":
-    DATA_DIR = os.path.join(os.getcwd(), "data", "raw")
+    DATA_DIR = os.path.join(os.getcwd(), "data", "operational")
     PL_DIR = os.path.join(DATA_DIR, "era5_pressure")
     SST_DIR = os.path.join(DATA_DIR, "era5_sst")
     

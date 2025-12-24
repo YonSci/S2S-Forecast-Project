@@ -64,12 +64,23 @@ def visualize_forecast(ds, var_name, lead_date, lead_weeks, output_path):
     """
     Produce a professional-quality forecast map for Ethiopia.
     """
-    plt.style.use('dark_background') # Force a dark theme for consistent inversion
-    plt.figure(figsize=(12, 10), facecolor='none') 
+    # Force a clean scientific style with high-contrast labels
+    plt.style.use('default')
+    plt.rcParams.update({
+        'font.size': 12,
+        'axes.labelsize': 14,
+        'axes.titlesize': 16,
+        'axes.labelweight': 'bold',
+        'font.family': 'sans-serif',
+        'savefig.facecolor': 'white',
+        'axes.facecolor': 'white'
+    })
     
-    # Configure plotting based on variable type
+    fig = plt.figure(figsize=(14, 11), facecolor='white')
+    
+    # 1. Legacy Colormap Selection
     if 'anomaly' in var_name:
-        cmap = 'RdYlBu' # Red-Yellow-Blue for anomalies
+        cmap = 'RdYlBu' # Classic: Red (Dry) -> Yellow -> Blue (Wet)
         label = 'Precipitation Anomaly (mm/day)'
         title_prefix = "Precipitation Anomaly"
         vmax = max(abs(ds[var_name].min() if not np.isnan(ds[var_name].min()) else 0), 
@@ -77,35 +88,34 @@ def visualize_forecast(ds, var_name, lead_date, lead_weeks, output_path):
         if vmax == 0: vmax = 1.0
         vmin, vmax = -vmax, vmax
     elif 'percent' in var_name:
-        cmap = 'BrBG' # Brown-to-Green for relative moisture
+        cmap = 'BrBG' # Brown (Dry) to Green (Wet)
         label = 'Percent of Normal Rainfall (%)'
         title_prefix = "Relative Precipitation"
         vmin, vmax = 0, 200
     elif 'tercile' in var_name:
-        # Custom discrete colormap for Terciles: Below (Brown), Near (Gray), Above (Green)
         from matplotlib.colors import ListedColormap
+        # Discrete BrBG: Dry/Below, Normal, Wet/Above
         cmap = ListedColormap(['#a6611a', '#f5f5f5', '#018571'])
-        label = 'Tercile Category (Below, Near, Above Normal)'
+        label = 'Tercile Category'
         title_prefix = "Tercile Forecast"
-        vmin, vmax = -1.5, 1.5 # Covers -1, 0, 1
+        vmin, vmax = -1.5, 1.5
     else:
-        cmap = 'YlGnBu' # Yellow-Green-Blue for total rainfall
+        cmap = 'YlGnBu' # Industry standard for total rainfall depth
         label = 'Total Precipitation (mm/day)'
         title_prefix = "Total Precipitation"
         vmin = 0
-        vmax = None
+        vmax = ds[var_name].max() if not np.isnan(ds[var_name].max()) else 12.0
 
     if CARTOPY_AVAILABLE:
         ax = plt.axes(projection=ccrs.PlateCarree())
         ax.set_extent([32.5, 48.5, 3, 15], crs=ccrs.PlateCarree())
         
-        ax.add_feature(cfeature.COASTLINE, linewidth=1)
-        ax.add_feature(cfeature.BORDERS, linestyle='-', linewidth=1.2, edgecolor='black')
-        ax.add_feature(cfeature.LAND, facecolor='lightgray', alpha=0.1)
-        ax.add_feature(cfeature.LAKES, edgecolor='blue', facecolor='azure', alpha=0.5)
+        # Enhanced Geography
+        ax.add_feature(cfeature.COASTLINE, linewidth=0.8, edgecolor='#333333')
+        ax.add_feature(cfeature.BORDERS, linestyle='-', linewidth=1.5, edgecolor='#000000')
+        ax.add_feature(cfeature.LAKES, edgecolor='#0000ff', facecolor='#add8e6', alpha=0.3)
         
-        cbar_kwargs = {'label': label, 'shrink': 0.8, 'pad': 0.05, 'aspect': 30}
-        
+        # Plot data with robust colorbar
         im = ds[var_name].plot(
             ax=ax, 
             transform=ccrs.PlateCarree(),
@@ -113,33 +123,43 @@ def visualize_forecast(ds, var_name, lead_date, lead_weeks, output_path):
             robust=True if 'tercile' not in var_name else False,
             vmin=vmin,
             vmax=vmax,
-            cbar_kwargs=cbar_kwargs,
-            add_labels=False
+            add_colorbar=True,
+            cbar_kwargs={
+                'label': label,
+                'shrink': 0.8,
+                'pad': 0.08,
+                'aspect': 25
+            }
         )
         
-        # Set colorbar tick interval / labels
-        cb = im.colorbar
-        if 'percent' in var_name:
-            cb.locator = mticker.MultipleLocator(25)
-        elif 'tercile' in var_name:
+        # Fix colorbar ticks for terciles
+        if 'tercile' in var_name:
+            cb = im.colorbar
             cb.set_ticks([-1, 0, 1])
             cb.set_ticklabels(['Below Normal', 'Near Normal', 'Above Normal'])
-        else:
-            cb.locator = mticker.MultipleLocator(0.25)
-        cb.update_ticks()
         
-        gl = ax.gridlines(draw_labels=True, linestyle='--', alpha=0.8, color='gray')
+        # Robust Gridlines and Labels
+        gl = ax.gridlines(draw_labels=True, linestyle='--', alpha=0.4, color='black')
         gl.top_labels = False
         gl.right_labels = False
+        gl.xlabel_style = {'size': 12, 'weight': 'bold', 'color': 'black'}
+        gl.ylabel_style = {'size': 12, 'weight': 'bold', 'color': 'black'}
+        
+        # Re-asserting axis text to ensure visibility after tight_layout
+        ax.text(-0.12, 0.5, 'LATITUDE', va='center', ha='center',
+                rotation='vertical', transform=ax.transAxes, fontsize=14, fontweight='bold')
+        ax.text(0.5, -0.12, 'LONGITUDE', va='center', ha='center',
+                transform=ax.transAxes, fontsize=14, fontweight='bold')
+
     else:
         ds[var_name].plot(cmap=cmap, robust=True, vmin=vmin, vmax=vmax)
     
     date_str = str(lead_date)[:10] if not isinstance(lead_date, xr.DataArray) else str(lead_date.values)[:10]
     plt.title(f"ET-NeuralCast S2S Forecast: {title_prefix}\nTarget: {date_str} (Lead: {lead_weeks} Weeks)", 
-              fontsize=16, pad=25, fontweight='bold')
+              fontsize=18, pad=40, fontweight='extrabold', color='black')
     
-    # Save with transparency to allow the web dashboard to handle themes
-    plt.savefig(output_path, dpi=300, bbox_inches='tight', transparent=True)
+    # Save with solid white background (the dashboard will invert labels to white in Dark Mode)
+    plt.savefig(output_path, dpi=300, bbox_inches='tight', pad_inches=0.5, facecolor='white', transparent=False)
     plt.close()
 
 
@@ -219,14 +239,15 @@ def run_inference(model_path, normalizer_path, pressure_file, sst_file=None, out
     )
     
     pred_ds = mask_to_ethiopia(pred_ds)
-    output_nc = os.path.join(output_dir, f"forecast_{str(lead_date_np)[:10]}.nc")
+    lead_suffix = f"_W{lead_weeks}"
+    output_nc = os.path.join(output_dir, f"forecast_{str(lead_date_np)[:10]}{lead_suffix}.nc")
     pred_ds.to_netcdf(output_nc)
     
     # Visualizations
-    visualize_forecast(pred_ds, 'precip_anomaly', lead_date_np, lead_weeks, os.path.join(output_dir, f"forecast_{str(lead_date_np)[:10]}_anomaly.png"))
-    visualize_forecast(pred_ds, 'precip_total', lead_date_np, lead_weeks, os.path.join(output_dir, f"forecast_{str(lead_date_np)[:10]}_total.png"))
-    visualize_forecast(pred_ds, 'precip_percent', lead_date_np, lead_weeks, os.path.join(output_dir, f"forecast_{str(lead_date_np)[:10]}_percent.png"))
-    visualize_forecast(pred_ds, 'precip_tercile', lead_date_np, lead_weeks, os.path.join(output_dir, f"forecast_{str(lead_date_np)[:10]}_tercile.png"))
+    visualize_forecast(pred_ds, 'precip_anomaly', lead_date_np, lead_weeks, os.path.join(output_dir, f"forecast_{str(lead_date_np)[:10]}{lead_suffix}_anomaly.png"))
+    visualize_forecast(pred_ds, 'precip_total', lead_date_np, lead_weeks, os.path.join(output_dir, f"forecast_{str(lead_date_np)[:10]}{lead_suffix}_total.png"))
+    visualize_forecast(pred_ds, 'precip_percent', lead_date_np, lead_weeks, os.path.join(output_dir, f"forecast_{str(lead_date_np)[:10]}{lead_suffix}_percent.png"))
+    visualize_forecast(pred_ds, 'precip_tercile', lead_date_np, lead_weeks, os.path.join(output_dir, f"forecast_{str(lead_date_np)[:10]}{lead_suffix}_tercile.png"))
 
     print("Inference completed successfully.")
 

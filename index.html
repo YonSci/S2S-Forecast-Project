@@ -1,853 +1,1270 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ET-NeuralCast | Advanced S2S Forecasting</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        :root {
-            /* Dark Theme (Default) */
-            --bg-color: #010409;
-            --bg-secondary: #0d1117;
-            --card-bg: rgba(22, 27, 34, 0.6);
-            --card-border: rgba(48, 54, 61, 0.8);
-            --text-primary: #f0f6fc;
-            --text-secondary: #8b949e;
-            --accent: #58a6ff;
-            --accent-glow: rgba(88, 166, 255, 0.15);
-            --accent-gradient: linear-gradient(135deg, #58a6ff 0%, #3fb950 100%);
-            --grid-color: rgba(255, 255, 255, 0.02);
-            --glass-blur: blur(24px);
-            --hero-gradient: linear-gradient(to bottom, #fff 60%, #8b949e 100%);
-        }
+      :root {
+        /* Dark Theme (Default) */
+        --bg-color: #010409;
+        --bg-secondary: #0d1117;
+        --card-bg: rgba(22, 27, 34, 0.6);
+        --card-border: rgba(48, 54, 61, 0.8);
+        --text-primary: #f0f6fc;
+        --text-secondary: #8b949e;
+        --accent: #58a6ff;
+        --accent-glow: rgba(88, 166, 255, 0.15);
+        --accent-gradient: linear-gradient(135deg, #58a6ff 0%, #3fb950 100%);
+        --grid-color: rgba(255, 255, 255, 0.02);
+        --glass-blur: blur(24px);
+        --hero-gradient: linear-gradient(to bottom, #fff 60%, #8b949e 100%);
+      }
 
-        [data-theme="light"] {
-            --bg-color: #f6f8fa;
-            --bg-secondary: #ffffff;
-            --card-bg: rgba(255, 255, 255, 0.8);
-            --card-border: #d0d7de;
-            --text-primary: #111111;
-            --text-secondary: #3e444d;
-            --accent: #0969da;
-            --accent-glow: rgba(9, 105, 218, 0.05);
-            --grid-color: rgba(0, 0, 0, 0.04);
-            --hero-gradient: linear-gradient(to bottom, #111 60%, #3e444d 100%);
-            --img-container-bg: transparent; 
-            --map-filter: invert(1) hue-rotate(180deg) brightness(1.2); /* Invert Light Mode to make black backgrounds white */
-        }
+      [data-theme="light"] {
+        --bg-color: #f6f8fa;
+        --bg-secondary: #ffffff;
+        --card-bg: rgba(255, 255, 255, 0.8);
+        --card-border: #d0d7de;
+        --text-primary: #111111;
+        --text-secondary: #3e444d;
+        --accent: #0969da;
+        --accent-glow: rgba(9, 105, 218, 0.05);
+        --grid-color: rgba(0, 0, 0, 0.04);
+        --hero-gradient: linear-gradient(to bottom, #111 60%, #3e444d 100%);
+        --img-container-bg: #ffffff;
+        --map-filter: none;
+      }
 
-        :root {
-            /* ... (keep as is) ... */
-            --img-container-bg: transparent;
-            --map-filter: none; /* Dark Mode keeps the professional black background */
-        }
+      :root {
+        --img-container-bg: #ffffff;
+        --map-filter: none; /* Removed inversion to preserve scientific colors */
+      }
 
-        * {
-            box-sizing: border-box;
-            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-        }
+      * {
+        box-sizing: border-box;
+        transition: background-color 0.3s ease, border-color 0.3s ease,
+          color 0.3s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      }
 
-        body {
-            font-family: 'Outfit', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            margin: 0;
-            padding: 0;
-            overflow-x: hidden;
-            background-image: 
-                radial-gradient(circle at 0% 0%, var(--accent-glow) 0%, transparent 50%),
-                radial-gradient(circle at 100% 100%, rgba(63, 185, 80, 0.1) 0%, transparent 50%),
-                linear-gradient(var(--grid-color) 1px, transparent 1px),
-                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
-            background-size: 100% 100%, 100% 100%, 80px 80px, 80px 80px;
-        }
+      body {
+        font-family: "Outfit", sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-primary);
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+        background-image: radial-gradient(
+            circle at 0% 0%,
+            var(--accent-glow) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 100% 100%,
+            rgba(63, 185, 80, 0.1) 0%,
+            transparent 50%
+          ),
+          linear-gradient(var(--grid-color) 1px, transparent 1px),
+          linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+        background-size: 100% 100%, 100% 100%, 80px 80px, 80px 80px;
+      }
 
-        .container {
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 0 4rem;
-        }
+      .container {
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 0 4rem;
+      }
 
-        section {
-            margin-bottom: 12rem; /* Reduced from 20rem for tighter flow */
-        }
+      section {
+        margin-bottom: 12rem; /* Reduced from 20rem for tighter flow */
+      }
 
-        /* Hero */
-        .hero {
-            padding: 10rem 0 6rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+      /* Hero */
+      .hero {
+        padding: 10rem 0 6rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
 
+      .header-main {
+        display: flex;
+        align-items: center;
+        gap: 5rem;
+        width: 100%;
+        max-width: 1200px;
+        margin-bottom: 6rem;
+      }
+
+      @media (max-width: 1100px) {
         .header-main {
-            display: flex;
-            align-items: center;
-            gap: 5rem;
-            width: 100%;
-            max-width: 1200px;
-            margin-bottom: 6rem;
+          flex-direction: column;
+          text-align: center;
+          gap: 3rem;
         }
+      }
 
-        @media (max-width: 1100px) {
-            .header-main {
-                flex-direction: column;
-                text-align: center;
-                gap: 3rem;
-            }
+      .logo-wrapper {
+        flex-shrink: 0;
+        width: 220px;
+        aspect-ratio: 1 / 1;
+        overflow: hidden;
+        position: relative;
+        background: transparent;
+      }
+
+      .hero-graphic {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: 0% 50%;
+        transform: scale(1.15);
+        display: block;
+      }
+
+      h1 {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: clamp(3.5rem, 8vw, 6rem);
+        font-weight: 800;
+        margin: 0;
+        letter-spacing: -0.06em;
+        line-height: 0.9;
+        background: var(--hero-gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .subtitle-large {
+        font-size: 1.5rem;
+        color: var(--text-secondary);
+        margin-top: 2rem;
+        font-weight: 300;
+        line-height: 1.5;
+        max-width: 700px;
+      }
+
+      /* Controls Section */
+      .controls-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 2rem;
+        margin-bottom: 6rem;
+        width: 100%;
+      }
+
+      .control-pill {
+        background: var(--bg-secondary);
+        border: 1px solid var(--card-border);
+        border-radius: 16px;
+        padding: 0.5rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .control-pill label {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      #forecast-date-select {
+        background: transparent;
+        border: none;
+        color: var(--text-primary);
+        font-family: "Outfit", sans-serif;
+        font-size: 1.1rem;
+        font-weight: 600;
+        padding: 0.5rem;
+        cursor: pointer;
+        outline: none;
+      }
+
+      #forecast-date-select option {
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+      }
+
+      .theme-toggle {
+        padding: 0.75rem;
+        border-radius: 12px;
+        background: var(--bg-secondary);
+        border: 1px solid var(--card-border);
+        color: var(--text-primary);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+      }
+
+      .theme-toggle:hover {
+        transform: translateY(-2px);
+        border-color: var(--accent);
+      }
+
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1.5rem;
+        background: rgba(63, 185, 80, 0.1);
+        color: #3fb950;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        border: 1px solid rgba(63, 185, 80, 0.2);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      .pulse-dot {
+        width: 10px;
+        height: 10px;
+        background: #3fb950;
+        border-radius: 50%;
+        box-shadow: 0 0 15px #3fb950;
+        animation: pulse-ring 2s infinite;
+      }
+
+      @keyframes pulse-ring {
+        0% {
+          transform: scale(0.8);
+          opacity: 1;
         }
-
-        .logo-wrapper {
-            flex-shrink: 0;
-            width: 220px;
-            aspect-ratio: 1 / 1;
-            overflow: hidden;
-            position: relative;
-            background: transparent;
+        50% {
+          transform: scale(1.4);
+          opacity: 0.5;
         }
-
-        .hero-graphic {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: 0% 50%;
-            transform: scale(1.15);
-            display: block;
+        100% {
+          transform: scale(0.8);
+          opacity: 1;
         }
+      }
 
-        h1 {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: clamp(3.5rem, 8vw, 6rem);
-            font-weight: 800;
-            margin: 0;
-            letter-spacing: -0.06em;
-            line-height: 0.9;
-            background: var(--hero-gradient);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+      /* Architecture Row */
+      .architecture-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2px;
+        background: var(--card-border);
+        border: 1px solid var(--card-border);
+        border-radius: 3rem;
+        overflow: hidden;
+        width: 100%;
+        max-width: 1400px;
+        box-shadow: 0 40px 100px rgba(0, 0, 0, 0.3);
+      }
 
-        .subtitle-large {
-            font-size: 1.5rem;
-            color: var(--text-secondary);
-            margin-top: 2rem;
-            font-weight: 300;
-            line-height: 1.5;
-            max-width: 700px;
-        }
-
-        /* Controls Section */
-        .controls-row {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 2rem;
-            margin-bottom: 6rem;
-            width: 100%;
-        }
-
-        .control-pill {
-            background: var(--bg-secondary);
-            border: 1px solid var(--card-border);
-            border-radius: 16px;
-            padding: 0.5rem 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .control-pill label {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--accent);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-
-        #forecast-date-select {
-            background: transparent;
-            border: none;
-            color: var(--text-primary);
-            font-family: 'Outfit', sans-serif;
-            font-size: 1.1rem;
-            font-weight: 600;
-            padding: 0.5rem;
-            cursor: pointer;
-            outline: none;
-        }
-
-        #forecast-date-select option {
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-        }
-
-        .theme-toggle {
-            padding: 0.75rem;
-            border-radius: 12px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--card-border);
-            color: var(--text-primary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-
-        .theme-toggle:hover {
-            transform: translateY(-2px);
-            border-color: var(--accent);
-        }
-
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem 1.5rem;
-            background: rgba(63, 185, 80, 0.1);
-            color: #3fb950;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            border: 1px solid rgba(63, 185, 80, 0.2);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-
-        .pulse-dot {
-            width: 10px;
-            height: 10px;
-            background: #3fb950;
-            border-radius: 50%;
-            box-shadow: 0 0 15px #3fb950;
-            animation: pulse-ring 2s infinite;
-        }
-
-        @keyframes pulse-ring {
-            0% { transform: scale(0.8); opacity: 1; }
-            50% { transform: scale(1.4); opacity: 0.5; }
-            100% { transform: scale(0.8); opacity: 1; }
-        }
-
-        /* Architecture Row */
+      @media (max-width: 1000px) {
         .architecture-row {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2px;
-            background: var(--card-border);
-            border: 1px solid var(--card-border);
-            border-radius: 3rem;
-            overflow: hidden;
-            width: 100%;
-            max-width: 1400px;
-            box-shadow: 0 40px 100px rgba(0,0,0,0.3);
+          grid-template-columns: 1fr;
         }
+      }
 
-        @media (max-width: 1000px) {
-            .architecture-row { grid-template-columns: 1fr; }
-        }
+      .arch-item {
+        background: var(--bg-secondary);
+        padding: 5rem 4rem;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        position: relative;
+      }
 
-        .arch-item {
-            background: var(--bg-secondary);
-            padding: 5rem 4rem;
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-            position: relative;
-        }
+      .arch-icon-wrapper {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--accent-glow);
+        border-radius: 16px;
+        color: var(--accent);
+        margin-bottom: 1rem;
+        position: relative;
+      }
 
-        .arch-icon-wrapper {
-            width: 60px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--accent-glow);
-            border-radius: 16px;
-            color: var(--accent);
-            margin-bottom: 1rem;
-            position: relative;
-        }
+      .arch-icon-wrapper svg {
+        width: 32px;
+        height: 32px;
+        stroke: var(--accent);
+        filter: drop-shadow(0 0 8px var(--accent));
+      }
 
-        .arch-icon-wrapper svg {
-            width: 32px;
-            height: 32px;
-            stroke: var(--accent);
-            filter: drop-shadow(0 0 8px var(--accent));
-        }
+      .arch-item h3 {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
 
-        .arch-item h3 { 
-            font-size: 1.6rem; 
-            font-weight: 700; 
-            color: var(--text-primary);
-        }
+      .arch-item p {
+        font-size: 1.1rem;
+        color: var(--text-secondary);
+        line-height: 1.8;
+        font-weight: 300;
+      }
 
-        .arch-item p { 
-            font-size: 1.1rem; 
-            color: var(--text-secondary); 
-            line-height: 1.8;
-            font-weight: 300;
-        }
+      /* Forecasts */
+      .section-label {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 5rem;
+        text-align: center;
+      }
 
-        /* Forecasts */
-        .section-label {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 3rem;
-            font-weight: 800;
-            margin-bottom: 5rem;
-            text-align: center;
-        }
+      .forecast-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(650px, 1fr));
+        gap: 6rem;
+      }
 
+      @media (max-width: 800px) {
         .forecast-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(650px, 1fr));
-            gap: 6rem;
+          grid-template-columns: 1fr;
         }
+      }
 
-        @media (max-width: 800px) { .forecast-grid { grid-template-columns: 1fr; } }
+      .forecast-card {
+        background: var(--bg-secondary);
+        border-radius: 4rem;
+        border: 1px solid var(--card-border);
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      }
 
-        .forecast-card {
-            background: var(--bg-secondary);
-            border-radius: 4rem;
-            border: 1px solid var(--card-border);
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        }
+      .forecast-card:hover {
+        border-color: var(--accent);
+        transform: scale(1.02);
+      }
 
-        .forecast-card:hover { border-color: var(--accent); transform: scale(1.02); }
+      .card-meta {
+        padding: 2.5rem 4rem;
+        background: var(--bg-color);
+        border-bottom: 1px solid var(--card-border);
+        display: flex;
+        justify-content: space-between;
+      }
 
-        .card-meta {
-            padding: 2.5rem 4rem;
-            background: var(--bg-color);
-            border-bottom: 1px solid var(--card-border);
-            display: flex;
-            justify-content: space-between;
-        }
+      .meta-tag {
+        color: var(--accent);
+        font-weight: 800;
+        letter-spacing: 0.3em;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+      }
 
-        .meta-tag { color: var(--accent); font-weight: 800; letter-spacing: 0.3em; font-size: 0.75rem; text-transform: uppercase; }
+      .img-container {
+        background: #ffffff; /* Always white for scientific maps */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        transition: background-color 0.3s ease;
+        min-height: 480px;
+      }
 
-        .img-container {
-            background: var(--img-container-bg);
-            aspect-ratio: 1.3;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-            transition: background-color 0.3s ease;
-        }
+      .img-container img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 2rem;
+        filter: var(--map-filter);
+        transition: filter 0.3s ease;
+      }
 
-        .img-container img { 
-            max-width: 100%; 
-            height: auto; 
-            border-radius: 12px; 
-            filter: var(--map-filter); /* Dynamically flip label contrast */
-        }
+      .card-content {
+        padding: 4rem;
+        background: var(--bg-secondary);
+      }
+      .card-content h4 {
+        font-size: 1.8rem;
+        margin: 0 0 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+      .card-content p {
+        font-size: 1.15rem;
+        color: var(--text-secondary);
+        line-height: 1.8;
+      }
 
-        .card-content { padding: 4rem; background: var(--bg-secondary); }
-        .card-content h4 { font-size: 1.8rem; margin: 0 0 1.5rem; font-weight: 700; color: var(--text-primary); }
-        .card-content p { font-size: 1.15rem; color: var(--text-secondary); line-height: 1.8; }
+      /* Footer */
+      footer {
+        padding: 6rem 0; /* Reduced from 10rem to bring contact closer to maps */
+        background: var(--bg-color);
+        border-top: 1px solid var(--card-border);
+        text-align: center;
+      }
 
-        /* Footer */
-        footer {
-            padding: 6rem 0; /* Reduced from 10rem to bring contact closer to maps */
-            background: var(--bg-color);
-            border-top: 1px solid var(--card-border);
-            text-align: center;
-        }
+      .contact-section {
+        max-width: 800px;
+        margin: 0 auto 6rem;
+        text-align: center;
+      }
 
-        .contact-section {
-            max-width: 800px;
-            margin: 0 auto 6rem;
-            text-align: center;
-        }
+      .contact-card {
+        background: var(--bg-secondary);
+        border: 1px solid var(--card-border);
+        border-radius: 2rem;
+        padding: 4rem;
+        display: inline-block;
+        text-align: center;
+      }
 
-        .contact-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--card-border);
-            border-radius: 2rem;
-            padding: 4rem;
-            display: inline-block;
-            text-align: center;
-        }
+      .contact-name {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        display: block;
+      }
 
-        .contact-name {
-            font-size: 2.2rem;
-            font-weight: 800;
-            color: var(--text-primary);
-            margin-bottom: 0.5rem;
-            display: block;
-        }
+      .contact-title {
+        font-size: 1.1rem;
+        color: var(--accent);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: block;
+        letter-spacing: 0.05em;
+      }
 
-        .contact-title {
-            font-size: 1.1rem;
-            color: var(--accent);
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            display: block;
-            letter-spacing: 0.05em;
-        }
+      .contact-org {
+        font-size: 1rem;
+        color: var(--text-secondary);
+        margin-bottom: 2.5rem;
+        display: block;
+      }
 
-        .contact-org {
-            font-size: 1rem;
-            color: var(--text-secondary);
-            margin-bottom: 2.5rem;
-            display: block;
-        }
+      .social-links {
+        display: flex;
+        justify-content: center;
+        gap: 2.5rem;
+        margin-top: 2rem;
+      }
 
-        .social-links {
-            display: flex;
-            justify-content: center;
-            gap: 2.5rem;
-            margin-top: 2rem;
-        }
+      .social-item {
+        color: var(--text-primary);
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+        opacity: 0.7;
+        transition: all 0.3s ease;
+      }
 
-        .social-item {
-            color: var(--text-primary);
-            text-decoration: none;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.75rem;
-            opacity: 0.7;
-            transition: all 0.3s ease;
-        }
+      .social-item:hover {
+        opacity: 1;
+        color: var(--accent);
+        transform: translateY(-3px);
+      }
 
-        .social-item:hover {
-            opacity: 1;
-            color: var(--accent);
-            transform: translateY(-3px);
-        }
+      .social-item svg {
+        width: 24px;
+        height: 24px;
+        stroke: currentColor;
+      }
 
-        .social-item svg {
-            width: 24px;
-            height: 24px;
-            stroke: currentColor;
-        }
+      .social-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-weight: 700;
+      }
 
-        .social-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            font-weight: 700;
-        }
+      .footer-brand {
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 2rem;
+        display: block;
+        color: var(--text-primary);
+      }
+      .f-links {
+        display: flex;
+        justify-content: center;
+        gap: 3rem;
+        margin-bottom: 3rem;
+      }
+      .f-links a {
+        color: var(--text-primary);
+        text-decoration: none;
+        opacity: 0.5;
+        font-size: 0.95rem;
+      }
+      .f-links a:hover {
+        opacity: 1;
+        color: var(--accent);
+      }
+      .copyright {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        opacity: 0.8;
+      }
 
-        .footer-brand { font-size: 2rem; font-weight: 800; margin-bottom: 2rem; display: block; color: var(--text-primary); }
-        .f-links { display: flex; justify-content: center; gap: 3rem; margin-bottom: 3rem; }
-        .f-links a { color: var(--text-primary); text-decoration: none; opacity: 0.5; font-size: 0.95rem; }
-        .f-links a:hover { opacity: 1; color: var(--accent); }
-        .copyright { color: var(--text-secondary); font-size: 0.9rem; opacity: 0.8; }
+      /* Technical Framework Section */
+      .tech-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 4rem;
+        margin-top: 4rem;
+      }
 
-        /* Technical Framework Section */
+      @media (max-width: 1100px) {
         .tech-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 4rem;
-            margin-top: 4rem;
+          grid-template-columns: 1fr;
         }
+      }
 
-        @media (max-width: 1100px) {
-            .tech-grid { grid-template-columns: 1fr; }
-        }
+      .tech-card {
+        background: var(--bg-secondary);
+        border: 1px solid var(--card-border);
+        border-radius: 2.5rem;
+        padding: 4rem;
+        position: relative;
+        overflow: hidden;
+      }
 
-        .tech-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--card-border);
-            border-radius: 2.5rem;
-            padding: 4rem;
-            position: relative;
-            overflow: hidden;
-        }
+      .tech-card h3 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+      }
 
-        .tech-card h3 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 2rem;
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
+      .tech-card h3 svg {
+        width: 30px;
+        height: 30px;
+        color: var(--accent);
+      }
 
-        .tech-card h3 svg {
-            width: 30px;
-            height: 30px;
-            color: var(--accent);
-        }
+      .tech-content h4 {
+        color: var(--accent);
+        font-size: 1.1rem;
+        margin: 2.5rem 0 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
 
-        .tech-content h4 {
-            color: var(--accent);
-            font-size: 1.1rem;
-            margin: 2.5rem 0 1rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
+      .tech-content p {
+        font-size: 1.05rem;
+        color: var(--text-secondary);
+        line-height: 1.7;
+        margin-bottom: 1.5rem;
+      }
 
-        .tech-content p {
-            font-size: 1.05rem;
-            color: var(--text-secondary);
-            line-height: 1.7;
-            margin-bottom: 1.5rem;
-        }
+      .tech-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
 
-        .tech-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
+      .tech-list li {
+        position: relative;
+        padding-left: 1.5rem;
+        margin-bottom: 1rem;
+        color: var(--text-secondary);
+        font-size: 1.05rem;
+      }
 
-        .tech-list li {
-            position: relative;
-            padding-left: 1.5rem;
-            margin-bottom: 1rem;
-            color: var(--text-secondary);
-            font-size: 1.05rem;
-        }
-
-        .tech-list li::before {
-            content: '→';
-            position: absolute;
-            left: 0;
-            color: var(--accent);
-        }
+      .tech-list li::before {
+        content: "→";
+        position: absolute;
+        left: 0;
+        color: var(--accent);
+      }
     </style>
-</head>
-<body>
-
+  </head>
+  <body>
     <div class="container">
-        
-        <header class="hero">
-            <div class="header-main">
-                <div class="logo-wrapper">
-                    <img src="hero_graphic.png" alt="ET-NeuralCast" class="hero-graphic">
-                </div>
-                <div class="hero-text">
-                    <h1>ET-NeuralCast</h1>
-                    <p class="subtitle-large">Sub-seasonal to Seasonal Forecasting for Ethiopia using Deep Learning</p>
-                </div>
+      <header class="hero">
+        <div class="header-main">
+          <div class="logo-wrapper">
+            <img
+              src="hero_graphic.png"
+              alt="ET-NeuralCast"
+              class="hero-graphic"
+            />
+          </div>
+          <div class="hero-text">
+            <h1>ET-NeuralCast</h1>
+            <p class="subtitle-large">
+              Sub-seasonal to Seasonal Forecasting for Ethiopia using Deep
+              Learning
+            </p>
+          </div>
+        </div>
+
+        <div class="controls-row">
+          <div class="status-badge">
+            <span class="pulse-dot"></span>
+            Operational
+          </div>
+
+          <div class="control-pill">
+            <label for="lead-select">Lead Time:</label>
+            <select id="lead-select">
+              <option value="W1">Week 1</option>
+              <option value="W2">Week 2</option>
+              <option value="W3">Week 3</option>
+              <option value="W4">Week 4</option>
+            </select>
+          </div>
+
+          <button
+            id="theme-toggle"
+            class="theme-toggle"
+            title="Toggle Light/Dark Mode"
+          >
+            <svg
+              id="theme-icon"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <!-- Moon Icon (Default for dark mode) -->
+              <path
+                id="moon-path"
+                d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+              ></path>
+              <!-- Sun Icon (Hidden) -->
+              <circle
+                id="sun-circle"
+                cx="12"
+                cy="12"
+                r="5"
+                style="display: none"
+              ></circle>
+              <line
+                id="sun-l1"
+                x1="12"
+                y1="1"
+                x2="12"
+                y2="3"
+                style="display: none"
+              ></line>
+              <line
+                id="sun-l2"
+                x1="12"
+                y1="21"
+                x2="12"
+                y2="23"
+                style="display: none"
+              ></line>
+              <line
+                id="sun-l3"
+                x1="4.22"
+                y1="4.22"
+                x2="5.64"
+                y2="5.64"
+                style="display: none"
+              ></line>
+              <line
+                id="sun-l4"
+                x1="18.36"
+                y1="18.36"
+                x2="19.78"
+                y2="19.78"
+                style="display: none"
+              ></line>
+              <line
+                id="sun-l5"
+                x1="1"
+                y1="12"
+                x2="3"
+                y2="12"
+                style="display: none"
+              ></line>
+              <line
+                id="sun-l6"
+                x1="21"
+                y1="12"
+                x2="23"
+                y2="12"
+                style="display: none"
+              ></line>
+              <line
+                id="sun-l7"
+                x1="4.22"
+                y1="19.78"
+                x2="5.64"
+                y2="18.36"
+                style="display: none"
+              ></line>
+              <line
+                id="sun-l8"
+                x1="18.36"
+                y1="5.64"
+                x2="19.78"
+                y2="4.22"
+                style="display: none"
+              ></line>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Architecture Row - Enhanced Visuals -->
+        <div class="architecture-row">
+          <!-- 1. Hybrid Framework -->
+          <div class="arch-item">
+            <div class="arch-icon-wrapper">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="feather-neural"
+              >
+                <path
+                  d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
+                ></path>
+              </svg>
             </div>
+            <h3>Hybrid Deep Learning Framework</h3>
+            <p>
+              The ET-NeuralCast architecture is a Hybrid Deep Learning framework
+              specifically designed for Sub-seasonal to Seasonal (S2S)
+              downscaling. Fusing the Generator (U-Net) and the Discriminator
+              (PatchGAN) to capture the spatiotemporal patterns of the input
+              climate data.
+            </p>
+          </div>
 
-            <div class="controls-row">
-                <div class="status-badge">
-                    <span class="pulse-dot"></span>
-                    Operational
-                </div>
-                
-                <div class="control-pill">
-                    <label for="forecast-date-select">Issued Date:</label>
-                    <select id="forecast-date-select">
-                        <option value="latest">Loading Dates...</option>
-                    </select>
-                </div>
-
-                <button id="theme-toggle" class="theme-toggle" title="Toggle Light/Dark Mode">
-                    <svg id="theme-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <!-- Moon Icon (Default for dark mode) -->
-                        <path id="moon-path" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                        <!-- Sun Icon (Hidden) -->
-                        <circle id="sun-circle" cx="12" cy="12" r="5" style="display:none"></circle>
-                        <line id="sun-l1" x1="12" y1="1" x2="12" y2="3" style="display:none"></line>
-                        <line id="sun-l2" x1="12" y1="21" x2="12" y2="23" style="display:none"></line>
-                        <line id="sun-l3" x1="4.22" y1="4.22" x2="5.64" y2="5.64" style="display:none"></line>
-                        <line id="sun-l4" x1="18.36" y1="18.36" x2="19.78" y2="19.78" style="display:none"></line>
-                        <line id="sun-l5" x1="1" y1="12" x2="3" y2="12" style="display:none"></line>
-                        <line id="sun-l6" x1="21" y1="12" x2="23" y2="12" style="display:none"></line>
-                        <line id="sun-l7" x1="4.22" y1="19.78" x2="5.64" y2="18.36" style="display:none"></line>
-                        <line id="sun-l8" x1="18.36" y1="5.64" x2="19.78" y2="4.22" style="display:none"></line>
-                    </svg>
-                </button>
+          <!-- 2. Data Fusion -->
+          <div class="arch-item">
+            <div class="arch-icon-wrapper">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="feather-fusion"
+              >
+                <path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z"></path>
+                <path
+                  d="M12 2a10 10 0 0 1 10 10M12 22a10 10 0 0 1-10-10"
+                ></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
             </div>
+            <h3>Intelligent Data Fusion</h3>
+            <p>
+              Built on a 4D tensor of atmospheric and oceanic predictors:
+              Geopotential (Z500), Humidity (Q), Wind Vectors (U/V), and Sea
+              Surface Temperature (SST), all cross-referenced with 0.05° CHIRPS
+              precipitation history.
+            </p>
+          </div>
 
-            <!-- Architecture Row - Enhanced Visuals -->
-            <div class="architecture-row">
-                <!-- 1. Hybrid Framework -->
-                <div class="arch-item">
-                    <div class="arch-icon-wrapper">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-neural"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
-                    </div>
-                    <h3>Hybrid Deep Learning Framework</h3>
-                    <p>The ET-NeuralCast architecture is a Hybrid Deep Learning framework specifically designed for Sub-seasonal to Seasonal (S2S) downscaling. Fusing the Generator (U-Net) and the Discriminator (PatchGAN) to capture the spatiotemporal patterns of the input climate data.</p>
-                </div>
-
-                <!-- 2. Data Fusion -->
-                <div class="arch-item">
-                    <div class="arch-icon-wrapper">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-fusion"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z"></path><path d="M12 2a10 10 0 0 1 10 10M12 22a10 10 0 0 1-10-10"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                    </div>
-                    <h3>Intelligent Data Fusion</h3>
-                    <p>Built on a 4D tensor of atmospheric and oceanic predictors: Geopotential (Z500), Humidity (Q), Wind Vectors (U/V), and Sea Surface Temperature (SST), all cross-referenced with 0.05° CHIRPS precipitation history.</p>
-                </div>
-
-                <!-- 3. Production Pipeline -->
-                <div class="arch-item">
-                    <div class="arch-icon-wrapper">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-pipeline"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-                    </div>
-                    <h3>Daily Production Pipeline</h3>
-                    <p>Fully autonomous CI/CD pipelines running every 24 hours at 00:00 UTC. The system automatically orchestrates data acquisition, inference, and multi-perspective forecast generation.</p>
-                </div>
+          <!-- 3. Production Pipeline -->
+          <div class="arch-item">
+            <div class="arch-icon-wrapper">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="feather-pipeline"
+              >
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+              </svg>
             </div>
-        </header>
+            <h3>Daily Production Pipeline</h3>
+            <p>
+              Fully autonomous CI/CD pipelines running every 24 hours at 00:00
+              UTC. The system automatically orchestrates data acquisition,
+              inference, and multi-perspective forecast generation.
+            </p>
+          </div>
+        </div>
+      </header>
 
-        <section id="technical-framework">
-            <h2 class="section-label">Technical Framework</h2>
-            <div class="tech-grid">
-                <!-- 1. Data Pipeline -->
-                <div class="tech-card">
-                    <h3>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                        Data Pipeline
-                    </h3>
-                    <div class="tech-content">
-                        <h4>Preprocessing & Normalization</h4>
-                        <p>Sources: ERA5 reanalysis and CHIRPS precipitation datasets. Performs clipping to Ethiopia's bounding box and weekly mean aggregation.</p>
-                        <ul class="tech-list">
-                            <li><strong>Anomaly Creation:</strong> Subtracts training-set-only weekly climatology.</li>
-                            <li><strong>Standardization:</strong> Zero-mean/unit-variance scaling using training statistics.</li>
-                            <li><strong>Lagged Predictors:</strong> Captures temporal atmospheric memory.</li>
-                        </ul>
-                        <h4>Input Format</h4>
-                        <p>Tensors: [Batch, Time, Variable, Lat, Lon]. Includes Z500, Q850, U/V Wind, and SST.</p>
-                    </div>
-                </div>
-
-                <!-- 2. Model Architecture -->
-                <div class="tech-card">
-                    <h3>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-                        Model Architecture
-                    </h3>
-                    <div class="tech-content">
-                        <h4>U-Net Generator Core</h4>
-                        <p>Deep encoder-decoder with skip connections ensuring preservation of both local and contextual atmospheric features.</p>
-                        <ul class="tech-list">
-                            <li><strong>Encoder:</strong> Progressive downsampling to capture planetary patterns.</li>
-                            <li><strong>Decoder:</strong> High-res reconstruction using transposed convolutions.</li>
-                            <li><strong>Tanh Activation:</strong> Outputs normalized precipitation anomalies.</li>
-                        </ul>
-                        <h4>PatchGAN Discriminator</h4>
-                        <p>Adversarial "critic" evaluating 16x16 spatial patches for absolute physical realism.</p>
-                    </div>
-                </div>
-
-                <!-- 3. Training Strategy -->
-                <div class="tech-card">
-                    <h3>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
-                        Training Strategy
-                    </h3>
-                    <div class="tech-content">
-                        <h4>Phase 1: Warm Start</h4>
-                        <p>Generator-only training using L1 Loss to stabilize core spatial patterns and ensure reliable baseline predictions.</p>
-                        <h4>Phase 2: GAN Fine-tuning</h4>
-                        <p>Full adversarial cycle. Generator is tuned to both minimize pixel-wise error and fool the Discriminator.</p>
-                        <ul class="tech-list">
-                            <li><strong>Loss Profile:</strong> Weighted combination of L1 and MSE PatchGAN loss.</li>
-                            <li><strong>Leakage Prevention:</strong> Chronological training splits to ensure zero data leakage.</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- 4. Production Workflow -->
-                <div class="tech-card">
-                    <h3>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
-                        Autonomous Operation
-                    </h3>
-                    <div class="tech-content">
-                        <h4>End-to-End CI/CD</h4>
-                        <p>Fully automated Docker-ready pipeline hosted via GitHub Actions, running every 24 hours at 00:00 UTC.</p>
-                        <ul class="tech-list">
-                            <li><strong>Ingestion:</strong> Real-time fetching of ERA5-T atmospheric drivers.</li>
-                            <li><strong>Sync:</strong> On-the-fly normalization matching training statistics.</li>
-                            <li><strong>Deployment:</strong> Immediate update of dashboard PNGs and NetCDF exports.</li>
-                        </ul>
-                        <p>Total latency: ~45 mins from raw atmospheric data to published forecast.</p>
-                    </div>
-                </div>
+      <section id="technical-framework">
+        <h2 class="section-label">Technical Framework</h2>
+        <div class="tech-grid">
+          <!-- 1. Data Pipeline -->
+          <div class="tech-card">
+            <h3>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+                ></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+              Data Pipeline
+            </h3>
+            <div class="tech-content">
+              <h4>Preprocessing & Normalization</h4>
+              <p>
+                Sources: ERA5 reanalysis and CHIRPS precipitation datasets.
+                Performs clipping to Ethiopia's bounding box and weekly mean
+                aggregation.
+              </p>
+              <ul class="tech-list">
+                <li>
+                  <strong>Anomaly Creation:</strong> Subtracts training-set-only
+                  weekly climatology.
+                </li>
+                <li>
+                  <strong>Standardization:</strong> Zero-mean/unit-variance
+                  scaling using training statistics.
+                </li>
+                <li>
+                  <strong>Lagged Predictors:</strong> Captures temporal
+                  atmospheric memory.
+                </li>
+              </ul>
+              <h4>Input Format</h4>
+              <p>
+                Tensors: [Batch, Time, Variable, Lat, Lon]. Includes Z500, Q850,
+                U/V Wind, and SST.
+              </p>
             </div>
-        </section>
+          </div>
 
-        <section id="forecasts">
-            <h2 class="section-label">Operational Forecasts</h2>
-            <div class="forecast-grid">
-                <!-- 1. Anomaly Forecast -->
-                <div class="forecast-card">
-                    <div class="card-meta"><span class="meta-tag">Anomaly Forecast</span></div>
-                    <div class="img-container">
-                        <img id="img-anomaly" src="outputs/latest_anomaly.png" alt="Anomaly">
-                    </div>
-                    <div class="card-content">
-                        <h4>Precipitation Anomaly</h4>
-                        <p>Identifying regions of critical rainfall deficit or surplus by calculating deviation from the mean in physical units (mm/day).</p>
-                    </div>
-                </div>
-
-                <!-- 2. Total Precipitation Forecast -->
-                <div class="forecast-card">
-                    <div class="card-meta"><span class="meta-tag">Total Precipitation Forecast</span></div>
-                    <div class="img-container">
-                        <img id="img-total" src="outputs/latest_total.png" alt="Total">
-                    </div>
-                    <div class="card-content">
-                        <h4>Absolute Physical Flux</h4>
-                        <p>The total expected water volume reaching the surface. Reconstructed from the learned anomaly and regional seasonal baseline data.</p>
-                    </div>
-                </div>
-
-                <!-- 3. Percent of Normal -->
-                <div class="forecast-card">
-                    <div class="card-meta"><span class="meta-tag">Percent of Normal</span></div>
-                    <div class="img-container">
-                        <img id="img-percent" src="outputs/latest_percent.png" alt="Percent">
-                    </div>
-                    <div class="card-content">
-                        <h4>Percent of Operational Normal</h4>
-                        <p>A relative moisture metric expressing the forecast as a percentage of standard expectation, highlighting extreme departures from the norm.</p>
-                    </div>
-                </div>
-
-                <!-- 4. Tercile Probability Forecast -->
-                <div class="forecast-card">
-                    <div class="card-meta"><span class="meta-tag">Tercile Probability Forecast</span></div>
-                    <div class="img-container">
-                        <img id="img-tercile" src="outputs/latest_tercile.png" alt="Tercile">
-                    </div>
-                    <div class="card-content">
-                        <h4>Tercile Probability</h4>
-                        <p>Classification of seasonal expectations into Below, Near, or Above normal states based on local 20-year climatology thresholds.</p>
-                    </div>
-                </div>
+          <!-- 2. Model Architecture -->
+          <div class="tech-card">
+            <h3>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="3" y1="9" x2="21" y2="9"></line>
+                <line x1="9" y1="21" x2="9" y2="9"></line>
+              </svg>
+              Model Architecture
+            </h3>
+            <div class="tech-content">
+              <h4>U-Net Generator Core</h4>
+              <p>
+                Deep encoder-decoder with skip connections ensuring preservation
+                of both local and contextual atmospheric features.
+              </p>
+              <ul class="tech-list">
+                <li>
+                  <strong>Encoder:</strong> Progressive downsampling to capture
+                  planetary patterns.
+                </li>
+                <li>
+                  <strong>Decoder:</strong> High-res reconstruction using
+                  transposed convolutions.
+                </li>
+                <li>
+                  <strong>Tanh Activation:</strong> Outputs normalized
+                  precipitation anomalies.
+                </li>
+              </ul>
+              <h4>PatchGAN Discriminator</h4>
+              <p>
+                Adversarial "critic" evaluating 16x16 spatial patches for
+                absolute physical realism.
+              </p>
             </div>
-        </section>
+          </div>
 
+          <!-- 3. Training Strategy -->
+          <div class="tech-card">
+            <h3>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="16"></line>
+                <line x1="8" y1="12" x2="16" y2="12"></line>
+              </svg>
+              Training Strategy
+            </h3>
+            <div class="tech-content">
+              <h4>Phase 1: Warm Start</h4>
+              <p>
+                Generator-only training using L1 Loss to stabilize core spatial
+                patterns and ensure reliable baseline predictions.
+              </p>
+              <h4>Phase 2: GAN Fine-tuning</h4>
+              <p>
+                Full adversarial cycle. Generator is tuned to both minimize
+                pixel-wise error and fool the Discriminator.
+              </p>
+              <ul class="tech-list">
+                <li>
+                  <strong>Loss Profile:</strong> Weighted combination of L1 and
+                  MSE PatchGAN loss.
+                </li>
+                <li>
+                  <strong>Leakage Prevention:</strong> Chronological training
+                  splits to ensure zero data leakage.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- 4. Production Workflow -->
+          <div class="tech-card">
+            <h3>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+              </svg>
+              Autonomous Operation
+            </h3>
+            <div class="tech-content">
+              <h4>End-to-End CI/CD</h4>
+              <p>
+                Fully automated Docker-ready pipeline hosted via GitHub Actions,
+                running every 24 hours at 00:00 UTC.
+              </p>
+              <ul class="tech-list">
+                <li>
+                  <strong>Ingestion:</strong> Real-time fetching of ERA5-T
+                  atmospheric drivers.
+                </li>
+                <li>
+                  <strong>Sync:</strong> On-the-fly normalization matching
+                  training statistics.
+                </li>
+                <li>
+                  <strong>Deployment:</strong> Immediate update of dashboard
+                  PNGs and NetCDF exports.
+                </li>
+              </ul>
+              <p>
+                Total latency: ~45 mins from raw atmospheric data to published
+                forecast.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="forecasts">
+        <h2 class="section-label">Operational Forecasts</h2>
+        <div class="forecast-grid">
+          <!-- 1. Anomaly Forecast -->
+          <div class="forecast-card">
+            <div class="card-meta">
+              <span class="meta-tag">Anomaly Forecast</span>
+            </div>
+            <div class="img-container">
+              <img
+                id="img-anomaly"
+                src="outputs/latest_anomaly.png"
+                alt="Anomaly"
+              />
+            </div>
+            <div class="card-content">
+              <h4>Precipitation Anomaly</h4>
+              <p>
+                Identifying regions of critical rainfall deficit or surplus by
+                calculating deviation from the mean in physical units (mm/day).
+              </p>
+            </div>
+          </div>
+
+          <!-- 2. Total Precipitation Forecast -->
+          <div class="forecast-card">
+            <div class="card-meta">
+              <span class="meta-tag">Total Precipitation Forecast</span>
+            </div>
+            <div class="img-container">
+              <img id="img-total" src="outputs/latest_total.png" alt="Total" />
+            </div>
+            <div class="card-content">
+              <h4>Absolute Physical Flux</h4>
+              <p>
+                The total expected water volume reaching the surface.
+                Reconstructed from the learned anomaly and regional seasonal
+                baseline data.
+              </p>
+            </div>
+          </div>
+
+          <!-- 3. Percent of Normal -->
+          <div class="forecast-card">
+            <div class="card-meta">
+              <span class="meta-tag">Percent of Normal</span>
+            </div>
+            <div class="img-container">
+              <img
+                id="img-percent"
+                src="outputs/latest_percent_W1.png"
+                alt="Percent"
+              />
+            </div>
+            <div class="card-content">
+              <h4>Percent of Operational Normal</h4>
+              <p>
+                A relative moisture metric expressing the forecast as a
+                percentage of standard expectation, highlighting extreme
+                departures from the norm.
+              </p>
+            </div>
+          </div>
+
+          <!-- 4. Tercile Probability Forecast -->
+          <div class="forecast-card">
+            <div class="card-meta">
+              <span class="meta-tag">Tercile Probability Forecast</span>
+            </div>
+            <div class="img-container">
+              <img
+                id="img-tercile"
+                src="outputs/latest_tercile_W1.png"
+                alt="Tercile"
+              />
+            </div>
+            <div class="card-content">
+              <h4>Tercile Probability</h4>
+              <p>
+                Classification of seasonal expectations into Below, Near, or
+                Above normal states based on local 20-year climatology
+                thresholds.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
 
     <footer>
-        <div class="contact-section">
-            <h2 class="section-label" style="font-size: 2rem; margin-bottom: 3rem;">Contact</h2>
-            <div class="contact-card">
-                <span class="contact-name">Yonas Mersha</span>
-                <span class="contact-title">Hydro-Climate Modelling and ML/AI Expert</span>
-                <span class="contact-org">International Livestock Research Institute (ILRI)</span>
-                
-                <div class="social-links">
-                    <a href="mailto:yonas.mersha14@gmail.com" class="social-item">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                        <span class="social-label">Email</span>
-                    </a>
-                    <a href="https://linkedin.com/in/yonas-mersha" target="_blank" class="social-item">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
-                        <span class="social-label">LinkedIn</span>
-                    </a>
-                    <a href="https://github.com/YonSci" target="_blank" class="social-item">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
-                        <span class="social-label">GitHub</span>
-                    </a>
-                    <a href="https://medium.com/@yonas.mersha14" target="_blank" class="social-item">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path><path d="M12 12m-2 0a2 9 0 1 0 4 0a2 9 0 1 0 -4 0"></path><path d="M19 12a1.5 9 0 1 0 -3 0a1.5 9 0 1 0 3 0"></path></svg>
-                        <span class="social-label">Medium</span>
-                    </a>
-                </div>
-            </div>
-        </div>
+      <div class="contact-section">
+        <h2 class="section-label" style="font-size: 2rem; margin-bottom: 3rem">
+          Contact
+        </h2>
+        <div class="contact-card">
+          <span class="contact-name">Yonas Mersha</span>
+          <span class="contact-title"
+            >Hydro-Climate Modelling and ML/AI Expert</span
+          >
+          <span class="contact-org"
+            >International Livestock Research Institute (ILRI)</span
+          >
 
-        <span class="footer-brand">ET-NeuralCast</span>
-        <div class="f-links">
-            <a href="https://github.com/YonSci/S2S-Forecast-Project">Repository</a>
-            <a href="outputs/latest_anomaly.nc" id="link-nc">NetCDF Export</a>
-            <a href="#">Methodology</a>
-            <a href="#">ERA5/CHIRPS Data</a>
+          <div class="social-links">
+            <a href="mailto:yonas.mersha14@gmail.com" class="social-item">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+                ></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+              <span class="social-label">Email</span>
+            </a>
+            <a
+              href="https://linkedin.com/in/yonas-mersha"
+              target="_blank"
+              class="social-item"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"
+                ></path>
+                <rect x="2" y="9" width="4" height="12"></rect>
+                <circle cx="4" cy="4" r="2"></circle>
+              </svg>
+              <span class="social-label">LinkedIn</span>
+            </a>
+            <a
+              href="https://github.com/YonSci"
+              target="_blank"
+              class="social-item"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"
+                ></path>
+              </svg>
+              <span class="social-label">GitHub</span>
+            </a>
+            <a
+              href="https://medium.com/@yonas.mersha14"
+              target="_blank"
+              class="social-item"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path>
+                <path d="M12 12m-2 0a2 9 0 1 0 4 0a2 9 0 1 0 -4 0"></path>
+                <path d="M19 12a1.5 9 0 1 0 -3 0a1.5 9 0 1 0 3 0"></path>
+              </svg>
+              <span class="social-label">Medium</span>
+            </a>
+          </div>
         </div>
-        <p class="copyright">Advanced S2S Climate Applications | &copy; 2025</p>
+      </div>
+
+      <span class="footer-brand">ET-NeuralCast</span>
+      <div class="f-links">
+        <a href="https://github.com/YonSci/S2S-Forecast-Project">Repository</a>
+        <a href="outputs/latest_anomaly.nc" id="link-nc">NetCDF Export</a>
+        <a href="#">Methodology</a>
+        <a href="#">ERA5/CHIRPS Data</a>
+      </div>
+      <p class="copyright">Advanced S2S Climate Applications | &copy; 2025</p>
     </footer>
 
     <script>
-        const dateSelect = document.getElementById('forecast-date-select');
-        const themeToggle = document.getElementById('theme-toggle');
-        const html = document.documentElement;
+      const leadSelect = document.getElementById("lead-select");
+      const themeToggle = document.getElementById("theme-toggle");
+      const html = document.documentElement;
+
+      const imgMap = {
+        tercile: document.getElementById("img-tercile"),
+        anomaly: document.getElementById("img-anomaly"),
+        total: document.getElementById("img-total"),
+        percent: document.getElementById("img-percent"),
+      };
+      const linkNc = document.getElementById("link-nc");
+
+      let forecastManifest = null;
+
+      // Theme Management
+      function setTheme(theme) {
+        html.setAttribute("data-theme", theme);
+        localStorage.setItem("theme", theme);
+        updateThemeIcon(theme);
+      }
+
+      function updateThemeIcon(theme) {
+        const moon = document.getElementById("moon-path");
+        const sunElements = [
+          "sun-circle",
+          "sun-l1",
+          "sun-l2",
+          "sun-l3",
+          "sun-l4",
+          "sun-l5",
+          "sun-l6",
+          "sun-l7",
+          "sun-l8",
+        ];
+
+        if (theme === "light") {
+          moon.style.display = "none";
+          sunElements.forEach(
+            (id) => (document.getElementById(id).style.display = "block")
+          );
+        } else {
+          moon.style.display = "block";
+          sunElements.forEach(
+            (id) => (document.getElementById(id).style.display = "none")
+          );
+        }
+      }
+
+      themeToggle.addEventListener("click", () => {
+        const currentTheme = html.getAttribute("data-theme");
+        setTheme(currentTheme === "dark" ? "light" : "dark");
+      });
+
+      // Initialize theme
+      const savedTheme = localStorage.getItem("theme") || "dark";
+      setTheme(savedTheme);
+
+      async function init() {
+        try {
+          const response = await fetch("outputs/forecast_index.json");
+          forecastManifest = await response.json();
+
+          // Initial load
+          updateForecast();
+
+          leadSelect.addEventListener("change", () => {
+            updateForecast();
+          });
+        } catch (err) {
+          console.error("Failed to load forecast manifest:", err);
+        }
+      }
+
+      function updateForecast() {
+        const lead = leadSelect.value;
+        const dates = forecastManifest.leads[lead] || [];
         
-        const imgMap = {
-            'tercile': document.getElementById('img-tercile'),
-            'anomaly': document.getElementById('img-anomaly'),
-            'total': document.getElementById('img-total'),
-            'percent': document.getElementById('img-percent')
-        };
-        const linkNc = document.getElementById('link-nc');
-
-        // Theme Management
-        function setTheme(theme) {
-            html.setAttribute('data-theme', theme);
-            localStorage.setItem('theme', theme);
-            updateThemeIcon(theme);
+        if (dates.length === 0) {
+          console.warn(`No data for lead ${lead}`);
+          return;
         }
 
-        function updateThemeIcon(theme) {
-            const moon = document.getElementById('moon-path');
-            const sunElements = [
-                'sun-circle', 'sun-l1', 'sun-l2', 'sun-l3', 'sun-l4', 
-                'sun-l5', 'sun-l6', 'sun-l7', 'sun-l8'
-            ];
-            
-            if (theme === 'light') {
-                moon.style.display = 'none';
-                sunElements.forEach(id => document.getElementById(id).style.display = 'block');
-            } else {
-                moon.style.display = 'block';
-                sunElements.forEach(id => document.getElementById(id).style.display = 'none');
-            }
+        // Always take the latest date for the selected lead
+        const latestDate = dates[0];
+        const ts = new Date().getTime(); // Cache-buster
+
+        // Update all images
+        for (const [key, img] of Object.entries(imgMap)) {
+          img.src = `outputs/forecast_${latestDate}_${lead}_${key}.png?v=${ts}`;
         }
+        // Update NetCDF download link
+        linkNc.href = `outputs/forecast_${latestDate}_${lead}.nc?v=${ts}`;
+      }
 
-        themeToggle.addEventListener('click', () => {
-            const currentTheme = html.getAttribute('data-theme');
-            setTheme(currentTheme === 'dark' ? 'light' : 'dark');
-        });
-
-        // Initialize theme
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        setTheme(savedTheme);
-
-        async function init() {
-            try {
-                const response = await fetch('outputs/forecast_index.json');
-                const data = await response.json();
-                
-                // Populate dropdown
-                dateSelect.innerHTML = '';
-                data.available_dates.forEach((date, index) => {
-                    const option = document.createElement('option');
-                    option.value = date;
-                    option.textContent = date + (index === 0 ? ' (Latest)' : '');
-                    dateSelect.appendChild(option);
-                });
-
-                // Listen for changes
-                dateSelect.addEventListener('change', (e) => {
-                    updateForecast(e.target.value);
-                });
-
-            } catch (err) {
-                console.error("Failed to load forecast manifest:", err);
-                dateSelect.innerHTML = '<option value="latest">Latest</option>';
-            }
-        }
-
-        function updateForecast(date) {
-            // Update all images
-            for (const [key, img] of Object.entries(imgMap)) {
-                img.src = `outputs/forecast_${date}_${key}.png`;
-            }
-            // Update NetCDF download link
-            linkNc.href = `outputs/forecast_${date}.nc`;
-        }
-
-        init();
+      init();
     </script>
-
-</body>
+  </body>
 </html>
