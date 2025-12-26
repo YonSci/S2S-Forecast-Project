@@ -6,10 +6,8 @@ venv_gpu/
 __pycache__/
 *.pyc
 
-# Data (Crucial: Keep the structure, exclude the heavy NetCDF raw files)
-data/raw/chirps/*.nc
-data/raw/era5_pressure/*.nc
-data/raw/era5_sst/*.nc
+# Data (exclude all large data folders)
+data/
 checkpoints/
 outputs/*.nc
 
@@ -23,6 +21,7 @@ pipeline.log
 
 # MLflow
 mlruns/
+mlflow.db
 
 # System
 .DS_Store
@@ -34,3 +33,5 @@ Thumbs.db
 !data/raw/era5_sst/.gitkeep
 !outputs/.gitkeep
 !checkpoints/.gitkeep
+
+test_bundle.bundle.lock

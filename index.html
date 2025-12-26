@@ -42,6 +42,11 @@
         --map-filter: none;
       }
 
+      [data-theme="light"] .hero-graphic {
+        filter: contrast(1.5) invert(1) hue-rotate(180deg);
+        mix-blend-mode: multiply;
+      }
+
       :root {
         --img-container-bg: #ffffff;
         --map-filter: none; /* Removed inversion to preserve scientific colors */
@@ -82,12 +87,16 @@
       }
 
       section {
-        margin-bottom: 12rem; /* Reduced from 20rem for tighter flow */
+        margin-bottom: 8rem; /* Reduced for proportional flow */
+      }
+      
+      #technical-framework {
+        margin-bottom: 4rem; /* Tightened above Forecasts */
       }
 
       /* Hero */
       .hero {
-        padding: 10rem 0 6rem;
+        padding: 4rem 0 4rem;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -99,7 +108,7 @@
         gap: 5rem;
         width: 100%;
         max-width: 1200px;
-        margin-bottom: 6rem;
+        margin-bottom: 2rem;
       }
 
       @media (max-width: 1100px) {
@@ -126,7 +135,12 @@
         object-position: 0% 50%;
         transform: scale(1.15);
         display: block;
+        mix-blend-mode: screen; /* Makes black background transparent in dark mode */
+        filter: contrast(1.5); /* Crushes near-black background to pure black */
+        mix-blend-mode: screen; /* Makes black background transparent in dark mode */
+        filter: contrast(1.5); /* Crushes near-black background to pure black */
       }
+      /* v1.1 - Logo Fixes Applied */
 
       h1 {
         font-family: "Plus Jakarta Sans", sans-serif;
@@ -144,10 +158,10 @@
       .subtitle-large {
         font-size: 1.5rem;
         color: var(--text-secondary);
-        margin-top: 2rem;
+        margin-top: 1.5rem;
         font-weight: 300;
         line-height: 1.5;
-        max-width: 700px;
+        max-width: 1000px;
       }
 
       /* Controls Section */
@@ -156,7 +170,7 @@
         align-items: center;
         justify-content: center;
         gap: 2rem;
-        margin-bottom: 6rem;
+        margin-bottom: 4rem;
         width: 100%;
       }
 
@@ -276,7 +290,7 @@
 
       .arch-item {
         background: var(--bg-secondary);
-        padding: 5rem 4rem;
+        padding: 4rem 3rem;
         display: flex;
         flex-direction: column;
         gap: 2rem;
@@ -321,14 +335,14 @@
         font-family: "Plus Jakarta Sans", sans-serif;
         font-size: 3rem;
         font-weight: 800;
-        margin-bottom: 5rem;
+        margin-bottom: 4rem;
         text-align: center;
       }
 
       .forecast-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(650px, 1fr));
-        gap: 6rem;
+        gap: 4rem;
       }
 
       @media (max-width: 800px) {
@@ -351,7 +365,7 @@
       }
 
       .card-meta {
-        padding: 2.5rem 4rem;
+        padding: 2rem 3rem;
         background: var(--bg-color);
         border-bottom: 1px solid var(--card-border);
         display: flex;
@@ -385,7 +399,7 @@
       }
 
       .card-content {
-        padding: 4rem;
+        padding: 3rem;
         background: var(--bg-secondary);
       }
       .card-content h4 {
@@ -531,7 +545,7 @@
         background: var(--bg-secondary);
         border: 1px solid var(--card-border);
         border-radius: 2.5rem;
-        padding: 4rem;
+        padding: 3rem;
         position: relative;
         overflow: hidden;
       }
