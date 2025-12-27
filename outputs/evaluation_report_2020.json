@@ -1,9 +1,7 @@
 {
   "meta": {
+    "year": 2020,
     "lead_weeks": 1,
-    "test_years": [
-      2020
-    ],
     "samples": 51
   },
   "metrics": [

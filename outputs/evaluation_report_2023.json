@@ -1,0 +1,44 @@
+{
+  "meta": {
+    "year": 2023,
+    "lead_weeks": 1,
+    "samples": 51
+  },
+  "metrics": [
+    {
+      "name": "RMSE",
+      "model": 0.7683145999908447,
+      "persistence": 1.3040626049041748,
+      "climatology": 1.011049509048462,
+      "skill": 0.24008214473724365
+    },
+    {
+      "name": "MAE",
+      "model": 0.45726701617240906,
+      "persistence": 0.8026310801506042,
+      "climatology": 0.6334278583526611,
+      "skill": 0.2781071662902832
+    },
+    {
+      "name": "ACC",
+      "model": 0.6179159283638,
+      "persistence": 0.09931950006341818,
+      "climatology": 0.0,
+      "skill": 0.6179159283638
+    },
+    {
+      "name": "HSS",
+      "model": 0.5869433239621469,
+      "persistence": 0.3048360110703704,
+      "climatology": 0.0,
+      "skill": 0.5869433239621469
+    },
+    {
+      "name": "HitRate",
+      "model": 0.8390999455337689,
+      "persistence": 0.6818082788671024,
+      "climatology": 0.6367987472766884,
+      "skill": 0.20230119825708048
+    }
+  ]
+}

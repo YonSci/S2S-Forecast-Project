@@ -7,7 +7,7 @@ __pycache__/
 *.pyc
 
 # Data (exclude all large data folders)
-data/
+/data/
 checkpoints/
 outputs/*.nc
 

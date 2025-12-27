@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S2S Forecast - Training Logs</title>
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --accent-color: #3b82f6;
+            --success-color: #22c55e;
+            --card-border: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        nav {
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--card-border);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--accent-color);
+        }
+
+        main {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .section-label {
+            color: var(--accent-color);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .tech-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--card-border);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .tech-card h4 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .tech-card p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 0.5rem;
+            border: 1px solid var(--card-border);
+        }
+
+        footer {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-secondary);
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-content">
+            <a href="index.html" class="logo">
+                <div style="width: 32px; height: 32px; background: linear-gradient(135deg, var(--accent-color), #60a5fa); border-radius: 8px;"></div>
+                S2S Forecast
+            </a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="forecast.html" class="nav-link">Forecasts</a>
+                <a href="evaluation.html" class="nav-link">Evaluation</a>
+                <a href="logs.html" class="nav-link active">Logs</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section>
+            <h1 class="section-label" style="font-size: 2.5rem; margin-bottom: 1rem; text-transform: none; color: var(--text-primary);">Training Logs & Metrics</h1>
+            <p style="font-size: 1.2rem; color: var(--text-secondary); margin-bottom: 3rem;">
+                Visualization of the model training process, tracked via MLflow.
+            </p>
+
+            <!-- Warmstart Phase -->
+            <div class="tech-card">
+                <h4>Phase 1: Warmstart (Supervised Learning)</h4>
+                <p>
+                    Training the Generator with L1 Loss. The chart shows high-frequency batch loss (light blue) and the overlaid smoothed trend (dark blue). 
+                    Red dots indicate the average loss at the end of each epoch.
+                </p>
+                <img src="outputs/logs_warmstart.png" alt="Warmstart Training Loss" onerror="this.onerror=null;this.src='outputs/placeholder_logs.png'; this.style.opacity='0.5';">
+                <p style="margin-top: 1.5rem; text-align: left; font-size: 0.95rem; border-left: 3px solid var(--accent-color); padding-left: 1rem;">
+                    <strong>Interpretation:</strong> A stable warmstart phase is characterized by a rapid initial drop in L1 loss followed by a gradual decay. 
+                    If the red dots (epoch averages) align closely with the blue trend line, the model is generalizing well. 
+                    Consistent convergence suggests the model has successfully learned the baseline physical mapping from predictors to precipitation.
+                </p>
+            </div>
+
+            <!-- GAN Epoch Phase -->
+            <div class="tech-card">
+                <h4>Phase 2: GAN Training (Epoch Averages)</h4>
+                <p>
+                    Long-term training trends per epoch.
+                    <strong>Blue:</strong> Generator Reconstruction Loss (Physical consistency).<br>
+                    <strong>Green:</strong> Generator Adversarial Loss (Effort to fool Discriminator).<br>
+                    <strong>Red:</strong> Discriminator Loss (Ability to detect fakes).
+                </p>
+                <img src="outputs/logs_gan_epoch.png" alt="GAN Epoch Loss" onerror="this.onerror=null;this.src='outputs/placeholder_logs.png'; this.style.opacity='0.5';">
+                <p style="margin-top: 1.5rem; text-align: left; font-size: 0.95rem; border-left: 3px solid var(--accent-color); padding-left: 1rem;">
+                    <strong>Interpretation:</strong> In a stable GAN, neither the Generator (Green) nor the Discriminator (Red) should win completely. 
+                    Ideally, losses should oscillate around a stable mean. If D_loss drops to zero, the Discriminator is too strong (vanishing gradients). 
+                    If it rises continuously, the Generator is dominating. A stable 'Gap' between G and D indicates healthy adversarial competition.
+                </p>
+            </div>
+
+            <!-- GAN Batch Phase -->
+            <div class="tech-card">
+                <h4>Phase 2: GAN Dynamics (Batch Level)</h4>
+                <p>
+                    High-frequency training dynamics smoothed for visualization. 
+                    This view reveals the fine-grained competition between the Generator and Discriminator.
+                </p>
+                <img src="outputs/logs_gan_batch.png" alt="GAN Batch Loss" onerror="this.onerror=null;this.src='outputs/placeholder_logs.png'; this.style.opacity='0.5';">
+                <p style="margin-top: 1.5rem; text-align: left; font-size: 0.95rem; border-left: 3px solid var(--accent-color); padding-left: 1rem;">
+                    <strong>Interpretation:</strong> High-frequency oscillations are expected here. Stability is indicated by bounded variance—spikes shouldn't grow uncontrollably. 
+                    The L1 Loss (Blue) should remain low and steady, ensuring that even as the generator fights the discriminator, it doesn't lose sight of the physical ground truth (rainfall patterns).
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 S2S Artificial Intelligence Team. Powered by ET-NeuralCast.</p>
+    </footer>
+</body>
+</html>

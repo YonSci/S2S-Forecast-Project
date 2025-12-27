@@ -20,6 +20,7 @@
         <a href="index.html" class="nav-link">Home</a>
         <a href="forecast.html" class="nav-link">Forecast</a>
         <a href="evaluation.html" class="nav-link active">Evaluation</a>
+        <a href="logs.html" class="nav-link">Logs</a>
         
         <button id="theme-toggle" class="theme-toggle" title="Toggle Light/Dark Mode">
           <svg id="theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -49,51 +50,180 @@
       </header>
 
       <section>
-        <div class="tech-grid">
-          <!-- Metric 1 -->
-          <div class="tech-card">
-            <h3>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 20V10"></path>
-                    <path d="M18 20V4"></path>
-                    <path d="M6 20v-4"></path>
-                </svg>
-                Ranked Probability Skill Score (RPSS)
-            </h3>
-            <p>
-              The RPSS measures the improvement of the probabilistic forecast over a reference climatology. 
-              Values > 0 indicate skill.
-            </p>
-            <div style="height: 250px; background: var(--bg-color); border-radius: 1rem; border: 1px dashed var(--card-border); display: flex; align-items: center; justify-content: center;">
-                 <span style="color: var(--text-secondary); font-weight: 600;">Chart Loading...</span>
-            </div>
-          </div>
+          <div style="margin-bottom: 4rem;">
+            <h2 class="section-label" style="font-size: 2.2rem; margin-bottom: 3rem;">Metric Definitions & Interpretation</h2>
+            <div class="tech-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                
+                <!-- RMSE -->
+                <div class="tech-card" style="padding: 2rem;">
+                    <h3 style="font-size: 1.4rem; margin-bottom: 1rem;">
+                        RMSE & MAE
+                    </h3>
+                    <p style="font-size: 0.95rem; margin-bottom: 0.5rem;">
+                        <strong>Root Mean Square Error</strong> & <strong>Mean Absolute Error</strong> measure the average magnitude of forecast errors in physical units (mm/day).
+                    </p>
+                    <p style="font-size: 0.9rem; color: var(--accent);">
+                        <strong>Interpretation:</strong> Lower values are better. Represents the physical distance between forecast and observation.
+                    </p>
+                </div>
 
-          <!-- Metric 2 -->
-          <div class="tech-card">
-            <h3>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <path d="M12 6v6l4 2"></path>
-                </svg>
-                Anomaly Correlation Coefficient (ACC)
-            </h3>
-            <p>
-              Measures the spatial correlation between the forecast anomalies and the observed anomalies.
-              Values closer to 1 indicate higher spatial accuracy.
-            </p>
-            <div style="height: 250px; background: var(--bg-color); border-radius: 1rem; border: 1px dashed var(--card-border); display: flex; align-items: center; justify-content: center;">
-                 <span style="color: var(--text-secondary); font-weight: 600;">Chart Loading...</span>
+                <!-- ACC -->
+                <div class="tech-card" style="padding: 2rem;">
+                    <h3 style="font-size: 1.4rem; margin-bottom: 1rem;">
+                        ACC
+                    </h3>
+                    <p style="font-size: 0.95rem; margin-bottom: 0.5rem;">
+                        <strong>Anomaly Correlation Coefficient</strong> measures the spatial pattern agreement between forecast and observed anomalies.
+                    </p>
+                    <p style="font-size: 0.9rem; color: var(--accent);">
+                        <strong>Interpretation:</strong> +1 is perfect, 0 is random. Values > 0.5 indicate useful skill for spatial patterns.
+                    </p>
+                </div>
+
+                <!-- HSS -->
+                <div class="tech-card" style="padding: 2rem;">
+                    <h3 style="font-size: 1.4rem; margin-bottom: 1rem;">
+                        HSS
+                    </h3>
+                    <p style="font-size: 0.95rem; margin-bottom: 0.5rem;">
+                        <strong>Heidke Skill Score</strong> measures the accuracy of categorical forecasts (e.g., Terciles) relative to random chance.
+                    </p>
+                    <p style="font-size: 0.9rem; color: var(--accent);">
+                        <strong>Interpretation:</strong> 1 is perfect score, 0 is no skill (random).
+                    </p>
+                </div>
+
+                <!-- Hit Rate -->
+                <div class="tech-card" style="padding: 2rem;">
+                    <h3 style="font-size: 1.4rem; margin-bottom: 1rem;">
+                        Hit Rate
+                    </h3>
+                    <p style="font-size: 0.95rem; margin-bottom: 0.5rem;">
+                        <strong>Hit Rate (Accuracy)</strong> measures the percentage of correct categorical forecasts (e.g., correct prediction of Below, Near, or Above Normal).
+                    </p>
+                    <p style="font-size: 0.9rem; color: var(--accent);">
+                        <strong>Interpretation:</strong> Higher is better. 1.0 (100%) indicates perfect categorical accuracy.
+                    </p>
+                </div>
             </div>
           </div>
-        </div>
       </section>
 
       <!-- Dynamic Evaluation Report -->
-      <section id="evaluation-report" style="max-width: 1000px; margin: 0 auto;">
-          <h2 class="section-label" style="font-size: 2.5rem; margin-bottom: 2rem;">Automated Evaluation Report</h2>
+      <section id="evaluation-report" style="max-width: 1000px; margin: 0 auto; margin-bottom: 6rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h2 class="section-label" style="font-size: 2.5rem; margin-bottom: 0;">Evaluation Report</h2>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <label for="eval-year-select" style="color: var(--text-secondary); font-weight: 500;">Select Year:</label>
+                <select id="eval-year-select" style="padding: 0.6rem 2rem; border-radius: 0.5rem; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--card-border); font-size: 1rem; cursor: pointer;">
+                    <option value="2020" selected>2020</option>
+                    <option value="2021">2021</option>
+                    <option value="2022">2022</option>
+                    <option value="2023">2023</option>
+                    <option value="2024">2024</option>
+                </select>
+            </div>
+          </div>
           <div id="eval-table-container" style="background: var(--bg-secondary); border: 1px solid var(--card-border); border-radius: 2rem; padding: 2rem; box-shadow: 0 20px 40px rgba(0,0,0,0.1);">
               <p style="text-align: center; color: var(--text-secondary);">Loading report...</p>
+          </div>
+      </section>
+
+      <!-- Spatial Analysis Section -->
+      <section style="margin-bottom: 6rem;">
+          <h2 id="spatial-title" class="section-label" style="font-size: 2.2rem; margin-bottom: 3rem;">Spatial Performance Analysis (2020)</h2>
+          
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem;">
+              <div class="tech-card" style="padding: 0; overflow: hidden; text-align: center;">
+                  <h4 style="margin: 1.5rem 0 0.5rem; font-size: 1.2rem;">Spatial Bias (mm/day)</h4>
+                  <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">Blue = Too Wet, Red = Too Dry</p>
+                  <img id="img-spatial-bias" src="outputs/spatial_bias_2020.png" alt="Spatial Bias Map" style="width: 100%; height: auto; display: block;">
+              </div>
+              
+              <div class="tech-card" style="padding: 0; overflow: hidden; text-align: center;">
+                  <h4 style="margin: 1.5rem 0 0.5rem; font-size: 1.2rem;">Spatial RMSE (mm/day)</h4>
+                  <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">Darker = Higher Error</p>
+                  <img id="img-spatial-rmse" src="outputs/spatial_rmse_2020.png" alt="Spatial RMSE Map" style="width: 100%; height: auto; display: block;">
+              </div>
+
+              <div class="tech-card" style="padding: 0; overflow: hidden; text-align: center;">
+                  <h4 style="margin: 1.5rem 0 0.5rem; font-size: 1.2rem;">Anomaly Correlation (ACC)</h4>
+                  <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">Red = Positive Correlation (Good)</p>
+                  <img id="img-spatial-acc" src="outputs/spatial_acc_2020.png" alt="Spatial ACC Map" style="width: 100%; height: auto; display: block;">
+              </div>
+
+              <div class="tech-card" style="padding: 0; overflow: hidden; text-align: center;">
+                  <h4 style="margin: 1.5rem 0 0.5rem; font-size: 1.2rem;">Hit Rate (Terciles)</h4>
+                  <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">Yellow = High Accuracy</p>
+                  <img id="img-spatial-hitrate" src="outputs/spatial_hitrate_2020.png" alt="Spatial Hit Rate Map" style="width: 100%; height: auto; display: block;">
+              </div>
+          </div>
+      </section>
+
+      <!-- Temporal Analysis Section -->
+      <section style="margin-bottom: 6rem;">
+          <h2 class="section-label" style="font-size: 2.2rem; margin-bottom: 3rem;">Temporal Skill Analysis (Time-Series)</h2>
+          
+          <div style="display: grid; grid-template-columns: 1fr; gap: 4rem;">
+              <!-- 1. Scores -->
+              <div class="tech-card" style="padding: 2rem; overflow: hidden; text-align: center;">
+                  <h4 style="margin: 0rem 0 1.5rem; font-size: 1.4rem;">Skill Score Evolution (ACC & Hit Rate)</h4>
+                  <p style="font-size: 1rem; color: var(--text-secondary); margin-bottom: 2rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+                      Tracking the model's ability to capture anomalies and categorical events over the test period.
+                      Consistent high scores (> 0.5) indicate robust performance.
+                  </p>
+                  <img id="img-temporal-skill" src="outputs/temporal_skill_2020.png" alt="Temporal Skill Chart" style="width: 100%; max-width: 1000px; height: auto; display: block; margin: 0 auto; border-radius: 1rem; border: 1px solid var(--card-border);">
+              </div>
+
+              <!-- 2. Errors -->
+              <div class="tech-card" style="padding: 2rem; overflow: hidden; text-align: center;">
+                  <h4 style="margin: 0rem 0 1.5rem; font-size: 1.4rem;">Error Metric Evolution (RMSE & MAE)</h4>
+                  <p style="font-size: 1rem; color: var(--text-secondary); margin-bottom: 2rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+                      Monitoring the magnitude of forecast errors. Spikes may indicate extreme events or model divergence.
+                  </p>
+                  <img id="img-temporal-error" src="outputs/temporal_error_2020.png" alt="Temporal Error Chart" style="width: 100%; max-width: 1000px; height: auto; display: block; margin: 0 auto; border-radius: 1rem; border: 1px solid var(--card-border);">
+              </div>
+          </div>
+      </section>
+
+      <!-- Confusion Matrix Section -->
+      <section style="margin-bottom: 8rem;">
+          <h2 class="section-label" style="font-size: 2.2rem; margin-bottom: 3rem;">Prediction Accuracy</h2>
+          
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem;">
+              <div class="tech-card" style="padding: 2rem; overflow: hidden; text-align: center;">
+                  <h4 style="margin: 0rem 0 1.5rem; font-size: 1.4rem;">Tercile Confusion Matrix</h4>
+                  <p style="font-size: 1rem; color: var(--text-secondary); margin-bottom: 2rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+                      Visualizing the hit and miss rates for each category (Below Normal, Normal, Above Normal).
+                      Darker diagonals indicate better performance.
+                  </p>
+                  <img id="img-confusion-matrix" src="outputs/confusion_matrix_2020.png" alt="Tercile Confusion Matrix" style="width: 100%; height: auto; display: block; margin: 0 auto; border-radius: 1rem; border: 1px solid var(--card-border);">
+              </div>
+              
+              <div class="tech-card" style="padding: 2rem; overflow: hidden; text-align: center;">
+                  <h4 style="margin: 0rem 0 1.5rem; font-size: 1.4rem;">Extreme Event (Top 10%) Matrix</h4>
+                  <p style="font-size: 1rem; color: var(--text-secondary); margin-bottom: 2rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+                      Assessing the model's ability to capture extreme precipitation events (>90th percentile).
+                      Focus on 'Extreme' detection rate.
+                  </p>
+                  <img id="img-extreme-confusion-matrix" src="outputs/extreme_confusion_matrix_2020.png" alt="Extreme Event Matrix" style="width: 100%; height: auto; display: block; margin: 0 auto; border-radius: 1rem; border: 1px solid var(--card-border);">
+              </div>
+          </div>
+      </section>
+
+      <!-- Scatter Plot Section -->
+      <section style="margin-bottom: 8rem;">
+          <h2 class="section-label" style="font-size: 2.2rem; margin-bottom: 3rem;">Forecast Calibration</h2>
+          
+          <div style="display: grid; grid-template-columns: 1fr; gap: 4rem;">
+              <div class="tech-card" style="padding: 2rem; overflow: hidden; text-align: center;">
+                  <h4 style="margin: 0rem 0 1.5rem; font-size: 1.4rem;">Forecast vs. Observation (Domain Mean)</h4>
+                  <p style="font-size: 1rem; color: var(--text-secondary); margin-bottom: 2rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+                      Scatter plot of domain-averaged rainfall for each test sample.
+                      Points close to the dashed 1:1 line indicate perfect calibration.
+                  </p>
+                  <img id="img-scatter-plot" src="outputs/scatter_plot_2020.png" alt="Forecast vs Obs Scatter Plot" style="width: 100%; max-width: 600px; height: auto; display: block; margin: 0 auto; border-radius: 1rem; border: 1px solid var(--card-border);">
+              </div>
           </div>
       </section>
     </div>
