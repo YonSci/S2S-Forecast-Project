@@ -11,6 +11,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/lightbox.css" />
     <!-- Removed inline styles to match Evaluation page look -->
 </head>
 <body>
@@ -54,7 +55,7 @@
                     Training the Generator with L1 Loss. The chart shows high-frequency batch loss (light blue) and the overlaid smoothed trend (dark blue). 
                     Red dots indicate the average loss at the end of each epoch.
                 </p>
-                <img src="outputs/logs_warmstart.png" alt="Warmstart Training Loss" onerror="this.onerror=null;this.src='outputs/placeholder_logs.png'; this.style.opacity='0.5';" style="max-width: 800px; width: 100%; height: auto; display: block; margin: 2rem auto; border-radius: 8px; border: 1px solid var(--card-border);">
+                <iframe src="outputs/logs_warmstart.html" title="Warmstart Training" style="width: 100%; height: 600px; border: none; border-radius: 8px; background: transparent;"></iframe>
                 <p style="margin-top: 1.5rem; text-align: left; font-size: 0.95rem; border-left: 3px solid var(--accent-color); padding-left: 1rem;">
                     <strong>Interpretation:</strong> A stable warmstart phase is characterized by a rapid initial drop in L1 loss followed by a gradual decay. 
                     If the red dots (epoch averages) align closely with the blue trend line, the model is generalizing well. 
@@ -71,7 +72,7 @@
                     <strong>Green:</strong> Generator Adversarial Loss (Effort to fool Discriminator).<br>
                     <strong>Red:</strong> Discriminator Loss (Ability to detect fakes).
                 </p>
-                <img src="outputs/logs_gan_epoch.png" alt="GAN Epoch Loss" onerror="this.onerror=null;this.src='outputs/placeholder_logs.png'; this.style.opacity='0.5';" style="max-width: 800px; width: 100%; height: auto; display: block; margin: 2rem auto; border-radius: 8px; border: 1px solid var(--card-border);">
+                <iframe src="outputs/logs_gan_epoch.html" title="GAN Epoch Loss" style="width: 100%; height: 600px; border: none; border-radius: 8px; background: transparent;"></iframe>
                 <p style="margin-top: 1.5rem; text-align: left; font-size: 0.95rem; border-left: 3px solid var(--accent-color); padding-left: 1rem;">
                     <strong>Interpretation:</strong> In a stable GAN, neither the Generator (Green) nor the Discriminator (Red) should win completely. 
                     Ideally, losses should oscillate around a stable mean. If D_loss drops to zero, the Discriminator is too strong (vanishing gradients). 
@@ -86,7 +87,7 @@
                     High-frequency training dynamics smoothed for visualization. 
                     This view reveals the fine-grained competition between the Generator and Discriminator.
                 </p>
-                <img src="outputs/logs_gan_batch.png" alt="GAN Batch Loss" onerror="this.onerror=null;this.src='outputs/placeholder_logs.png'; this.style.opacity='0.5';" style="max-width: 800px; width: 100%; height: auto; display: block; margin: 2rem auto; border-radius: 8px; border: 1px solid var(--card-border);">
+                <iframe src="outputs/logs_gan_batch.html" title="GAN Batch Loss" style="width: 100%; height: 600px; border: none; border-radius: 8px; background: transparent;"></iframe>
                 <p style="margin-top: 1.5rem; text-align: left; font-size: 0.95rem; border-left: 3px solid var(--accent-color); padding-left: 1rem;">
                     <strong>Interpretation:</strong> High-frequency oscillations are expected here. Stability is indicated by bounded variance—spikes shouldn't grow uncontrollably. 
                     The L1 Loss (Blue) should remain low and steady, ensuring that even as the generator fights the discriminator, it doesn't lose sight of the physical ground truth (rainfall patterns).
@@ -101,7 +102,7 @@
                     <strong>Blue (Left):</strong> RMSE (Lower is better).
                     <strong>Orange (Right):</strong> Anomaly Correlation Coefficient (Higher is better).
                 </p>
-                <img src="outputs/logs_gan_validation.png" alt="GAN Validation Metrics" onerror="this.onerror=null;this.src='outputs/placeholder_logs.png'; this.style.opacity='0.5';" style="max-width: 800px; width: 100%; height: auto; display: block; margin: 2rem auto; border-radius: 8px; border: 1px solid var(--card-border);">
+                <iframe src="outputs/logs_gan_validation.html" title="GAN Validation Metrics" style="width: 100%; height: 600px; border: none; border-radius: 8px; background: transparent;"></iframe>
                 <p style="margin-top: 1.5rem; text-align: left; font-size: 0.95rem; border-left: 3px solid var(--success-color); padding-left: 1rem;">
                     <strong>Interpretation:</strong> This is the most critical chart for model selection. 
                     We want <strong>RMSE</strong> to decrease and <strong>ACC</strong> to increase over time. 
@@ -116,5 +117,6 @@
     </footer>
 
     <script src="js/theme.js"></script>
+    <script src="js/lightbox.js"></script>
 </body>
 </html>

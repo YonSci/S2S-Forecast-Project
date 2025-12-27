@@ -1,8 +1,9 @@
 const yearSelect = document.getElementById("eval-year-select");
 
 async function loadEvaluation(year) {
+    const yearSelect = document.getElementById("eval-year-select");
     // defaults to currently selected or 2020
-    year = year || yearSelect.value || "2020";
+    year = year || (yearSelect ? yearSelect.value : "2020") || "2020";
     
     // Update Images
     updateImages(year);
@@ -114,5 +115,108 @@ if (yearSelect) {
     });
 }
 
+const downloadBtn = document.getElementById("download-report-btn");
+if (downloadBtn) {
+    downloadBtn.addEventListener("click", () => {
+        const year = yearSelect.value;
+        const filename = `evaluation_report_${year}.json`;
+        const filepath = `outputs/${filename}`;
+        
+        // Create temporary link
+        const link = document.createElement('a');
+        link.href = filepath;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+}
+
 // Initial Load
-loadEvaluation();
+async function init() {
+    try {
+        const response = await fetch('outputs/manifest.json');
+        if (response.ok) {
+            const manifest = await response.json();
+            
+            // Clear existing options
+            yearSelect.innerHTML = '';
+            
+            // Populate
+            manifest.available_years.forEach(year => {
+                const opt = document.createElement('option');
+                opt.value = year;
+                opt.textContent = year;
+                yearSelect.appendChild(opt);
+            });
+            
+            // Select latest by default or stick to current
+            const latest = manifest.latest_year;
+            if (latest) {
+                yearSelect.value = latest;
+                loadEvaluation(latest);
+            } else {
+                // Fallback
+                loadEvaluation("2020");
+            }
+        } else {
+            console.warn("Manifest not found, using static defaults.");
+        }
+    } catch (err) {
+        console.error("Error loading manifest:", err);
+    }
+    
+    // Fallback if manifest fails or was empty
+    if (yearSelect.options.length === 0) {
+        // Manually add at least 2020
+        const opt = document.createElement('option');
+        opt.value = "2020";
+        opt.textContent = "2020";
+        yearSelect.appendChild(opt);
+        loadEvaluation("2020");
+    }
+}
+
+init();
+
+// Map Layer Toggles
+// Map Layer Toggles
+const toggleCountry = document.getElementById('toggle-country');
+const toggleRegions = document.getElementById('toggle-regions');
+const toggleZones = document.getElementById('toggle-zones');
+
+// Force refresh overlays to clear cache
+const overlays = document.querySelectorAll('.overlay-layer');
+overlays.forEach(img => {
+    const currentSrc = img.getAttribute('src').split('?')[0];
+    img.src = `${currentSrc}?v=${new Date().getTime()}`;
+});
+
+function updateOverlayVisibility(className, isChecked) {
+    const overlays = document.querySelectorAll(className);
+    overlays.forEach(img => img.style.opacity = isChecked ? '1' : '0');
+}
+
+if (toggleCountry) {
+    toggleCountry.addEventListener('change', function() {
+        updateOverlayVisibility('.country-overlay', this.checked);
+    });
+    // Set initial state
+    updateOverlayVisibility('.country-overlay', toggleCountry.checked);
+}
+
+if (toggleRegions) {
+    toggleRegions.addEventListener('change', function() {
+        updateOverlayVisibility('.region-overlay', this.checked);
+    });
+    // Set initial state
+    updateOverlayVisibility('.region-overlay', toggleRegions.checked);
+}
+
+if (toggleZones) {
+    toggleZones.addEventListener('change', function() {
+        updateOverlayVisibility('.zone-overlay', this.checked);
+    });
+    // Set initial state
+    updateOverlayVisibility('.zone-overlay', toggleZones.checked);
+}

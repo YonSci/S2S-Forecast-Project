@@ -4,6 +4,9 @@ import pandas as pd
 import argparse
 import os
 import sys
+import json
+import glob
+import re
 
 # Add project root to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
@@ -217,13 +220,25 @@ def plot_spatial_metrics(bias_grid, rmse_grid, acc_grid, hitrate_grid, output_di
     common_cbar_kwargs = {'shrink': 0.7, 'pad': 0.05, 'aspect': 20}
     extent = [32.5, 48.5, 3, 15]
     
+
+
     def plot_map(var_name, cmap, levels, title, label, filename, extend='neither'):
         fig = plt.figure(figsize=(10, 8))
         ax = plt.axes(projection=ccrs.PlateCarree())
         ax.set_extent(extent, crs=ccrs.PlateCarree())
         
         ax.add_feature(cfeature.COASTLINE, linewidth=0.8)
-        ax.add_feature(cfeature.BORDERS, linewidth=1.2)
+        # ax.add_feature(cfeature.BORDERS, linewidth=1.2) # Removed to prevent duplication with overlays
+        
+        # --- LAYOUT ANCHORS ---
+        # Add nearly-invisible text to the figure edges to force bbox_inches='tight' 
+        # to uniformly crop to this max extent.
+        anchor_style = dict(fontsize=20, color='#00000001') # Alpha=0.001
+        # fig.text(0.5, 1.05, "."*100, ha='center', **anchor_style) # Removed Top Anchor to fix whitespace gap
+        
+        # Right side needs to account for colorbar. Force wide right margin.
+        # Adjusted from 1.05 to 0.94 to reduce whitespace while maintaining alignment width
+        fig.text(0.94, 0.5, "."*60, va='center', rotation=270, **anchor_style) 
         
         # Discrete Plot
         ds[var_name].plot(
@@ -234,8 +249,14 @@ def plot_spatial_metrics(bias_grid, rmse_grid, acc_grid, hitrate_grid, output_di
             cbar_kwargs={**common_cbar_kwargs, 'label': label}
         )
         
-        ax.gridlines(draw_labels=True, linestyle='--', alpha=0.5)
+        # Configure Gridlines: Remove Top and Right labels
+        gl = ax.gridlines(draw_labels=True, linestyle='--', alpha=0.5)
+        gl.top_labels = False
+        gl.right_labels = False
+        
         plt.title(title, fontsize=14, pad=10)
+        
+        # Save with anchors forcing the size
         plt.savefig(os.path.join(output_dir, filename), dpi=300, bbox_inches='tight')
         plt.close()
 
@@ -447,12 +468,46 @@ def evaluate_model(config):
             })
             
         out_path = os.path.join("outputs", f"evaluation_report_{year}.json")
-        import json
         with open(out_path, "w") as f:
             json.dump(report_data, f, indent=2)
         print(f"Saved: {out_path}")
     
+    # Generate Manifest for Frontend
+    generate_manifest("outputs")
+
+    print("\n=== EVALUATION COMPLETE ===")
     print("\nBatch Evaluation Completed.")
+
+def generate_manifest(output_dir):
+    """
+    Scans the output directory for year-based artifacts and generates a manifest.json
+    for the frontend to populate dropdowns dynamically.
+    """
+    print(f"Generating manifest for {output_dir}...")
+    
+    # improved regex to find years in filenames like "spatial_bias_2020.png"
+    # We look for files ending in _YYYY.png
+    files = glob.glob(os.path.join(output_dir, "*_*.png"))
+    years = set()
+    
+    for f in files:
+        match = re.search(r'_(\d{4})\.png$', f)
+        if match:
+            years.add(int(match.group(1)))
+            
+    sorted_years = sorted(list(years))
+    
+    manifest = {
+        "available_years": sorted_years,
+        "latest_year": sorted_years[-1] if sorted_years else None,
+        "generated_at": pd.Timestamp.now().isoformat()
+    }
+    
+    manifest_path = os.path.join(output_dir, "manifest.json")
+    with open(manifest_path, 'w') as f:
+        json.dump(manifest, f, indent=2)
+        
+    print(f"Manifest saved to {manifest_path}: {sorted_years}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

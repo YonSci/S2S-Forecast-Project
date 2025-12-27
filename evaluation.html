@@ -11,6 +11,8 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/lightbox.css" />
+    <link rel="stylesheet" href="css/overlays.css" />
   </head>
   <body>
     <!-- Navbar -->
@@ -40,12 +42,20 @@
     </nav>
 
     <div class="container">
-      <header class="hero">
-        <div class="header-main" style="flex-direction: column; text-align: center; gap: 1rem;">
-          <h1 style="font-size: 3.5rem;">Model Evaluation</h1>
-          <p class="subtitle-large">
-             rigorous verification of forecast skill against historical observations (CHIRPS).
-          </p>
+      <header class="hero" style="margin-top: 4rem;">
+        <div class="header-main">
+          <div class="hero-text" style="width: 100%;">
+            <h1>Model Evaluation</h1>
+            <p class="subtitle-large">
+              Rigorous verification of forecast skill against historical observations (CHIRPS).
+            </p>
+            <div class="controls-row" style="margin-top: 2rem;">
+                 <div class="status-badge">
+                   <span class="pulse-dot" style="background: var(--success-color);"></span>
+                   Validated on 20+ Years
+                 </div>
+            </div>
+          </div>
         </div>
       </header>
 
@@ -56,7 +66,13 @@
                 
                 <!-- RMSE -->
                 <div class="tech-card" style="padding: 2rem;">
-                    <h3 style="font-size: 1.4rem; margin-bottom: 1rem;">
+                    <h3>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 12h20"></path>
+                            <path d="M2 17h20"></path>
+                            <path d="M2 7h20"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
                         RMSE & MAE
                     </h3>
                     <p style="font-size: 0.95rem; margin-bottom: 0.5rem;">
@@ -69,7 +85,11 @@
 
                 <!-- ACC -->
                 <div class="tech-card" style="padding: 2rem;">
-                    <h3 style="font-size: 1.4rem; margin-bottom: 1rem;">
+                    <h3>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 3v18h18"></path>
+                            <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path>
+                        </svg>
                         ACC
                     </h3>
                     <p style="font-size: 0.95rem; margin-bottom: 0.5rem;">
@@ -82,7 +102,12 @@
 
                 <!-- HSS -->
                 <div class="tech-card" style="padding: 2rem;">
-                    <h3 style="font-size: 1.4rem; margin-bottom: 1rem;">
+                    <h3>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="20" x2="18" y2="10"></line>
+                            <line x1="12" y1="20" x2="12" y2="4"></line>
+                            <line x1="6" y1="20" x2="6" y2="14"></line>
+                        </svg>
                         HSS
                     </h3>
                     <p style="font-size: 0.95rem; margin-bottom: 0.5rem;">
@@ -95,7 +120,12 @@
 
                 <!-- Hit Rate -->
                 <div class="tech-card" style="padding: 2rem;">
-                    <h3 style="font-size: 1.4rem; margin-bottom: 1rem;">
+                    <h3>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <circle cx="12" cy="12" r="6"></circle>
+                            <circle cx="12" cy="12" r="2"></circle>
+                        </svg>
                         Hit Rate
                     </h3>
                     <p style="font-size: 0.95rem; margin-bottom: 0.5rem;">
@@ -122,6 +152,14 @@
                     <option value="2023">2023</option>
                     <option value="2024">2024</option>
                 </select>
+                <button id="download-report-btn" class="control-pill" style="border: 1px solid var(--card-border); cursor: pointer; padding: 0.6rem 1rem; display: flex; align-items: center; gap: 0.5rem; background: var(--bg-secondary); color: var(--text-primary);">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Download JSON
+                </button>
             </div>
           </div>
           <div id="eval-table-container" style="background: var(--bg-secondary); border: 1px solid var(--card-border); border-radius: 2rem; padding: 2rem; box-shadow: 0 20px 40px rgba(0,0,0,0.1);">
@@ -131,31 +169,70 @@
 
       <!-- Spatial Analysis Section -->
       <section style="margin-bottom: 6rem;">
-          <h2 id="spatial-title" class="section-label" style="font-size: 2.2rem; margin-bottom: 3rem;">Spatial Performance Analysis (2020)</h2>
+          <h2 id="spatial-title" class="section-label" style="font-size: 2.2rem; margin-bottom: 2rem;">Spatial Performance Analysis (2020)</h2>
+          
+          <!-- Overlay Controls -->
+          <div class="toggle-group" style="justify-content: center; margin-bottom: 3rem;">
+              <span style="color: var(--text-secondary); font-weight: 500;">Map Layers:</span>
+              <label class="toggle-switch">
+                  <input type="checkbox" id="toggle-country" checked>
+                  <span class="slider"></span>
+                  <span class="label">Country</span>
+              </label>
+              <label class="toggle-switch">
+                  <input type="checkbox" id="toggle-regions">
+                  <span class="slider"></span>
+                  <span class="label">Regions</span>
+              </label>
+              <label class="toggle-switch">
+                  <input type="checkbox" id="toggle-zones">
+                  <span class="slider"></span>
+                  <span class="label">Subregions</span>
+              </label>
+          </div>
           
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem;">
               <div class="tech-card" style="padding: 0; overflow: hidden; text-align: center;">
                   <h4 style="margin: 1.5rem 0 0.5rem; font-size: 1.2rem;">Spatial Bias (mm/day)</h4>
                   <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">Blue = Too Wet, Red = Too Dry</p>
-                  <img id="img-spatial-bias" src="outputs/spatial_bias_2020.png" alt="Spatial Bias Map" style="width: 100%; height: auto; display: block;">
+                  <div class="map-overlay-wrapper">
+                      <img id="img-spatial-bias" class="base-map lightbox-trigger" src="outputs/spatial_bias_2020.png" alt="Spatial Bias Map">
+                      <img class="overlay-layer country-overlay" src="outputs/overlay_country.png" alt="Country">
+                      <img class="overlay-layer region-overlay" src="outputs/overlay_regions.png" alt="Regions">
+                      <img class="overlay-layer zone-overlay" src="outputs/overlay_zones.png" alt="Subregions">
+                  </div>
               </div>
               
               <div class="tech-card" style="padding: 0; overflow: hidden; text-align: center;">
-                  <h4 style="margin: 1.5rem 0 0.5rem; font-size: 1.2rem;">Spatial RMSE (mm/day)</h4>
-                  <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">Darker = Higher Error</p>
-                  <img id="img-spatial-rmse" src="outputs/spatial_rmse_2020.png" alt="Spatial RMSE Map" style="width: 100%; height: auto; display: block;">
+                  <h4 style="margin: 1.5rem 0 0.5rem; font-size: 1.2rem;">Root Mean Square Error (RMSE)</h4>
+                  <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">Lower is better (Darker Purple)</p>
+                  <div class="map-overlay-wrapper">
+                      <img id="img-spatial-rmse" class="base-map lightbox-trigger" src="outputs/spatial_rmse_2020.png" alt="Spatial RMSE Map">
+                      <img class="overlay-layer country-overlay" src="outputs/overlay_country.png" alt="Country">
+                      <img class="overlay-layer region-overlay" src="outputs/overlay_regions.png" alt="Regions">
+                      <img class="overlay-layer zone-overlay" src="outputs/overlay_zones.png" alt="Subregions">
+                  </div>
               </div>
-
               <div class="tech-card" style="padding: 0; overflow: hidden; text-align: center;">
                   <h4 style="margin: 1.5rem 0 0.5rem; font-size: 1.2rem;">Anomaly Correlation (ACC)</h4>
                   <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">Red = Positive Correlation (Good)</p>
-                  <img id="img-spatial-acc" src="outputs/spatial_acc_2020.png" alt="Spatial ACC Map" style="width: 100%; height: auto; display: block;">
+                  <div class="map-overlay-wrapper">
+                      <img id="img-spatial-acc" class="base-map lightbox-trigger" src="outputs/spatial_acc_2020.png" alt="Spatial ACC Map">
+                      <img class="overlay-layer country-overlay" src="outputs/overlay_country.png" alt="Country">
+                      <img class="overlay-layer region-overlay" src="outputs/overlay_regions.png" alt="Regions">
+                      <img class="overlay-layer zone-overlay" src="outputs/overlay_zones.png" alt="Subregions">
+                  </div>
               </div>
 
               <div class="tech-card" style="padding: 0; overflow: hidden; text-align: center;">
                   <h4 style="margin: 1.5rem 0 0.5rem; font-size: 1.2rem;">Hit Rate (Terciles)</h4>
                   <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">Yellow = High Accuracy</p>
-                  <img id="img-spatial-hitrate" src="outputs/spatial_hitrate_2020.png" alt="Spatial Hit Rate Map" style="width: 100%; height: auto; display: block;">
+                  <div class="map-overlay-wrapper">
+                      <img id="img-spatial-hitrate" class="base-map lightbox-trigger" src="outputs/spatial_hitrate_2020.png" alt="Spatial Hit Rate Map">
+                      <img class="overlay-layer country-overlay" src="outputs/overlay_country.png" alt="Country">
+                      <img class="overlay-layer region-overlay" src="outputs/overlay_regions.png" alt="Regions">
+                      <img class="overlay-layer zone-overlay" src="outputs/overlay_zones.png" alt="Subregions">
+                  </div>
               </div>
           </div>
       </section>
@@ -234,5 +311,6 @@
 
     <script src="js/theme.js"></script>
     <script src="js/evaluation.js"></script>
+    <script src="js/lightbox.js"></script>
   </body>
 </html>
