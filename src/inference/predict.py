@@ -5,6 +5,7 @@ import os
 import sys
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
+from matplotlib.colors import LinearSegmentedColormap
 from datetime import datetime, timedelta
 
 try:
@@ -60,7 +61,7 @@ def mask_to_ethiopia(ds):
         
     return ds
 
-def visualize_forecast(ds, var_name, lead_date, lead_weeks, output_path):
+def visualize_forecast(ds, var_name, init_date, lead_date, lead_weeks, output_path):
     """
     Produce a professional-quality forecast map for Ethiopia.
     """
@@ -78,33 +79,79 @@ def visualize_forecast(ds, var_name, lead_date, lead_weeks, output_path):
     
     fig = plt.figure(figsize=(14, 11), facecolor='white')
     
-    # 1. Legacy Colormap Selection
+    # 1. Colormap Selection
+    plot_kwargs = {}
+    
     if 'anomaly' in var_name:
-        cmap = 'RdYlBu' # Classic: Red (Dry) -> Yellow -> Blue (Wet)
+        # Dynamic Discrete Levels
+        # 1. Determine robustness range
+        data_min = ds[var_name].min().item() if not np.isnan(ds[var_name].min()) else 0
+        data_max = ds[var_name].max().item() if not np.isnan(ds[var_name].max()) else 0
+        limit = max(abs(data_min), abs(data_max))
+        if limit == 0: limit = 1.0
+        
+        # 2. Create 11 levels (10 bins) centered at 0
+        levels = np.linspace(-limit, limit, 11)
+        
+        # 3. Custom RYG Colormap (Red -> Yellow -> White -> Green)
+        colors = ['#d73027', '#fdae61', '#ffffbf', '#ffffff', '#d9ef8b', '#a6d96a', '#1a9850']
+        n_bins = len(levels) - 1
+        cmap = LinearSegmentedColormap.from_list('custom_ryg', colors, N=n_bins)
+        
         label = 'Precipitation Anomaly (mm/day)'
         title_prefix = "Precipitation Anomaly"
-        vmax = max(abs(ds[var_name].min() if not np.isnan(ds[var_name].min()) else 0), 
-                   abs(ds[var_name].max() if not np.isnan(ds[var_name].max()) else 0))
-        if vmax == 0: vmax = 1.0
-        vmin, vmax = -vmax, vmax
+        
+        vmin, vmax = None, None # Handled by levels
+        plot_kwargs = {'levels': levels, 'extend': 'both'}
+        
     elif 'percent' in var_name:
-        cmap = 'BrBG' # Brown (Dry) to Green (Wet)
+        # Custom discrete colormap for Percent of Normal
+        colors = ['#d73027', '#f46d43', '#fdae61', '#fee090', '#e0f3f8', '#abd9e9', '#74add1', '#4575b4']
+        levels = np.linspace(0, 200, len(colors) + 1)
+        cmap = LinearSegmentedColormap.from_list('percent_cmap', colors, N=len(colors))
         label = 'Percent of Normal Rainfall (%)'
         title_prefix = "Relative Precipitation"
         vmin, vmax = 0, 200
+        plot_kwargs = {'levels': levels, 'extend': 'neither'}
     elif 'tercile' in var_name:
         from matplotlib.colors import ListedColormap
-        # Discrete BrBG: Dry/Below, Normal, Wet/Above
-        cmap = ListedColormap(['#a6611a', '#f5f5f5', '#018571'])
+        # Discrete: Below (Orange/Red), Normal (Cyan), Above (Green)
+        # Colors match user preference: Red -> Cyan -> Green
+        cmap = ListedColormap(['#d73027', '#74add1', '#1a9850'])
         label = 'Tercile Category'
         title_prefix = "Tercile Forecast"
         vmin, vmax = -1.5, 1.5
     else:
-        cmap = 'YlGnBu' # Industry standard for total rainfall depth
+        # Dynamic Discrete Levels for Total Precip
+        data_max = ds[var_name].max().item() if not np.isnan(ds[var_name].max()) else 0
+        if data_max == 0: data_max = 12.0 # Fallback
+        
+        # Create 10 levels from 0 to max
+        levels = np.linspace(0, data_max, 10)
+        
+        # Custom Grey -> Orange -> Green Palette
+        # Matches user reference: Grey (low) -> Orange -> Yellow -> Green (high)
+        colors = [
+            '#e0e0e0', # Grey (Lowest/Zero)
+            '#fdbb84', # Orange
+            '#fee08b', # Yellow-Orange
+            '#ffffbf', # Pale Yellow
+            '#d9f0a3', # Pale Green
+            '#addd8e', # Light Green
+            '#78c679', # Medium Green
+            '#31a354', # Green
+            '#006837'  # Dark Green (Highest)
+        ]
+        
+        # Interpolate/Resample to match number of bins if needed, but here we just use the list
+        # For discrete consistency, we treat these as N distinct colors
+        cmap = LinearSegmentedColormap.from_list('custom_precip', colors, N=len(levels)-1)
+        
         label = 'Total Precipitation (mm/day)'
         title_prefix = "Total Precipitation"
-        vmin = 0
-        vmax = ds[var_name].max() if not np.isnan(ds[var_name].max()) else 12.0
+        
+        vmin, vmax = None, None
+        plot_kwargs = {'levels': levels, 'extend': 'neither'}
 
     if CARTOPY_AVAILABLE:
         ax = plt.axes(projection=ccrs.PlateCarree())
@@ -116,21 +163,24 @@ def visualize_forecast(ds, var_name, lead_date, lead_weeks, output_path):
         ax.add_feature(cfeature.LAKES, edgecolor='#0000ff', facecolor='#add8e6', alpha=0.3)
         
         # Plot data with robust colorbar
-        im = ds[var_name].plot(
-            ax=ax, 
-            transform=ccrs.PlateCarree(),
-            cmap=cmap, 
-            robust=True if 'tercile' not in var_name else False,
-            vmin=vmin,
-            vmax=vmax,
-            add_colorbar=True,
-            cbar_kwargs={
+        plot_params = {
+            'ax': ax, 
+            'transform': ccrs.PlateCarree(),
+            'cmap': cmap, 
+            'robust': True if 'tercile' not in var_name and 'anomaly' not in var_name else False,
+            'vmin': vmin,
+            'vmax': vmax,
+            'add_colorbar': True,
+            'cbar_kwargs': {
                 'label': label,
                 'shrink': 0.8,
                 'pad': 0.08,
                 'aspect': 25
             }
-        )
+        }
+        plot_params.update(plot_kwargs)
+        
+        im = ds[var_name].plot(**plot_params)
         
         # Fix colorbar ticks for terciles
         if 'tercile' in var_name:
@@ -152,11 +202,23 @@ def visualize_forecast(ds, var_name, lead_date, lead_weeks, output_path):
                 transform=ax.transAxes, fontsize=14, fontweight='bold')
 
     else:
-        ds[var_name].plot(cmap=cmap, robust=True, vmin=vmin, vmax=vmax)
+        plot_params = {'cmap': cmap, 'robust': True, 'vmin': vmin, 'vmax': vmax}
+        plot_params.update(plot_kwargs)
+        ds[var_name].plot(**plot_params)
     
     date_str = str(lead_date)[:10] if not isinstance(lead_date, xr.DataArray) else str(lead_date.values)[:10]
-    plt.title(f"ET-NeuralCast S2S Forecast: {title_prefix}\nTarget: {date_str} (Lead: {lead_weeks} Weeks)", 
-              fontsize=18, pad=40, fontweight='extrabold', color='black')
+    init_str = str(init_date)[:10] if not isinstance(init_date, xr.DataArray) else str(init_date.values)[:10]
+    
+    # Calculate target week string
+    try:
+        start_dt = datetime.strptime(date_str, '%Y-%m-%d')
+        end_dt = start_dt + timedelta(days=6)
+        target_week_str = f"{start_dt.strftime('%b %d')} - {end_dt.strftime('%b %d')}"
+    except:
+        target_week_str = date_str
+
+    plt.title(f"ET-NeuralCast S2S Forecast: {title_prefix}\nInit: {init_str} | Target Week: {target_week_str} (Lead: {lead_weeks} Weeks)", 
+              fontsize=18, pad=40, fontweight='bold', color='black')
     
     # Save with solid white background (the dashboard will invert labels to white in Dark Mode)
     plt.savefig(output_path, dpi=300, bbox_inches='tight', pad_inches=0.5, facecolor='white', transparent=False)
@@ -244,10 +306,10 @@ def run_inference(model_path, normalizer_path, pressure_file, sst_file=None, out
     pred_ds.to_netcdf(output_nc)
     
     # Visualizations
-    visualize_forecast(pred_ds, 'precip_anomaly', lead_date_np, lead_weeks, os.path.join(output_dir, f"forecast_{str(lead_date_np)[:10]}{lead_suffix}_anomaly.png"))
-    visualize_forecast(pred_ds, 'precip_total', lead_date_np, lead_weeks, os.path.join(output_dir, f"forecast_{str(lead_date_np)[:10]}{lead_suffix}_total.png"))
-    visualize_forecast(pred_ds, 'precip_percent', lead_date_np, lead_weeks, os.path.join(output_dir, f"forecast_{str(lead_date_np)[:10]}{lead_suffix}_percent.png"))
-    visualize_forecast(pred_ds, 'precip_tercile', lead_date_np, lead_weeks, os.path.join(output_dir, f"forecast_{str(lead_date_np)[:10]}{lead_suffix}_tercile.png"))
+    visualize_forecast(pred_ds, 'precip_anomaly', forecast_date, lead_date_np, lead_weeks, os.path.join(output_dir, f"forecast_{str(lead_date_np)[:10]}{lead_suffix}_anomaly.png"))
+    visualize_forecast(pred_ds, 'precip_total', forecast_date, lead_date_np, lead_weeks, os.path.join(output_dir, f"forecast_{str(lead_date_np)[:10]}{lead_suffix}_total.png"))
+    visualize_forecast(pred_ds, 'precip_percent', forecast_date, lead_date_np, lead_weeks, os.path.join(output_dir, f"forecast_{str(lead_date_np)[:10]}{lead_suffix}_percent.png"))
+    visualize_forecast(pred_ds, 'precip_tercile', forecast_date, lead_date_np, lead_weeks, os.path.join(output_dir, f"forecast_{str(lead_date_np)[:10]}{lead_suffix}_tercile.png"))
 
     print("Inference completed successfully.")
 
@@ -255,7 +317,7 @@ def run_inference(model_path, normalizer_path, pressure_file, sst_file=None, out
 if __name__ == "__main__":
     MODEL_PATH = "checkpoints/G_warmstart_best.pth"
     NORMALIZER_PATH = "checkpoints/normalizer.pkl"
-    PL_DIR, SST_DIR = "data/raw/era5_pressure", "data/raw/era5_sst"
+    PL_DIR, SST_DIR = "data/train/era5_pressure", "data/train/era5_sst"
     
     if os.path.exists(PL_DIR):
         pl_files = sorted([f for f in os.listdir(PL_DIR) if f.endswith('.nc')], reverse=True)

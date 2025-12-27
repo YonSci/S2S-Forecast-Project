@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ET-NeuralCast | Evaluation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar">
+      <a href="index.html" class="nav-brand">ET-NeuralCast</a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="forecast.html" class="nav-link">Forecast</a>
+        <a href="evaluation.html" class="nav-link active">Evaluation</a>
+        
+        <button id="theme-toggle" class="theme-toggle" title="Toggle Light/Dark Mode">
+          <svg id="theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path id="moon-path" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            <circle id="sun-circle" cx="12" cy="12" r="5" style="display: none"></circle>
+            <line id="sun-l1" x1="12" y1="1" x2="12" y2="3" style="display: none"></line>
+            <line id="sun-l2" x1="12" y1="21" x2="12" y2="23" style="display: none"></line>
+            <line id="sun-l3" x1="4.22" y1="4.22" x2="5.64" y2="5.64" style="display: none"></line>
+            <line id="sun-l4" x1="18.36" y1="18.36" x2="19.78" y2="19.78" style="display: none"></line>
+            <line id="sun-l5" x1="1" y1="12" x2="3" y2="12" style="display: none"></line>
+            <line id="sun-l6" x1="21" y1="12" x2="23" y2="12" style="display: none"></line>
+            <line id="sun-l7" x1="4.22" y1="19.78" x2="5.64" y2="18.36" style="display: none"></line>
+            <line id="sun-l8" x1="18.36" y1="5.64" x2="19.78" y2="4.22" style="display: none"></line>
+          </svg>
+        </button>
+      </div>
+    </nav>
+
+    <div class="container">
+      <header class="hero">
+        <div class="header-main" style="flex-direction: column; text-align: center; gap: 1rem;">
+          <h1 style="font-size: 3.5rem;">Model Evaluation</h1>
+          <p class="subtitle-large">
+             rigorous verification of forecast skill against historical observations (CHIRPS).
+          </p>
+        </div>
+      </header>
+
+      <section>
+        <div class="tech-grid">
+          <!-- Metric 1 -->
+          <div class="tech-card">
+            <h3>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 20V10"></path>
+                    <path d="M18 20V4"></path>
+                    <path d="M6 20v-4"></path>
+                </svg>
+                Ranked Probability Skill Score (RPSS)
+            </h3>
+            <p>
+              The RPSS measures the improvement of the probabilistic forecast over a reference climatology. 
+              Values > 0 indicate skill.
+            </p>
+            <div style="height: 250px; background: var(--bg-color); border-radius: 1rem; border: 1px dashed var(--card-border); display: flex; align-items: center; justify-content: center;">
+                 <span style="color: var(--text-secondary); font-weight: 600;">Chart Loading...</span>
+            </div>
+          </div>
+
+          <!-- Metric 2 -->
+          <div class="tech-card">
+            <h3>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M12 6v6l4 2"></path>
+                </svg>
+                Anomaly Correlation Coefficient (ACC)
+            </h3>
+            <p>
+              Measures the spatial correlation between the forecast anomalies and the observed anomalies.
+              Values closer to 1 indicate higher spatial accuracy.
+            </p>
+            <div style="height: 250px; background: var(--bg-color); border-radius: 1rem; border: 1px dashed var(--card-border); display: flex; align-items: center; justify-content: center;">
+                 <span style="color: var(--text-secondary); font-weight: 600;">Chart Loading...</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Dynamic Evaluation Report -->
+      <section id="evaluation-report" style="max-width: 1000px; margin: 0 auto;">
+          <h2 class="section-label" style="font-size: 2.5rem; margin-bottom: 2rem;">Automated Evaluation Report</h2>
+          <div id="eval-table-container" style="background: var(--bg-secondary); border: 1px solid var(--card-border); border-radius: 2rem; padding: 2rem; box-shadow: 0 20px 40px rgba(0,0,0,0.1);">
+              <p style="text-align: center; color: var(--text-secondary);">Loading report...</p>
+          </div>
+      </section>
+    </div>
+
+    <footer>
+      <p class="copyright">Advanced S2S Climate Applications | &copy; 2025</p>
+    </footer>
+
+    <script src="js/theme.js"></script>
+    <script src="js/evaluation.js"></script>
+  </body>
+</html>

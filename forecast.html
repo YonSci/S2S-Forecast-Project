@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ET-NeuralCast | Forecast</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar">
+      <a href="index.html" class="nav-brand">ET-NeuralCast</a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="forecast.html" class="nav-link active">Forecast</a>
+        <a href="evaluation.html" class="nav-link">Evaluation</a>
+        
+        <button id="theme-toggle" class="theme-toggle" title="Toggle Light/Dark Mode">
+          <svg id="theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path id="moon-path" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            <circle id="sun-circle" cx="12" cy="12" r="5" style="display: none"></circle>
+            <line id="sun-l1" x1="12" y1="1" x2="12" y2="3" style="display: none"></line>
+            <line id="sun-l2" x1="12" y1="21" x2="12" y2="23" style="display: none"></line>
+            <line id="sun-l3" x1="4.22" y1="4.22" x2="5.64" y2="5.64" style="display: none"></line>
+            <line id="sun-l4" x1="18.36" y1="18.36" x2="19.78" y2="19.78" style="display: none"></line>
+            <line id="sun-l5" x1="1" y1="12" x2="3" y2="12" style="display: none"></line>
+            <line id="sun-l6" x1="21" y1="12" x2="23" y2="12" style="display: none"></line>
+            <line id="sun-l7" x1="4.22" y1="19.78" x2="5.64" y2="18.36" style="display: none"></line>
+            <line id="sun-l8" x1="18.36" y1="5.64" x2="19.78" y2="4.22" style="display: none"></line>
+          </svg>
+        </button>
+      </div>
+    </nav>
+
+    <div class="container">
+      <header style="margin-top: 4rem; text-align: center;">
+          <h1 class="section-label" style="margin-bottom: 2rem;">Operational Forecasts</h1>
+          <p class="subtitle-large" style="margin: 0 auto 4rem; text-align: center;">
+              Real-time deep learning predictions for precipitation anomalies, totals, and probabilities.
+          </p>
+      </header>
+      
+      <div class="controls-row">
+          <div class="status-badge">
+            <span class="pulse-dot"></span>
+            Operational
+          </div>
+
+          <div class="control-pill">
+            <label for="lead-select">Lead Time:</label>
+            <select id="lead-select">
+              <option value="W1">Week 1</option>
+              <option value="W2">Week 2</option>
+              <option value="W3">Week 3</option>
+              <option value="W4">Week 4</option>
+            </select>
+          </div>
+
+          <div class="control-pill">
+            <label for="date-select">Target Week:</label>
+            <select id="date-select">
+              <!-- Populated by JS -->
+            </select>
+          </div>
+      </div>
+
+      <div class="forecast-grid">
+          <!-- 1. Anomaly Forecast -->
+          <div class="forecast-card">
+            <div class="card-meta">
+              <span class="meta-tag">Anomaly Forecast</span>
+            </div>
+            <div class="img-container">
+              <img
+                id="img-anomaly"
+                src="outputs/latest_anomaly.png"
+                alt="Anomaly"
+              />
+            </div>
+            <div class="card-content">
+              <h4>Precipitation Anomaly</h4>
+              <p>
+                Identifying regions of critical rainfall deficit or surplus by
+                calculating deviation from the mean in physical units (mm/day).
+              </p>
+            </div>
+          </div>
+
+          <!-- 2. Total Precipitation Forecast -->
+          <div class="forecast-card">
+            <div class="card-meta">
+              <span class="meta-tag">Total Precipitation Forecast</span>
+            </div>
+            <div class="img-container">
+              <img id="img-total" src="outputs/latest_total.png" alt="Total" />
+            </div>
+            <div class="card-content">
+              <h4>Absolute Physical Flux</h4>
+              <p>
+                The total expected water volume reaching the surface.
+                Reconstructed from the learned anomaly and regional seasonal
+                baseline data.
+              </p>
+            </div>
+          </div>
+
+          <!-- 3. Percent of Normal -->
+          <div class="forecast-card">
+            <div class="card-meta">
+              <span class="meta-tag">Percent of Normal</span>
+            </div>
+            <div class="img-container">
+              <img
+                id="img-percent"
+                src="outputs/latest_percent_W1.png"
+                alt="Percent"
+              />
+            </div>
+            <div class="card-content">
+              <h4>Percent of Operational Normal</h4>
+              <p>
+                A relative moisture metric expressing the forecast as a
+                percentage of standard expectation, highlighting extreme
+                departures from the norm.
+              </p>
+            </div>
+          </div>
+
+          <!-- 4. Tercile Probability Forecast -->
+          <div class="forecast-card">
+            <div class="card-meta">
+              <span class="meta-tag">Tercile Probability Forecast</span>
+            </div>
+            <div class="img-container">
+              <img
+                id="img-tercile"
+                src="outputs/latest_tercile_W1.png"
+                alt="Tercile"
+              />
+            </div>
+            <div class="card-content">
+              <h4>Tercile Probability</h4>
+              <p>
+                Classification of seasonal expectations into Below, Near, or
+                Above normal states based on local 20-year climatology
+                thresholds.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 4rem; margin-bottom: 6rem;">
+             <a href="outputs/latest_anomaly.nc" id="link-nc" class="contact-card" style="padding: 1.5rem 3rem; text-decoration: none; display: inline-block;">
+                <span class="contact-title" style="margin: 0; font-size: 1.2rem;">Download NetCDF Data</span>
+             </a>
+        </div>
+    </div>
+
+    <footer>
+      <p class="copyright">Advanced S2S Climate Applications | &copy; 2025</p>
+    </footer>
+
+    <script src="js/theme.js"></script>
+    <script src="js/forecast.js"></script>
+  </body>
+</html>

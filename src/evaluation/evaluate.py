@@ -159,28 +159,47 @@ def evaluate_model(config):
     
     metrics_to_show = ["RMSE", "MAE", "ACC", "HSS", "HitRate"]
     
+    report_data = {
+        "meta": {
+            "lead_weeks": config['lead_weeks'],
+            "test_years": config['test_years'],
+            "samples": len(df)
+        },
+        "metrics": []
+    }
+
     for m in metrics_to_show:
         val_mod = df[f"{m}_Model"].mean()
         val_pers = df[f"{m}_Pers"].mean()
         val_clim = df[f"{m}_Clim"].mean()
         
         # Skill Score Calculation (Standard: 1 - MSE_mod/MSE_clim)
-        # For correlation/accuracy: (Mod - Clim)/(Perf - Clim) -> Different
-        # Simple Logic: How much better than Clim?
         if m in ["RMSE", "MAE"]:
-            # Lower is better. Skill = 1 - (Mod / Clim)
             skill = 1 - (val_mod / val_clim)
         else:
-            # Higher is better. Skill = Mod - Clim (Simple difference)
             skill = val_mod - val_clim
             
         print(f"{m:<15} {val_mod:<12.4f} {val_pers:<12.4f} {val_clim:<12.4f} {skill:<12.4f}")
+        
+        report_data["metrics"].append({
+            "name": m,
+            "model": float(val_mod),
+            "persistence": float(val_pers),
+            "climatology": float(val_clim),
+            "skill": float(skill)
+        })
         
     print("="*40)
     print("Notes:")
     print("- Skill for Error Metrics (RMSE, MAE): Positive is Good (Reduction in error).")
     print("- Skill for Score Metrics (ACC, HSS): Positive is Good (Increase in score).")
     print("-" * 40)
+    
+    import json
+    out_path = os.path.join("outputs", "evaluation_report.json")
+    with open(out_path, "w") as f:
+        json.dump(report_data, f, indent=2)
+    print(f"Report saved to {out_path}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
