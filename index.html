@@ -55,6 +55,14 @@
               Sub-seasonal to Seasonal Forecasting for Ethiopia using Deep
               Learning
             </p>
+            <div style="margin-top: 2rem;">
+                 <a href="#technical-framework" class="control-pill" style="display: inline-flex; text-decoration: none; width: auto; padding: 0.8rem 2rem; border-radius: 30px;">
+                    <span style="font-weight: 700; color: var(--accent); font-size: 1rem;">Explore Methodology</span>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left: 0.5rem; color: var(--accent);">
+                        <path d="M7 17l9.2-9.2M17 17V7H7"/>
+                    </svg>
+                 </a>
+            </div>
           </div>
         </div>
 
@@ -145,6 +153,26 @@
             </div>
           </div>
 
+          <!-- 3. Training Strategy (New) -->
+          <div class="tech-card">
+            <h3>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                </svg>
+              Training Strategy
+            </h3>
+            <div class="tech-content">
+              <h4>Two-Phase Optimization</h4>
+              <p>
+                A rigorous training regimen designed to ensure both physical reliability and realistic texture generation.
+              </p>
+              <ul class="tech-list">
+                <li><strong>Warmstart:</strong> Supervised training with L1 Loss to learn the physical mapping.</li>
+                <li><strong>Adversarial Tuning:</strong> GAN fine-tuning to sharpen details and correct distributions.</li>
+              </ul>
+            </div>
+          </div>
+
           <!-- 2. Model Architecture -->
           <div class="tech-card">
             <h3>
@@ -164,6 +192,28 @@
               <ul class="tech-list">
                   <li><strong>Encoder:</strong> Progressive downsampling.</li>
                   <li><strong>Decoder:</strong> High-res reconstruction.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- 4. Evaluation Protocols (New) -->
+          <div class="tech-card">
+            <h3>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                </svg>
+              Evaluation Protocols
+            </h3>
+            <div class="tech-content">
+              <h4>Multi-Metric Validation</h4>
+              <p>
+                Comprehensive assessment of forecast skill and reliability using standard meteorological metrics.
+              </p>
+              <ul class="tech-list">
+                <li><strong>RMSE:</strong> Accuracy in physical units (mm/day).</li>
+                <li><strong>ACC:</strong> Anomaly Correlation Coefficient for pattern matching.</li>
               </ul>
             </div>
           </div>
