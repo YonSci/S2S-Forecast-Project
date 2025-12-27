@@ -144,5 +144,42 @@ def plot_experiment_logs():
             plt.savefig(os.path.join(OUTPUT_DIR, "logs_gan_epoch.png"), dpi=300)
             plt.close()
 
+            # --- Plot C: Validation Performance ---
+            try:
+                h_rmse = client.get_metric_history(run_id, "val_rmse")
+                h_acc = client.get_metric_history(run_id, "val_acc")
+                
+                if h_rmse and h_acc:
+                    fig, ax1 = plt.subplots(figsize=(12, 6))
+                    
+                    # RMSE (Left Axis)
+                    steps_rmse = [m.step for m in h_rmse]
+                    vals_rmse = [m.value for m in h_rmse]
+                    l1 = ax1.plot(steps_rmse, vals_rmse, 'b-o', label='Val RMSE', linewidth=2)
+                    ax1.set_xlabel("Epochs", fontsize=12)
+                    ax1.set_ylabel("RMSE (mm/day)", color='blue', fontsize=12)
+                    ax1.tick_params(axis='y', labelcolor='blue')
+                    ax1.grid(True, alpha=0.3)
+                    
+                    # ACC (Right Axis)
+                    ax2 = ax1.twinx()
+                    steps_acc = [m.step for m in h_acc]
+                    vals_acc = [m.value for m in h_acc]
+                    l2 = ax2.plot(steps_acc, vals_acc, 'orange', marker='s', linestyle='-', label='Val ACC', linewidth=2)
+                    ax2.set_ylabel("Anomaly Correlation (ACC)", color='orange', fontsize=12)
+                    ax2.tick_params(axis='y', labelcolor='orange')
+                    
+                    # Combined Title & Legend
+                    lines = l1 + l2
+                    labels = [l.get_label() for l in lines]
+                    ax1.legend(lines, labels, loc='center right')
+                    
+                    plt.title("GAN Validation Performance (Unseen Years)", fontsize=16)
+                    plt.tight_layout()
+                    plt.savefig(os.path.join(OUTPUT_DIR, "logs_gan_validation.png"), dpi=300)
+                    plt.close()
+            except Exception as e:
+                print(f"Skipping validation plot: {e}")
+
 if __name__ == "__main__":
     plot_experiment_logs()

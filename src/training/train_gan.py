@@ -21,6 +21,8 @@ from src.models.unet import UNetGenerator
 from src.models.discriminator import PixelDiscriminator
 from src.training.loss import GANLoss, WeightedL1Loss
 from src.data.dataloader import S2SDataset
+from src.evaluation.metrics import rmse, acc
+import numpy as np
 
 def train_gan(config):
     """
@@ -45,6 +47,22 @@ def train_gan(config):
     dataloader = DataLoader(train_dataset, batch_size=config['batch_size'], shuffle=True)
 
     
+    # Validation Dataset
+    val_years = config.get('val_years', [])
+    val_loader = None
+    if val_years:
+        print(f"Loading validation dataset for years {val_years}...")
+        val_dataset = S2SDataset(
+            data_dir=config['data_dir'],
+            years=val_years,
+            lead_weeks=config.get('lead_weeks', 1),
+            normalizer=train_dataset.normalizer # Use training normalizer!
+        )
+        if len(val_dataset) > 0:
+            val_loader = DataLoader(val_dataset, batch_size=config['batch_size'], shuffle=False)
+        else:
+            print("Warning: Validation dataset is empty.")
+
     # Models
     G = UNetGenerator(input_channels=5, output_channels=1, target_size=(48, 60)).to(device)
     D = PixelDiscriminator(input_channels=6).to(device)  # 5 input + 1 target
@@ -66,6 +84,8 @@ def train_gan(config):
     criterion_L1 = WeightedL1Loss(weight=5.0).to(device)
     
     # Training Loop
+    best_val_acc = -1.0
+    
     for epoch in range(config['epochs']):
         G.train()
         D.train()
@@ -117,13 +137,57 @@ def train_gan(config):
                 mlflow.log_metric("G_GAN_loss", loss_G_GAN.item(), step=step)
                 mlflow.log_metric("D_loss", loss_D.item(), step=step)
         
-        # Epoch metrics
+        # Epoch metrics (Training)
         if MLFLOW_AVAILABLE:
             mlflow.log_metric("epoch_G_L1_avg", epoch_G_L1 / len(dataloader), step=epoch)
             mlflow.log_metric("epoch_G_GAN_avg", epoch_G_GAN / len(dataloader), step=epoch)
             mlflow.log_metric("epoch_D_avg", epoch_D / len(dataloader), step=epoch)
         
-        # Save checkpoint
+        # --- Validation Loop ---
+        if val_loader:
+            G.eval()
+            val_rmse_list = []
+            val_acc_list = []
+            
+            with torch.no_grad():
+                for x_val, y_val in val_loader:
+                    x_val = x_val.to(device)
+                    y_val = y_val.to(device)
+                    
+                    # Forward pass
+                    fake_val = G(x_val)
+                    
+                    # Convert to numpy for metrics
+                    # Note: These are normalized values (anomalies in sigma units)
+                    # Use metrics on normalized data:
+                    # RMSE is "Normalized RMSE"
+                    # ACC is "Anomaly Correlation" (Correlation is scale invariant)
+                    pred_np = fake_val.cpu().numpy()
+                    obs_np = y_val.cpu().numpy()
+                    
+                    for k in range(pred_np.shape[0]):
+                        val_rmse_list.append(rmse(pred_np[k], obs_np[k]))
+                        # ACC calc: obs_np is already anomaly (if normalizer centers it). 
+                        # Our normalizer subtracts clim and divides by std. 
+                        # So passing climatology=0 means we correlate the anomalies directly.
+                        val_acc_list.append(acc(pred_np[k], obs_np[k], climatology=0))
+
+            avg_val_rmse = np.mean(val_rmse_list)
+            avg_val_acc = np.mean(val_acc_list)
+            
+            print(f"  [Validation] RMSE: {avg_val_rmse:.4f} | ACC: {avg_val_acc:.4f}")
+            
+            if MLFLOW_AVAILABLE:
+                mlflow.log_metric("val_rmse", avg_val_rmse, step=epoch)
+                mlflow.log_metric("val_acc", avg_val_acc, step=epoch)
+                
+            # Save best model based on ACC
+            if avg_val_acc > best_val_acc:
+                best_val_acc = avg_val_acc
+                torch.save(G.state_dict(), f"checkpoints/G_best_acc_W{config.get('lead_weeks', 1)}.pth")
+                print(f"  [*] New best model saved (ACC: {best_val_acc:.4f})")
+        
+        # Save regular checkpoint
         if (epoch + 1) % 10 == 0:
             g_path = f"checkpoints/G_gan_epoch_{epoch+1}_W{config.get('lead_weeks', 1)}.pth"
             d_path = f"checkpoints/D_gan_epoch_{epoch+1}_W{config.get('lead_weeks', 1)}.pth"
@@ -156,13 +220,16 @@ if __name__ == "__main__":
     parser.add_argument("--lead", type=int, default=1, help="Lead time in weeks (1, 2, 3, 4)")
     parser.add_argument("--epochs", type=int, default=30, help="Number of training epochs")
     parser.add_argument("--years", type=str, nargs='+', default=["2000-2005"], help="Years to train on (e.g. 2000-2005 or 2000 2001)")
+    parser.add_argument("--val-years", type=str, nargs='+', default=["2006-2007"], help="Years to validate on")
     args = parser.parse_args()
 
     train_years = parse_years(args.years)
+    val_years_parsed = parse_years(args.val_years)
 
     gan_config = {
         'data_dir': 'data/train',
         'train_years': train_years,
+        'val_years': val_years_parsed,
         'lead_weeks': args.lead,
         'batch_size': 4,
         'lr': 0.0001,
