@@ -156,11 +156,55 @@
           </div>
         </div>
 
-        <div style="text-align: center; margin-top: 4rem; margin-bottom: 6rem;">
-             <a href="outputs/latest_anomaly.nc" id="link-nc" class="contact-card" style="padding: 1.5rem 3rem; text-decoration: none; display: inline-block;">
-                <span class="contact-title" style="margin: 0; font-size: 1.2rem;">Download NetCDF Data</span>
-             </a>
-        </div>
+        <!-- Interpretation Guide -->
+        <section id="interpretation-guide" style="margin-top: 6rem; margin-bottom: 6rem;">
+            <h2 class="section-label" style="text-align: center; margin-bottom: 3rem; font-size: 2rem;">Forecast Interpretation Guide</h2>
+            <div class="tech-grid">
+                <!-- 1. Anomaly vs Total -->
+                <div class="tech-card">
+                    <h3>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                             <circle cx="12" cy="12" r="10"></circle>
+                             <path d="M8 12h8"></path>
+                        </svg>
+                        Anomaly vs. Total Rainfall
+                    </h3>
+                    <div class="tech-content">
+                        <h4>Understanding the Difference</h4>
+                        <p>
+                            <strong>Anomaly (Deviation):</strong> Shows how much the rainfall differs from the long-term average (Climatology). <br>
+                            Positive values (Green/Blue) indicate wetter than normal conditions, while negative values (Brown/Red) indicate drier conditions.
+                        </p>
+                        <p>
+                            <strong>Total Precipitation:</strong> The absolute amount of rain expected (mm/day). This is useful for hydrology and agriculture planning.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 2. Probabilistic Outlook -->
+                <div class="tech-card">
+                    <h3>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                        </svg>
+                        Probabilistic Alerts
+                    </h3>
+                    <div class="tech-content">
+                        <h4>Tercile Risks</h4>
+                        <p>
+                            Instead of a single value, we classify the risk into three categories based on historical data distributions (1981-2010):
+                        </p>
+                        <ul class="tech-list">
+                            <li><strong>Below Normal (Category 1):</strong> High risk of drought conditions.</li>
+                            <li><strong>Near Normal (Category 2):</strong> Expected seasonal conditions.</li>
+                            <li><strong>Above Normal (Category 3):</strong> High risk of excess rainfall or flooding.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
     </div>
 
     <footer>
