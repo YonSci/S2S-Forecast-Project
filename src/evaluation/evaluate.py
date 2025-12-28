@@ -75,6 +75,14 @@ def plot_temporal_metrics(df, output_dir, suffix=""):
     df['Date'] = pd.to_datetime(df['Date'])
     df = df.sort_values('Date')
     
+    # Export for Frontend (Plotly)
+    json_path = os.path.join(output_dir, f'temporal_metrics_{suffix}.json')
+    df_export = df.copy()
+    if 'Date' in df_export.columns:
+        df_export['Date'] = df_export['Date'].dt.strftime('%Y-%m-%d')
+    df_export.to_json(json_path, orient='records', indent=2)
+    print(f"Saved Temporal JSON: {json_path}")
+    
     # Common plotting parameters
     def setup_axis(ax):
         ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
@@ -128,6 +136,11 @@ def plot_confusion_matrix(start_p_cat, start_t_cat, output_dir, suffix=""):
     
     cm = confusion_matrix(y_true, y_pred, labels=labels, normalize='true') # Normalize by true rows
     
+    # Export JSON
+    cm_json_path = os.path.join(output_dir, f'confusion_matrix_{suffix}.json')
+    with open(cm_json_path, 'w') as f:
+        json.dump({'matrix': cm.tolist(), 'labels': classes}, f)
+    
     fig, ax = plt.subplots(figsize=(8, 6))
     sns.heatmap(cm, annot=True, fmt='.2%', cmap='Blues', xticklabels=classes, yticklabels=classes, cbar=True)
     
@@ -151,6 +164,11 @@ def plot_extreme_confusion_matrix(start_p_cat, start_t_cat, output_dir, suffix="
     
     cm = confusion_matrix(y_true, y_pred, labels=labels, normalize='true') 
     
+    # Export JSON
+    cm_json_path = os.path.join(output_dir, f'extreme_confusion_matrix_{suffix}.json')
+    with open(cm_json_path, 'w') as f:
+        json.dump({'matrix': cm.tolist(), 'labels': classes}, f) 
+    
     fig, ax = plt.subplots(figsize=(6, 5))
     sns.heatmap(cm, annot=True, fmt='.2%', cmap='Reds', xticklabels=classes, yticklabels=classes, cbar=True)
     
@@ -168,6 +186,15 @@ def plot_scatter_metrics(p_mean, t_mean, output_dir, suffix=""):
     # Calculate correlation for annotation
     corr, _ = pearsonr(p_mean, t_mean)
     
+    # Export JSON
+    scatter_json_path = os.path.join(output_dir, f'scatter_metrics_{suffix}.json')
+    with open(scatter_json_path, 'w') as f:
+        json.dump({
+            'observed': t_mean.tolist(),
+            'forecast': p_mean.tolist(),
+            'correlation': float(corr[0]) if isinstance(corr, (list, tuple, np.ndarray)) else float(corr)
+        }, f)
+    
     fig, ax = plt.subplots(figsize=(8, 8))
     
     # Scatter points
@@ -178,7 +205,8 @@ def plot_scatter_metrics(p_mean, t_mean, output_dir, suffix=""):
     max_val = max(np.max(p_mean), np.max(t_mean))
     ax.plot([min_val, max_val], [min_val, max_val], 'k--', alpha=0.7, label='Perfect Forecast')
     
-    ax.set_title(f'Forecast vs Observation (Domain Avg) - {suffix}\nR = {corr[0]:.3f}', fontsize=16)
+    corr_val = float(corr[0]) if isinstance(corr, (list, tuple, np.ndarray)) else float(corr)
+    ax.set_title(f'Forecast vs Observation (Grid Points) - {suffix}\nR = {corr_val:.3f}', fontsize=16)
     ax.set_xlabel('Observed Mean Rainfall (mm/day)', fontsize=14)
     ax.set_ylabel('Forecast Mean Rainfall (mm/day)', fontsize=14)
     
@@ -224,40 +252,52 @@ def plot_spatial_metrics(bias_grid, rmse_grid, acc_grid, hitrate_grid, output_di
 
     def plot_map(var_name, cmap, levels, title, label, filename, extend='neither'):
         fig = plt.figure(figsize=(10, 8))
-        ax = plt.axes(projection=ccrs.PlateCarree())
+        # Use Fixed Layout with Horizontal Colorbar at Bottom - Adjusted Position
+        map_rect = [0.05, 0.14, 0.90, 0.79]
+        cbar_rect = [0.20, 0.08, 0.60, 0.025]
+        
+        ax = fig.add_axes(map_rect, projection=ccrs.PlateCarree())
+        cbar_ax = fig.add_axes(cbar_rect)
+        
         ax.set_extent(extent, crs=ccrs.PlateCarree())
         
         ax.add_feature(cfeature.COASTLINE, linewidth=0.8)
         # ax.add_feature(cfeature.BORDERS, linewidth=1.2) # Removed to prevent duplication with overlays
         
-        # --- LAYOUT ANCHORS ---
-        # Add nearly-invisible text to the figure edges to force bbox_inches='tight' 
-        # to uniformly crop to this max extent.
-        anchor_style = dict(fontsize=20, color='#00000001') # Alpha=0.001
-        # fig.text(0.5, 1.05, "."*100, ha='center', **anchor_style) # Removed Top Anchor to fix whitespace gap
-        
-        # Right side needs to account for colorbar. Force wide right margin.
-        # Adjusted from 1.05 to 0.94 to reduce whitespace while maintaining alignment width
-        fig.text(0.94, 0.5, "."*60, va='center', rotation=270, **anchor_style) 
+        # --- ANCHORS REMOVED --- 
         
         # Discrete Plot
-        ds[var_name].plot(
+        im = ds[var_name].plot(
             ax=ax, transform=ccrs.PlateCarree(),
             cmap=cmap, 
             levels=levels,
             extend=extend,
-            cbar_kwargs={**common_cbar_kwargs, 'label': label}
+            cbar_ax=cbar_ax,
+            cbar_kwargs={
+                'label': label,
+                'format': '%.2f', 
+                'orientation': 'horizontal',
+                'spacing': 'proportional'
+            }
         )
         
+        # Stylize Colorbar (Normal Weight)
+        cb = im.colorbar
+        if cb:
+            cb.set_label(label, size=12, weight='normal')
+            cb.ax.tick_params(labelsize=10, width=0.5)
+
         # Configure Gridlines: Remove Top and Right labels
-        gl = ax.gridlines(draw_labels=True, linestyle='--', alpha=0.5)
+        gl = ax.gridlines(draw_labels=True, linestyle='--', alpha=0.4, color='black')
         gl.top_labels = False
         gl.right_labels = False
+        gl.xlabel_style = {'size': 12, 'weight': 'normal', 'color': 'black'}
+        gl.ylabel_style = {'size': 12, 'weight': 'normal', 'color': 'black'}
         
-        plt.title(title, fontsize=14, pad=10)
+        ax.set_title(title, fontsize=14, weight='bold')
         
         # Save with anchors forcing the size
-        plt.savefig(os.path.join(output_dir, filename), dpi=300, bbox_inches='tight')
+        plt.savefig(os.path.join(output_dir, filename), dpi=300)
         plt.close()
 
     # 1. Bias (Diverging, centered at 0)
@@ -431,9 +471,10 @@ def evaluate_model(config):
         
         # --- Scatter Plot ---
         print(f"Saving Scatter Plot ({year})...")
-        # sp_p shape is (N, H, W). Mean over H, W (axes 1, 2)
-        domain_p = np.mean(sp_p, axis=(1, 2))
-        domain_t = np.mean(sp_t, axis=(1, 2))
+        # Flatten spatial dims and subsample for dense scatter cloud (Grid Points)
+        stride = 50
+        domain_p = sp_p.flatten()[::stride]
+        domain_t = sp_t.flatten()[::stride]
         plot_scatter_metrics(domain_p, domain_t, "outputs", suffix=str(year))
         
         # --- Report Generation ---

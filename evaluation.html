@@ -42,14 +42,14 @@
     </nav>
 
     <div class="container">
-      <header class="hero" style="margin-top: 4rem;">
+      <header class="hero" style="margin-top: 0; padding-top: 0; padding-bottom: 0;">
         <div class="header-main">
           <div class="hero-text" style="width: 100%;">
             <h1>Model Evaluation</h1>
-            <p class="subtitle-large">
+            <p class="subtitle-large" style="white-space: nowrap;">
               Rigorous verification of forecast skill against historical observations (CHIRPS).
             </p>
-            <div class="controls-row" style="margin-top: 2rem;">
+            <div class="controls-row" style="margin-top: 1rem; margin-bottom: 1rem;">
                  <div class="status-badge">
                    <span class="pulse-dot" style="background: var(--success-color);"></span>
                    Validated on 20+ Years
@@ -60,8 +60,8 @@
       </header>
 
       <section>
-          <div style="margin-bottom: 4rem;">
-            <h2 class="section-label" style="font-size: 2.2rem; margin-bottom: 3rem;">Metric Definitions & Interpretation</h2>
+          <div style="margin-bottom: 3rem;">
+            <h2 class="section-label" style="font-size: 2.2rem; margin-bottom: 2rem;">Metric Definitions & Interpretation</h2>
             <div class="tech-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
                 
                 <!-- RMSE -->
@@ -140,7 +140,7 @@
       </section>
 
       <!-- Dynamic Evaluation Report -->
-      <section id="evaluation-report" style="max-width: 1000px; margin: 0 auto; margin-bottom: 6rem;">
+      <section id="evaluation-report" style="max-width: 1000px; margin: 0 auto; margin-bottom: 3rem;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
             <h2 class="section-label" style="font-size: 2.5rem; margin-bottom: 0;">Evaluation Report</h2>
             <div style="display: flex; align-items: center; gap: 1rem;">
@@ -168,7 +168,7 @@
       </section>
 
       <!-- Spatial Analysis Section -->
-      <section style="margin-bottom: 6rem;">
+      <section style="margin-bottom: 3rem;">
           <h2 id="spatial-title" class="section-label" style="font-size: 2.2rem; margin-bottom: 2rem;">Spatial Performance Analysis (2020)</h2>
           
           <!-- Overlay Controls -->
@@ -238,7 +238,7 @@
       </section>
 
       <!-- Temporal Analysis Section -->
-      <section style="margin-bottom: 6rem;">
+      <section style="margin-bottom: 3rem;">
           <h2 class="section-label" style="font-size: 2.2rem; margin-bottom: 3rem;">Temporal Skill Analysis (Time-Series)</h2>
           
           <div style="display: grid; grid-template-columns: 1fr; gap: 4rem;">
@@ -249,7 +249,7 @@
                       Tracking the model's ability to capture anomalies and categorical events over the test period.
                       Consistent high scores (> 0.5) indicate robust performance.
                   </p>
-                  <img id="img-temporal-skill" src="outputs/temporal_skill_2020.png" alt="Temporal Skill Chart" style="width: 100%; max-width: 1000px; height: auto; display: block; margin: 0 auto; border-radius: 1rem; border: 1px solid var(--card-border);">
+                  <div id="plot-temporal-skill" style="width: 100%; height: 500px; margin: 0 auto;"></div>
               </div>
 
               <!-- 2. Errors -->
@@ -258,7 +258,7 @@
                   <p style="font-size: 1rem; color: var(--text-secondary); margin-bottom: 2rem; max-width: 800px; margin-left: auto; margin-right: auto;">
                       Monitoring the magnitude of forecast errors. Spikes may indicate extreme events or model divergence.
                   </p>
-                  <img id="img-temporal-error" src="outputs/temporal_error_2020.png" alt="Temporal Error Chart" style="width: 100%; max-width: 1000px; height: auto; display: block; margin: 0 auto; border-radius: 1rem; border: 1px solid var(--card-border);">
+                  <div id="plot-temporal-error" style="width: 100%; height: 500px; margin: 0 auto;"></div>
               </div>
           </div>
       </section>
@@ -274,7 +274,7 @@
                       Visualizing the hit and miss rates for each category (Below Normal, Normal, Above Normal).
                       Darker diagonals indicate better performance.
                   </p>
-                  <img id="img-confusion-matrix" src="outputs/confusion_matrix_2020.png" alt="Tercile Confusion Matrix" style="width: 100%; height: auto; display: block; margin: 0 auto; border-radius: 1rem; border: 1px solid var(--card-border);">
+                  <div id="plot-confusion-matrix" style="width: 100%; height: 500px; margin: 0 auto;"></div>
               </div>
               
               <div class="tech-card" style="padding: 2rem; overflow: hidden; text-align: center;">
@@ -283,14 +283,14 @@
                       Assessing the model's ability to capture extreme precipitation events (>90th percentile).
                       Focus on 'Extreme' detection rate.
                   </p>
-                  <img id="img-extreme-confusion-matrix" src="outputs/extreme_confusion_matrix_2020.png" alt="Extreme Event Matrix" style="width: 100%; height: auto; display: block; margin: 0 auto; border-radius: 1rem; border: 1px solid var(--card-border);">
+                  <div id="plot-extreme-confusion-matrix" style="width: 100%; height: 500px; margin: 0 auto;"></div>
               </div>
           </div>
       </section>
 
       <!-- Scatter Plot Section -->
       <section style="margin-bottom: 8rem;">
-          <h2 class="section-label" style="font-size: 2.2rem; margin-bottom: 3rem;">Forecast Calibration</h2>
+          <h2 class="section-label" style="font-size: 2.2rem; margin-bottom: 3rem;">Scatter Plot: Forecast vs. Observation</h2>
           
           <div style="display: grid; grid-template-columns: 1fr; gap: 4rem;">
               <div class="tech-card" style="padding: 2rem; overflow: hidden; text-align: center;">
@@ -299,16 +299,18 @@
                       Scatter plot of domain-averaged rainfall for each test sample.
                       Points close to the dashed 1:1 line indicate perfect calibration.
                   </p>
-                  <img id="img-scatter-plot" src="outputs/scatter_plot_2020.png" alt="Forecast vs Obs Scatter Plot" style="width: 100%; max-width: 600px; height: auto; display: block; margin: 0 auto; border-radius: 1rem; border: 1px solid var(--card-border);">
+                  <div id="plot-scatter-metrics" style="width: 100%; height: 600px; margin: 0 auto;"></div>
               </div>
           </div>
       </section>
     </div>
 
-    <footer>
-      <p class="copyright">Advanced S2S Climate Applications | &copy; 2025</p>
+    <footer style="text-align: center; padding: 2rem 0; margin-top: 4rem;">
+      <p class="copyright" style="color: var(--text-secondary); margin: 0;">Advanced S2S Climate Applications | &copy; 2025</p>
     </footer>
 
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
     <script src="js/theme.js"></script>
     <script src="js/evaluation.js"></script>
     <script src="js/lightbox.js"></script>

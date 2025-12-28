@@ -40,20 +40,20 @@
     </nav>
 
     <div class="container">
-      <header class="hero">
+      <header class="hero" style="padding-top: 0;">
         <div class="header-main">
           <div class="logo-wrapper">
             <img
               src="hero_graphic.png"
               alt="ET-NeuralCast"
               class="hero-graphic"
+              style="width: 280px; height: auto;"
             />
           </div>
           <div class="hero-text">
             <h1>ET-NeuralCast</h1>
-            <p class="subtitle-large">
-              Sub-seasonal to Seasonal Forecasting for Ethiopia using Deep
-              Learning
+            <p class="subtitle-large" style="white-space: nowrap;">
+              Sub-seasonal to Seasonal Forecasting for Ethiopia using Deep Learning
             </p>
             <div style="margin-top: 2rem;">
                  <a href="#technical-framework" class="control-pill" style="display: inline-flex; text-decoration: none; width: auto; padding: 0.8rem 2rem; border-radius: 30px;">
@@ -74,7 +74,7 @@
         </div>
 
         <!-- Architecture Row -->
-        <div class="architecture-row">
+        <div class="architecture-row" style="margin-top: 3rem; margin-bottom: 3rem;">
           <!-- 1. Hybrid Framework -->
           <div class="arch-item">
             <div class="arch-icon-wrapper">
@@ -127,8 +127,8 @@
         </div>
       </header>
 
-      <section id="technical-framework">
-        <h2 class="section-label">Technical Framework</h2>
+      <section id="technical-framework" style="margin-top: 3rem;">
+        <h2 class="section-label" style="font-size: 3rem; margin-bottom: 3rem;">Technical Framework</h2>
         <div class="tech-grid">
           <!-- 1. Data Pipeline -->
           <div class="tech-card">
@@ -221,16 +221,18 @@
       </section>
     </div>
 
-    <footer>
-      <div class="contact-section">
-        <h2 class="section-label" style="font-size: 2rem; margin-bottom: 3rem">Contact</h2>
-        <div class="contact-card">
-          <span class="contact-name">Yonas Mersha</span>
-          <span class="contact-title">Hydro-Climate Modelling and ML/AI Expert</span>
-          <span class="contact-org">International Livestock Research Institute (ILRI)</span>
+    <footer style="margin-top: 6rem; padding-bottom: 4rem;">
+      <div style="display: flex; justify-content: center; padding: 0 2rem;">
+        <div class="contact-card" style="text-align: center; padding: 2.5rem; border: 1px solid var(--card-border); border-radius: 20px; background: var(--bg-secondary); max-width: 700px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+          <h3 style="margin: 0 0 0.5rem; font-size: 1.6rem; color: var(--text-primary); font-family: 'Plus Jakarta Sans', sans-serif;">Yonas Mersha</h3>
+          <p style="margin: 0 0 0.5rem; color: var(--text-secondary); font-size: 1.1rem;">Hydro-Climate Modelling and ML/AI Expert</p>
+          <p style="margin: 0 0 1.5rem; color: var(--accent); font-weight: 600; font-size: 1.1rem;">International Livestock Research Institute (ILRI)</p>
+          
+          <div style="height: 1px; background: var(--card-border); margin: 1.5rem auto; width: 60%;"></div>
+          
+          <p style="margin: 0; color: var(--text-secondary); font-size: 0.95rem; font-weight: 500;">Advanced S2S Climate Applications | &copy; 2025</p>
         </div>
       </div>
-      <p class="copyright">Advanced S2S Climate Applications | &copy; 2025</p>
     </footer>
 
     <script src="js/theme.js"></script>

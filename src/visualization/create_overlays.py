@@ -35,15 +35,17 @@ def generate_perfect_overlay(shapefile_path, output_name, line_color='black', li
     fig = plt.figure(figsize=(10, 8))
     fig.patch.set_alpha(0.0) # Transparent Figure
     
-    ax = plt.axes(projection=ccrs.PlateCarree())
+    # Use Fixed Layout with Horizontal Colorbar at Bottom - Adjusted Position
+    map_rect = [0.05, 0.14, 0.90, 0.79]
+    cbar_rect = [0.20, 0.08, 0.60, 0.025]
+    
+    ax = fig.add_axes(map_rect, projection=ccrs.PlateCarree())
+    cbar_ax = fig.add_axes(cbar_rect)
+    
     ax.set_extent(extent, crs=ccrs.PlateCarree())
-    ax.patch.set_alpha(0.0) # Transparent Axes
-    
-    # --- LAYOUT ANCHORS (Updated to match evaluate.py) ---
-    anchor_style = dict(fontsize=20, color='#00000001') # Alpha=0.001
-    # fig.text(0.5, 1.05, "."*100, ha='center', **anchor_style) # Removed Top Anchor
-    fig.text(0.94, 0.5, "."*60, va='center', rotation=270, **anchor_style) # Right (Tightened)
-    
+    ax.patch.set_alpha(0.0)
+    cbar_ax.patch.set_alpha(0.0) # Transparent Cbar Axes
+
     # --- 3. Plot Invisible Heatmap ---
     bias_levels = [-2.0, -1.5, -1.0, -0.5, 0, 0.5, 1.0, 1.5, 2.0]
     
@@ -54,10 +56,16 @@ def generate_perfect_overlay(shapefile_path, output_name, line_color='black', li
         extend='both',
         alpha=0.0,   # Invisible
         add_colorbar=True, 
-        cbar_kwargs={**common_cbar_kwargs, 'label': dummy_label}
+        cbar_ax=cbar_ax, 
+        cbar_kwargs={
+            'label': dummy_label,
+            'orientation': 'horizontal' 
+        } 
     )
     
-    # Hide Colorbar
+    # Hide Colorbar Visuals (Keep the layout space)
+    cbar = plot_handle.colorbar
+    cbar.ax.set_visible(False) # This hides the entire colorbar axis (spine, ticks, labels)
     cbar = plot_handle.colorbar
     cbar.outline.set_visible(False)
     
@@ -75,7 +83,8 @@ def generate_perfect_overlay(shapefile_path, output_name, line_color='black', li
     gl.ylabel_style = {'color': ghost_color}
     
     # --- 6. Add Title ---
-    plt.title(dummy_title, fontsize=14, pad=10, color=ghost_color)
+    # --- 6. Add Title ---
+    ax.set_title(dummy_title, fontsize=14, pad=10, color=ghost_color)
     
     # --- 7. Add Shapefile ---
     try:
@@ -117,7 +126,7 @@ def generate_perfect_overlay(shapefile_path, output_name, line_color='black', li
     # --- 8. Save ---
     ax.spines['geo'].set_visible(False) # Turn off boundary
     
-    plt.savefig(os.path.join(OUTPUT_DIR, output_name), dpi=300, bbox_inches='tight', transparent=True)
+    plt.savefig(os.path.join(OUTPUT_DIR, output_name), dpi=300, transparent=True)
     plt.close()
 
 if __name__ == "__main__":

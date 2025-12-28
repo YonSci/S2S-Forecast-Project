@@ -77,7 +77,7 @@ def visualize_forecast(ds, var_name, init_date, lead_date, lead_weeks, output_pa
         'axes.facecolor': 'white'
     })
     
-    fig = plt.figure(figsize=(14, 11), facecolor='white')
+    fig = plt.figure(figsize=(10, 8), facecolor='white')
     
     # 1. Colormap Selection
     plot_kwargs = {}
@@ -154,13 +154,21 @@ def visualize_forecast(ds, var_name, init_date, lead_date, lead_weeks, output_pa
         plot_kwargs = {'levels': levels, 'extend': 'neither'}
 
     if CARTOPY_AVAILABLE:
-        ax = plt.axes(projection=ccrs.PlateCarree())
+        # Use Fixed Layout with Horizontal Colorbar at Bottom - Adjusted Position
+        map_rect = [0.05, 0.14, 0.90, 0.79]
+        cbar_rect = [0.20, 0.08, 0.60, 0.025]
+        
+        ax = fig.add_axes(map_rect, projection=ccrs.PlateCarree())
+        cbar_ax = fig.add_axes(cbar_rect)
+        
         ax.set_extent([32.5, 48.5, 3, 15], crs=ccrs.PlateCarree())
         
         # Enhanced Geography
         ax.add_feature(cfeature.COASTLINE, linewidth=0.8, edgecolor='#333333')
-        ax.add_feature(cfeature.BORDERS, linestyle='-', linewidth=1.5, edgecolor='#000000')
+        # ax.add_feature(cfeature.BORDERS, linestyle='-', linewidth=1.5, edgecolor='#000000') # Disable built-in borders
         ax.add_feature(cfeature.LAKES, edgecolor='#0000ff', facecolor='#add8e6', alpha=0.3)
+        
+        # --- ANCHORS REMOVED ---
         
         # Plot data with robust colorbar
         plot_params = {
@@ -171,20 +179,26 @@ def visualize_forecast(ds, var_name, init_date, lead_date, lead_weeks, output_pa
             'vmin': vmin,
             'vmax': vmax,
             'add_colorbar': True,
+            'cbar_ax': cbar_ax, # Use dedicated axes
             'cbar_kwargs': {
                 'label': label,
-                'shrink': 0.8,
-                'pad': 0.08,
-                'aspect': 25
+                'format': '%.0f' if 'percent' in var_name else '%.2f', 
+                'orientation': 'horizontal',
+                'spacing': 'proportional'
             }
         }
         plot_params.update(plot_kwargs)
         
         im = ds[var_name].plot(**plot_params)
         
+        # Stylize Colorbar (Normal Weight)
+        cb = im.colorbar
+        if cb:
+            cb.set_label(label, size=12, weight='normal')
+            cb.ax.tick_params(labelsize=10, width=0.5)
+
         # Fix colorbar ticks for terciles
         if 'tercile' in var_name:
-            cb = im.colorbar
             cb.set_ticks([-1, 0, 1])
             cb.set_ticklabels(['Below Normal', 'Near Normal', 'Above Normal'])
         
@@ -192,14 +206,8 @@ def visualize_forecast(ds, var_name, init_date, lead_date, lead_weeks, output_pa
         gl = ax.gridlines(draw_labels=True, linestyle='--', alpha=0.4, color='black')
         gl.top_labels = False
         gl.right_labels = False
-        gl.xlabel_style = {'size': 12, 'weight': 'bold', 'color': 'black'}
-        gl.ylabel_style = {'size': 12, 'weight': 'bold', 'color': 'black'}
-        
-        # Re-asserting axis text to ensure visibility after tight_layout
-        ax.text(-0.12, 0.5, 'LATITUDE', va='center', ha='center',
-                rotation='vertical', transform=ax.transAxes, fontsize=14, fontweight='bold')
-        ax.text(0.5, -0.12, 'LONGITUDE', va='center', ha='center',
-                transform=ax.transAxes, fontsize=14, fontweight='bold')
+        gl.xlabel_style = {'size': 12, 'weight': 'normal', 'color': 'black'}
+        gl.ylabel_style = {'size': 12, 'weight': 'normal', 'color': 'black'}
 
     else:
         plot_params = {'cmap': cmap, 'robust': True, 'vmin': vmin, 'vmax': vmax}
@@ -217,11 +225,12 @@ def visualize_forecast(ds, var_name, init_date, lead_date, lead_weeks, output_pa
     except:
         target_week_str = date_str
 
-    plt.title(f"ET-NeuralCast S2S Forecast: {title_prefix}\nInit: {init_str} | Target Week: {target_week_str} (Lead: {lead_weeks} Weeks)", 
-              fontsize=18, pad=40, fontweight='bold', color='black')
+    # Single line title to match evaluate.py layout for perfect overlay alignment
+    title_str = f"{title_prefix} | {target_week_str} (Lead: {lead_weeks}W)"
+    ax.set_title(title_str, fontsize=14, pad=10, fontweight='bold', color='black')
     
     # Save with solid white background (the dashboard will invert labels to white in Dark Mode)
-    plt.savefig(output_path, dpi=300, bbox_inches='tight', pad_inches=0.5, facecolor='white', transparent=False)
+    plt.savefig(output_path, dpi=300, facecolor='white', transparent=False)
     plt.close()
 
 
@@ -305,11 +314,22 @@ def run_inference(model_path, normalizer_path, pressure_file, sst_file=None, out
     output_nc = os.path.join(output_dir, f"forecast_{str(lead_date_np)[:10]}{lead_suffix}.nc")
     pred_ds.to_netcdf(output_nc)
     
-    # Visualizations
-    visualize_forecast(pred_ds, 'precip_anomaly', forecast_date, lead_date_np, lead_weeks, os.path.join(output_dir, f"forecast_{str(lead_date_np)[:10]}{lead_suffix}_anomaly.png"))
-    visualize_forecast(pred_ds, 'precip_total', forecast_date, lead_date_np, lead_weeks, os.path.join(output_dir, f"forecast_{str(lead_date_np)[:10]}{lead_suffix}_total.png"))
-    visualize_forecast(pred_ds, 'precip_percent', forecast_date, lead_date_np, lead_weeks, os.path.join(output_dir, f"forecast_{str(lead_date_np)[:10]}{lead_suffix}_percent.png"))
-    visualize_forecast(pred_ds, 'precip_tercile', forecast_date, lead_date_np, lead_weeks, os.path.join(output_dir, f"forecast_{str(lead_date_np)[:10]}{lead_suffix}_tercile.png"))
+    # Visualizations & Latest Update
+    import shutil
+    
+    tasks = [
+        ('precip_anomaly', 'anomaly'),
+        ('precip_total', 'total'),
+        ('precip_percent', 'percent'),
+        ('precip_tercile', 'tercile')
+    ]
+    
+    for var, suffix in tasks:
+        path = os.path.join(output_dir, f"forecast_{str(lead_date_np)[:10]}{lead_suffix}_{suffix}.png")
+        visualize_forecast(pred_ds, var, forecast_date, lead_date_np, lead_weeks, path)
+        # Copy to latest (legacy and lead-specific)
+        shutil.copy(path, os.path.join(output_dir, f"latest_{suffix}.png"))
+        shutil.copy(path, os.path.join(output_dir, f"latest_{suffix}{lead_suffix}.png"))
 
     print("Inference completed successfully.")
 
