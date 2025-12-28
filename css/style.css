@@ -547,3 +547,22 @@ body {
 .js-plotly-plot *, .plotly * {
   transition: none !important;
 }
+
+/* Typography Standardization */
+.section-label {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 3rem;
+  color: var(--text-primary);
+  text-align: center; /* Default to center for major sections */
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+/* Ensure mobile responsiveness */
+@media (max-width: 768px) {
+    .section-label {
+        font-size: 2rem;
+        margin-bottom: 2rem;
+    }
+}
