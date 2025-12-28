@@ -91,12 +91,13 @@ def plot_experiment_logs():
                 fig_p.update_layout(title="Warmstart Training: L1 Reconstruction Loss",
                                    xaxis_title="Steps", yaxis_title="L1 Loss",
                                    hovermode="x unified",
-                                   font=dict(color="white"),
-                                   paper_bgcolor='#1e293b',
-                                   plot_bgcolor='#1e293b',
-                                   xaxis=dict(showgrid=True, gridcolor='rgba(255,255,255,0.1)'),
-                                   yaxis=dict(showgrid=True, gridcolor='rgba(255,255,255,0.1)'))
-                fig_p.write_html(os.path.join(OUTPUT_DIR, "logs_warmstart.html"))
+                                   font=dict(color="black"),
+                                   paper_bgcolor='white',
+                                   plot_bgcolor='white',
+                                   xaxis=dict(showgrid=True, gridcolor='rgba(0,0,0,0.1)'),
+                                   yaxis=dict(showgrid=True, gridcolor='rgba(0,0,0,0.1)'))
+                with open(os.path.join(OUTPUT_DIR, "logs_warmstart.html"), "w", encoding="utf-8") as f:
+                    fig_p.write_html(f)
                 print("Saved logs_warmstart.html")
             except Exception as e:
                 print(f"Error creating Plotly warmstart: {e}")
@@ -182,12 +183,13 @@ def plot_experiment_logs():
                 fig_p.update_layout(title="GAN Training Dynamics (Batch Level - Smoothed)",
                                    xaxis_title="Steps", yaxis_title="Loss",
                                    hovermode="x unified",
-                                   font=dict(color="white"),
-                                   paper_bgcolor='#1e293b',
-                                   plot_bgcolor='#1e293b',
-                                   xaxis=dict(showgrid=True, gridcolor='rgba(255,255,255,0.1)'),
-                                   yaxis=dict(showgrid=True, gridcolor='rgba(255,255,255,0.1)'))
-                fig_p.write_html(os.path.join(OUTPUT_DIR, "logs_gan_batch.html"))
+                                   font=dict(color="black"),
+                                   paper_bgcolor='white',
+                                   plot_bgcolor='white',
+                                   xaxis=dict(showgrid=True, gridcolor='rgba(0,0,0,0.1)'),
+                                   yaxis=dict(showgrid=True, gridcolor='rgba(0,0,0,0.1)'))
+                with open(os.path.join(OUTPUT_DIR, "logs_gan_batch.html"), "w", encoding="utf-8") as f:
+                    fig_p.write_html(f)
                 print("Saved logs_gan_batch.html")
             except Exception as e:
                 print(f"Error creating Plotly GAN batch: {e}")
@@ -240,19 +242,22 @@ def plot_experiment_logs():
                 fig_p.update_layout(title="GAN Training Progress (Epoch Averages)",
                                    xaxis_title="Epochs", yaxis_title="Average Loss",
                                    hovermode="x unified",
-                                   font=dict(color="white"),
-                                   paper_bgcolor='#1e293b',
-                                   plot_bgcolor='#1e293b',
-                                   xaxis=dict(showgrid=True, gridcolor='rgba(255,255,255,0.1)'),
-                                   yaxis=dict(showgrid=True, gridcolor='rgba(255,255,255,0.1)'))
-                fig_p.write_html(os.path.join(OUTPUT_DIR, "logs_gan_epoch.html"))
+                                   font=dict(color="black"),
+                                   paper_bgcolor='white',
+                                   plot_bgcolor='white',
+                                   xaxis=dict(showgrid=True, gridcolor='rgba(0,0,0,0.1)'),
+                                   yaxis=dict(showgrid=True, gridcolor='rgba(0,0,0,0.1)'))
+                with open(os.path.join(OUTPUT_DIR, "logs_gan_epoch.html"), "w", encoding="utf-8") as f:
+                    fig_p.write_html(f)
                 print("Saved logs_gan_epoch.html")
             except Exception as e:
                 print(f"Error creating Plotly GAN epoch: {e}")
 
             # --- Plot C: Validation Performance ---
             try:
+                print("DEBUG: Fetching RMSE")
                 h_rmse = client.get_metric_history(run_id, "val_rmse")
+                print("DEBUG: Fetching ACC")
                 h_acc = client.get_metric_history(run_id, "val_acc")
                 
                 # --- Plotly Validation ---
@@ -275,15 +280,15 @@ def plot_experiment_logs():
                         
                         fig_p.update_layout(title="GAN Validation Performance (Unseen Years)",
                                            xaxis_title="Epochs",
-                                           yaxis=dict(title="RMSE (mm/day)", titlefont=dict(color="cyan"), tickfont=dict(color="cyan"), 
-                                                      showgrid=True, gridcolor='rgba(255,255,255,0.1)'),
-                                           yaxis2=dict(title="Anomaly Correlation (ACC)", titlefont=dict(color="orange"), tickfont=dict(color="orange"),
+                                           yaxis=dict(title="RMSE (mm/day)", titlefont=dict(color="darkcyan"), tickfont=dict(color="darkcyan"), 
+                                                      showgrid=True, gridcolor='rgba(0,0,0,0.1)'),
+                                           yaxis2=dict(title="Anomaly Correlation (ACC)", titlefont=dict(color="darkorange"), tickfont=dict(color="darkorange"),
                                                        overlaying='y', side='right', showgrid=False),
                                            hovermode="x unified",
-                                           paper_bgcolor='#1e293b',
-                                           plot_bgcolor='#1e293b',
-                                           font=dict(color="white"),
-                                           xaxis=dict(showgrid=True, gridcolor='rgba(255,255,255,0.1)'))
+                                           paper_bgcolor='white',
+                                           plot_bgcolor='white',
+                                           font=dict(color="black"),
+                                           xaxis=dict(showgrid=True, gridcolor='rgba(0,0,0,0.1)'))
                     else:
                         # Placeholder if no data
                         fig_p.update_layout(
@@ -291,16 +296,17 @@ def plot_experiment_logs():
                             annotations=[dict(
                                 text="No Validation Data Available Yet<br>Run training with --val-years argument",
                                 xref="paper", yref="paper",
-                                showarrow=False, font=dict(size=20, color="white")
+                                showarrow=False, font=dict(size=20, color="black")
                             )],
-                            paper_bgcolor='#1e293b',
-                            plot_bgcolor='#1e293b',
-                            font=dict(color="white"),
+                            paper_bgcolor='white',
+                            plot_bgcolor='white',
+                            font=dict(color="black"),
                             xaxis=dict(visible=False, showgrid=False),
                             yaxis=dict(visible=False, showgrid=False)
                         )
 
-                    fig_p.write_html(os.path.join(OUTPUT_DIR, "logs_gan_validation.html"))
+                    with open(os.path.join(OUTPUT_DIR, "logs_gan_validation.html"), "w", encoding="utf-8") as f:
+                        fig_p.write_html(f)
                     print("Saved logs_gan_validation.html")
                 except Exception as e:
                     print(f"Error creating Plotly GAN validation: {e}")
