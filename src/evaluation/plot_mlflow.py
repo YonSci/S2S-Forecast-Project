@@ -255,67 +255,63 @@ def plot_experiment_logs():
 
             # --- Plot C: Validation Performance ---
             try:
-                print("DEBUG: Fetching RMSE")
                 h_rmse = client.get_metric_history(run_id, "val_rmse")
-                print("DEBUG: Fetching ACC")
                 h_acc = client.get_metric_history(run_id, "val_acc")
                 
-                # --- Plotly Validation ---
-                try:
-                    fig_p = go.Figure()
+                fig_p = go.Figure()
 
-                    if h_rmse and h_acc:
-                         # RMSE (Left Axis)
-                        steps_rmse = [m.step for m in h_rmse]
-                        vals_rmse = [m.value for m in h_rmse]
-                        fig_p.add_trace(go.Scatter(x=steps_rmse, y=vals_rmse, mode='lines+markers', name='Val RMSE',
-                                                 line=dict(color='cyan', width=2), marker=dict(size=8)))
-                        
-                        # ACC (Right Axis)
-                        steps_acc = [m.step for m in h_acc]
-                        vals_acc = [m.value for m in h_acc]
-                        fig_p.add_trace(go.Scatter(x=steps_acc, y=vals_acc, mode='lines+markers', name='Val ACC',
-                                                 line=dict(color='orange', width=2), marker=dict(size=8, symbol='square'),
-                                                 yaxis='y2'))
-                        
-                        fig_p.update_layout(title="GAN Validation Performance (Unseen Years)",
-                                           xaxis_title="Epochs",
-                                           yaxis=dict(title="RMSE (mm/day)", titlefont=dict(color="darkcyan"), tickfont=dict(color="darkcyan"), 
-                                                      showgrid=True, gridcolor='rgba(0,0,0,0.1)'),
-                                           yaxis2=dict(title="Anomaly Correlation (ACC)", titlefont=dict(color="darkorange"), tickfont=dict(color="darkorange"),
-                                                       overlaying='y', side='right', showgrid=False),
-                                           hovermode="x unified",
-                                           paper_bgcolor='white',
-                                           plot_bgcolor='white',
-                                           font=dict(color="black"),
-                                           xaxis=dict(showgrid=True, gridcolor='rgba(0,0,0,0.1)'))
-                    else:
-                        # Placeholder if no data
-                        fig_p.update_layout(
-                            title="GAN Validation Performance",
-                            annotations=[dict(
-                                text="No Validation Data Available Yet<br>Run training with --val-years argument",
-                                xref="paper", yref="paper",
-                                showarrow=False, font=dict(size=20, color="black")
-                            )],
-                            paper_bgcolor='white',
-                            plot_bgcolor='white',
-                            font=dict(color="black"),
-                            xaxis=dict(visible=False, showgrid=False),
-                            yaxis=dict(visible=False, showgrid=False)
-                        )
+                if h_rmse and h_acc:
+                    # RMSE (Left Axis)
+                    steps_rmse = [m.step for m in h_rmse]
+                    vals_rmse = [m.value for m in h_rmse]
+                    fig_p.add_trace(go.Scatter(x=steps_rmse, y=vals_rmse, mode='lines+markers', name='Val RMSE',
+                                             line=dict(color='cyan', width=2), marker=dict(size=8)))
+                    
+                    # ACC (Right Axis)
+                    steps_acc = [m.step for m in h_acc]
+                    vals_acc = [m.value for m in h_acc]
+                    fig_p.add_trace(go.Scatter(x=steps_acc, y=vals_acc, mode='lines+markers', name='Val ACC',
+                                             line=dict(color='orange', width=2), marker=dict(size=8, symbol='square'),
+                                             yaxis='y2'))
+                    
+                    fig_p.update_layout(title="GAN Validation Performance (Unseen Years)",
+                                       xaxis_title="Epochs",
+                                       yaxis=dict(title=dict(text="RMSE (mm/day)", font=dict(color="darkcyan")), 
+                                                  tickfont=dict(color="darkcyan"), 
+                                                  showgrid=True, gridcolor='rgba(0,0,0,0.1)'),
+                                       yaxis2=dict(title=dict(text="Anomaly Correlation (ACC)", font=dict(color="darkorange")), 
+                                                   tickfont=dict(color="darkorange"),
+                                                   overlaying='y', side='right', showgrid=False),
+                                       hovermode="x unified",
+                                       paper_bgcolor='white',
+                                       plot_bgcolor='white',
+                                       font=dict(color="black"),
+                                       xaxis=dict(showgrid=True, gridcolor='rgba(0,0,0,0.1)'))
+                else:
+                    # Placeholder if no data
+                    fig_p.update_layout(
+                        title="GAN Validation Performance",
+                        annotations=[dict(
+                            text="No Validation Data Available Yet<br>Run training with --val-years argument",
+                            xref="paper", yref="paper",
+                            showarrow=False, font=dict(size=20, color="black")
+                        )],
+                        paper_bgcolor='white',
+                        plot_bgcolor='white',
+                        font=dict(color="black"),
+                        xaxis=dict(visible=False, showgrid=False),
+                        yaxis=dict(visible=False, showgrid=False)
+                    )
 
-                    with open(os.path.join(OUTPUT_DIR, "logs_gan_validation.html"), "w", encoding="utf-8") as f:
-                        fig_p.write_html(f)
-                    print("Saved logs_gan_validation.html")
-                except Exception as e:
-                    print(f"Error creating Plotly GAN validation: {e}")
-
-                # Matplotlib fallback (Optional, kept for png compatibility if needed)
-                # ... (skipped for brevity as we are moving to html)
+                out_path = os.path.join(OUTPUT_DIR, "logs_gan_validation.html")
+                with open(out_path, "w", encoding="utf-8") as f:
+                    fig_p.write_html(f)
+                print("Saved logs_gan_validation.html")
 
             except Exception as e:
-                print(f"Skipping validation plot setup: {e}")
+                # Safe print to avoid console encoding crashes
+                msg = str(e).encode('ascii', 'replace').decode('ascii')
+                print(f"Skipping validation plot setup: {msg}")
 
 if __name__ == "__main__":
     plot_experiment_logs()
