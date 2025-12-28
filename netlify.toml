@@ -1,0 +1,14 @@
+[build]
+  publish = "."  # The project root contains index.html
+  # No build command needed for static serving of pre-generated artifacts
+
+# Set proper headers for JSON/Data files if needed
+[[headers]]
+  for = "/*.json"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
