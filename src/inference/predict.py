@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 from matplotlib.colors import LinearSegmentedColormap
 from datetime import datetime, timedelta
+import subprocess
 
 try:
     import cartopy.crs as ccrs
@@ -155,7 +156,8 @@ def visualize_forecast(ds, var_name, init_date, lead_date, lead_weeks, output_pa
 
     if CARTOPY_AVAILABLE:
         # Use Fixed Layout with Horizontal Colorbar at Bottom - Adjusted Position
-        map_rect = [0.05, 0.14, 0.90, 0.79]
+        # Reduced height (0.79 -> 0.74) to prevent title clipping
+        map_rect = [0.05, 0.14, 0.90, 0.74]
         cbar_rect = [0.20, 0.08, 0.60, 0.025]
         
         ax = fig.add_axes(map_rect, projection=ccrs.PlateCarree())
@@ -218,16 +220,26 @@ def visualize_forecast(ds, var_name, init_date, lead_date, lead_weeks, output_pa
     init_str = str(init_date)[:10] if not isinstance(init_date, xr.DataArray) else str(init_date.values)[:10]
     
     # Calculate target week string
+    # Calculate valid period
     try:
         start_dt = datetime.strptime(date_str, '%Y-%m-%d')
         end_dt = start_dt + timedelta(days=6)
-        target_week_str = f"{start_dt.strftime('%b %d')} - {end_dt.strftime('%b %d')}"
+        valid_period = f"{start_dt.strftime('%d %b')} - {end_dt.strftime('%d %b %Y')}"
     except:
-        target_week_str = date_str
+        valid_period = date_str
 
-    # Single line title to match evaluate.py layout for perfect overlay alignment
-    title_str = f"{title_prefix} | {target_week_str} (Lead: {lead_weeks}W)"
-    ax.set_title(title_str, fontsize=14, pad=10, fontweight='bold', color='black')
+    # Calculate Init String
+    try:
+        init_dt = datetime.strptime(init_str, '%Y-%m-%d')
+        init_annot = init_dt.strftime('%d %b %Y')
+    except:
+        init_annot = init_str
+
+    # Detailed Title
+    main_title = f"{title_prefix} (Lead: {lead_weeks}W)"
+    sub_title = f"Valid Period: {valid_period}   |   Initialized: {init_annot}"
+    
+    ax.set_title(f"{main_title}\n{sub_title}", fontsize=13, pad=12, fontweight='bold', color='black')
     
     # Save with solid white background (the dashboard will invert labels to white in Dark Mode)
     plt.savefig(output_path, dpi=300, facecolor='white', transparent=False)
@@ -251,6 +263,7 @@ def run_inference(model_path, normalizer_path, pressure_file, sst_file=None, out
     model.eval()
     
     # 3. Load and Preprocess Latest ERA5 Data
+    print(f"Using operational input file: {os.path.basename(pressure_file)}")
     print(f"Loading pressure data: {pressure_file}")
     ds_pressure = xr.open_dataset(pressure_file)
     
@@ -333,11 +346,25 @@ def run_inference(model_path, normalizer_path, pressure_file, sst_file=None, out
 
     print("Inference completed successfully.")
 
+    # Automatically update the forecast index
+    try:
+        print("Updating forecast index...")
+        subprocess.run(["python", "update_forecast_index.py"], check=True)
+    except Exception as e:
+        print(f"Warning: Failed to update forecast index: {e}")
+
 
 if __name__ == "__main__":
-    MODEL_PATH = "checkpoints/G_warmstart_best.pth"
+    MODEL_PATH = "checkpoints/G_best_acc_W1.pth"
     NORMALIZER_PATH = "checkpoints/normalizer.pkl"
-    PL_DIR, SST_DIR = "data/train/era5_pressure", "data/train/era5_sst"
+    # Default to Operational, fallback to Train
+    PL_DIR = "data/operational/era5_pressure"
+    SST_DIR = "data/operational/era5_sst"
+    
+    if not os.path.exists(PL_DIR):
+        print(f"Operational directory {PL_DIR} not found. Falling back to training data.")
+        PL_DIR = "data/train/era5_pressure"
+        SST_DIR = "data/train/era5_sst"
     
     if os.path.exists(PL_DIR):
         pl_files = sorted([f for f in os.listdir(PL_DIR) if f.endswith('.nc')], reverse=True)

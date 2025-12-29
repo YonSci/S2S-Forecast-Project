@@ -36,7 +36,8 @@ def generate_perfect_overlay(shapefile_path, output_name, line_color='black', li
     fig.patch.set_alpha(0.0) # Transparent Figure
     
     # Use Fixed Layout with Horizontal Colorbar at Bottom - Adjusted Position
-    map_rect = [0.05, 0.14, 0.90, 0.79]
+    # Use Fixed Layout with Horizontal Colorbar at Bottom - Adjusted Position
+    map_rect = [0.05, 0.14, 0.90, 0.74]
     cbar_rect = [0.20, 0.08, 0.60, 0.025]
     
     ax = fig.add_axes(map_rect, projection=ccrs.PlateCarree())

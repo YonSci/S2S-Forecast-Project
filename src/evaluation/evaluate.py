@@ -253,7 +253,7 @@ def plot_spatial_metrics(bias_grid, rmse_grid, acc_grid, hitrate_grid, output_di
     def plot_map(var_name, cmap, levels, title, label, filename, extend='neither'):
         fig = plt.figure(figsize=(10, 8))
         # Use Fixed Layout with Horizontal Colorbar at Bottom - Adjusted Position
-        map_rect = [0.05, 0.14, 0.90, 0.79]
+        map_rect = [0.05, 0.14, 0.90, 0.74]
         cbar_rect = [0.20, 0.08, 0.60, 0.025]
         
         ax = fig.add_axes(map_rect, projection=ccrs.PlateCarree())
